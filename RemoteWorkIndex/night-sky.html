@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Remote Index — A guide to working anywhere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PP+Editorial+Old:ital,wght@0,400;0,700;1,400&family=Editorial+New:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Geist+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="enhance.css">
+<style>
+  :root{
+    --bg:#0d1721;
+    --bg-2:#162232;
+    --bg-3:#1f2f45;
+    --paper:#f4eee4;
+    --paper-dim:#cfc6b5;
+    --ink:#0d1721;
+    --accent:#ff6b3d;
+    --accent-2:#7dd3c0;
+    --gold:#d4a574;
+    --line:rgba(244,238,228,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--paper);font-family:'Geist',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  ::selection{background:var(--accent);color:var(--bg)}
+
+  body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(125,211,192,.12),transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(255,107,61,.10),transparent 50%);pointer-events:none;z-index:0}
+  body > *{position:relative;z-index:1}
+
+  .top{display:flex;justify-content:space-between;align-items:center;padding:14px 32px;border-bottom:1px solid var(--line);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--paper-dim)}
+  .top-left{display:flex;gap:24px;align-items:center}
+  .live{display:flex;align-items:center;gap:6px;color:var(--accent-2)}
+  .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 8px var(--accent-2);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .header{display:flex;justify-content:space-between;align-items:center;padding:22px 32px;gap:24px;flex-wrap:wrap}
+  .logo{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;letter-spacing:-.005em;line-height:1}
+  .logo em{font-style:italic;color:var(--accent)}
+  .logo .sub{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--paper-dim);display:block;text-transform:uppercase;margin-top:4px}
+  .nav{display:flex;gap:6px}
+  .nav a{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.1em;padding:9px 14px;border-radius:100px;border:1px solid var(--line);text-transform:uppercase}
+  .nav a:hover,.nav a.on{background:var(--paper);color:var(--bg);border-color:var(--paper)}
+
+  .hero{padding:100px 32px 70px;max-width:1500px;margin:0 auto;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:60px;align-items:end}
+  .hero-kicker{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.25em;color:var(--accent-2);text-transform:uppercase;margin-bottom:32px;display:flex;align-items:center;gap:12px}
+  .hero-kicker::before{content:"";display:inline-block;width:40px;height:1px;background:var(--accent-2)}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,9vw,140px);font-weight:400;line-height:.95;letter-spacing:-.025em;margin-bottom:30px}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero h1 .small{font-size:.7em}
+  .hero p{font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.5;color:var(--paper-dim);max-width:540px;font-weight:400}
+  .hero-card{background:rgba(244,238,228,.04);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;padding:30px;align-self:end}
+  .hero-card-label{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.25em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:18px}
+  .hero-card-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .hero-card-row:last-child{border-bottom:none;padding-bottom:0}
+  .hero-card-row .nm{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic}
+  .hero-card-row .city{display:flex;align-items:center;gap:10px}
+  .hero-card-row .city .flg{font-size:24px}
+  .hero-card-row .v{font-family:'Geist Mono',monospace;font-size:13px;color:var(--accent-2)}
+  .hero-cta{margin-top:24px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:14px 24px;background:var(--accent);color:var(--bg);border-radius:100px;display:inline-block}
+  .hero-cta:hover{background:var(--paper)}
+
+  .ticker{padding:20px 32px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(13,23,33,.6);backdrop-filter:blur(10px);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.1em;overflow:hidden;white-space:nowrap}
+  .ticker-track{display:inline-block;animation:scroll 60s linear infinite}
+  .ticker-track .item{display:inline-block;margin:0 30px}
+  .ticker-track .city{color:var(--accent-2)}
+  .ticker-track .delta-pos{color:#7dd3c0}
+  .ticker-track .delta-neg{color:#ff6b3d}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  .sec{padding:90px 32px;max-width:1500px;margin:0 auto}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:50px;gap:24px;flex-wrap:wrap}
+  .sec-num{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--accent-2);margin-bottom:10px}
+  .sec-title{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:400;letter-spacing:-.02em;line-height:.95}
+  .sec-title em{font-style:italic;color:var(--accent)}
+  .sec-meta{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--paper-dim);text-transform:uppercase}
+
+  .cities{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .city-card{background:rgba(244,238,228,.03);border:1px solid var(--line);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;backdrop-filter:blur(10px);position:relative;display:flex;flex-direction:column}
+  .city-card:hover{transform:translateY(-4px);border-color:var(--accent-2)}
+  .city-img{height:220px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg-2),var(--bg-3))}
+  .city-img-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:140px;opacity:.18;line-height:1}
+  .city-img-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(13,23,33,.7))}
+  .city-img-meta{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+  .city-rank{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--paper);background:rgba(13,23,33,.5);backdrop-filter:blur(8px);padding:6px 10px;border-radius:100px}
+  .city-flag{font-size:36px;text-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .city-img-title{position:absolute;left:22px;right:22px;bottom:18px;z-index:2}
+  .city-img-title h3{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;line-height:.95;letter-spacing:-.01em}
+  .city-img-title h3 em{font-style:italic;color:var(--accent)}
+  .city-img-title .ctry{font-family:'Geist Mono',monospace;font-size:11px;color:var(--paper-dim);letter-spacing:.12em;text-transform:uppercase;margin-top:5px}
+  .city-body{padding:24px;display:flex;flex-direction:column;gap:20px;flex:1}
+  .city-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .city-stat .l{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:4px}
+  .city-stat .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
+  .city-stat .v em{font-style:italic;color:var(--accent-2);font-weight:400}
+  .city-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .city-tag{font-family:'Geist Mono',monospace;font-size:10px;padding:5px 10px;border:1px solid var(--line);border-radius:100px;letter-spacing:.1em;text-transform:uppercase}
+  .city-visa{font-family:'Geist Mono',monospace;font-size:11px;color:var(--accent-2);padding-top:14px;border-top:1px solid var(--line);text-transform:uppercase;letter-spacing:.1em}
+
+  .itin{margin-bottom:30px;background:linear-gradient(135deg,rgba(255,107,61,.06),rgba(125,211,192,.04));border:1px solid var(--line);border-radius:24px;padding:40px;backdrop-filter:blur(10px)}
+  .itin-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+  .itin-head h3{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:500;line-height:.95;letter-spacing:-.02em}
+  .itin-head h3 em{font-style:italic;color:var(--accent)}
+  .itin-head p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--paper-dim);max-width:540px;margin-top:6px}
+  .itin-num{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.25em;color:var(--accent-2);text-transform:uppercase;margin-bottom:10px}
+  .itin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .itin-slot{background:rgba(13,23,33,.5);border:1px dashed var(--line);border-radius:18px;padding:22px;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;position:relative;cursor:pointer;transition:all .25s}
+  .itin-slot:hover{border-color:var(--accent-2);transform:translateY(-3px)}
+  .itin-slot.filled{border-style:solid;background:rgba(244,238,228,.06)}
+  .itin-quarter{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:14px}
+  .itin-flag{font-size:42px;line-height:1}
+  .itin-city{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;letter-spacing:-.01em;margin-top:8px;line-height:1}
+  .itin-city em{font-style:italic;color:var(--accent)}
+  .itin-empty{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--paper-dim);text-align:center;margin:auto}
+  .itin-empty span{display:block;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-2);margin-top:8px}
+  .itin-detail{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.05em;color:var(--paper-dim);margin-top:12px;display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)}
+  .itin-detail .v{color:var(--accent-2)}
+  .itin-clear{position:absolute;top:10px;right:10px;font-family:'Geist Mono',monospace;font-size:10px;padding:4px 8px;background:rgba(13,23,33,.6);border:1px solid var(--line);border-radius:100px;color:var(--paper-dim);cursor:pointer;display:none}
+  .itin-slot.filled .itin-clear{display:block}
+  .itin-clear:hover{color:var(--accent);border-color:var(--accent)}
+  .itin-picker{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-2);border:1px solid var(--line);border-radius:14px;margin-top:6px;z-index:20;max-height:240px;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+  .itin-picker.on{display:block}
+  .itin-pick{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:'Cormorant Garamond',serif;border-bottom:1px solid var(--line)}
+  .itin-pick:last-child{border-bottom:none}
+  .itin-pick:hover{background:rgba(125,211,192,.1)}
+  .itin-pick .flg{font-size:20px;margin-right:8px}
+  .itin-pick .nm{font-size:17px;flex:1}
+  .itin-pick .ct{font-family:'Geist Mono',monospace;font-size:11px;color:var(--accent-2)}
+
+  .itin-summary{margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(13,23,33,.4)}
+  .itin-sum-cell{padding:18px 22px;border-right:1px solid var(--line)}
+  .itin-sum-cell:last-child{border-right:none}
+  .itin-sum-cell .l{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:6px}
+  .itin-sum-cell .v{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;line-height:1;letter-spacing:-.015em}
+  .itin-sum-cell .v em{font-style:italic;color:var(--accent)}
+  .itin-temp-strip{display:flex;align-items:center;gap:4px;margin-top:6px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--accent-2)}
+
+  .budget-panel{background:rgba(244,238,228,.04);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:24px;padding:32px;margin-bottom:30px;display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center}
+  .budget-left h3{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;line-height:1;letter-spacing:-.015em;margin-bottom:10px}
+  .budget-left h3 em{font-style:italic;color:var(--accent)}
+  .budget-left p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--paper-dim);margin-bottom:24px;line-height:1.5}
+  .budget-amount{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:500;letter-spacing:-.025em;line-height:1;color:var(--accent)}
+  .budget-amount em{font-style:italic;color:var(--paper)}
+  .budget-slider{margin-top:18px}
+  .budget-slider input{width:100%;-webkit-appearance:none;appearance:none;background:transparent;height:30px;cursor:pointer}
+  .budget-slider input::-webkit-slider-runnable-track{height:3px;background:linear-gradient(90deg,var(--accent-2),var(--accent),var(--accent));border-radius:3px}
+  .budget-slider input::-moz-range-track{height:3px;background:var(--accent-2);border-radius:3px}
+  .budget-slider input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--paper);margin-top:-10px;cursor:grab;border:3px solid var(--accent);box-shadow:0 4px 12px rgba(255,107,61,.4)}
+  .budget-slider input::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--paper);cursor:grab;border:3px solid var(--accent)}
+  .budget-ticks{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--paper-dim);display:flex;justify-content:space-between;margin-top:10px;text-transform:uppercase}
+  .budget-stats{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .budget-stat{padding:18px;background:rgba(13,23,33,.4);border:1px solid var(--line);border-radius:14px}
+  .budget-stat .l{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:6px}
+  .budget-stat .v{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;line-height:1}
+  .budget-stat .v em{font-style:italic;color:var(--accent-2)}
+  .region-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+  .region-pill{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;padding:7px 12px;border:1px solid var(--line);border-radius:100px;text-transform:uppercase;cursor:pointer}
+  .region-pill.on{background:var(--paper);color:var(--bg);border-color:var(--paper)}
+
+  .tz-panel{background:linear-gradient(135deg,rgba(125,211,192,.06),rgba(13,23,33,.6));border:1px solid var(--line);border-radius:24px;padding:50px;margin-top:30px;backdrop-filter:blur(12px)}
+  .tz-head{margin-bottom:30px}
+  .tz-head h3{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:500;line-height:.95;letter-spacing:-.02em;margin-bottom:6px}
+  .tz-head h3 em{font-style:italic;color:var(--accent)}
+  .tz-head p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--paper-dim);max-width:560px}
+  .tz-cities{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+  .tz-add{font-family:'Geist Mono',monospace;font-size:11px;padding:9px 14px;border:1px solid var(--line);border-radius:100px;text-transform:uppercase;letter-spacing:.1em;cursor:pointer}
+  .tz-add:hover{background:var(--accent-2);color:var(--bg);border-color:var(--accent-2)}
+  .tz-add.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+  .tz-track{position:relative;height:140px;border:1px solid var(--line);border-radius:14px;background:rgba(13,23,33,.5);overflow:hidden}
+  .tz-hour{position:absolute;top:0;bottom:0;border-right:1px solid var(--line);font-family:'Geist Mono',monospace;font-size:9px;color:var(--paper-dim);padding:6px 4px;letter-spacing:.05em}
+  .tz-hour.work{background:rgba(125,211,192,.06)}
+  .tz-row{position:absolute;left:0;right:0;height:30px;display:flex;align-items:center;padding-left:14px}
+  .tz-row .label{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--paper);text-transform:uppercase;background:rgba(13,23,33,.8);padding:4px 10px;border-radius:6px;border:1px solid var(--line);z-index:2}
+  .tz-block{position:absolute;height:24px;background:rgba(125,211,192,.25);border:1px solid var(--accent-2);border-radius:4px}
+  .tz-overlap{position:absolute;top:0;bottom:0;background:linear-gradient(180deg,rgba(255,107,61,.18),rgba(255,107,61,.06));border-left:1px solid var(--accent);border-right:1px solid var(--accent);pointer-events:none}
+  .tz-overlap-label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;white-space:nowrap;background:rgba(13,23,33,.8);padding:3px 8px;border-radius:4px}
+
+  .visas{background:rgba(244,238,228,.03);border:1px solid var(--line);border-radius:24px;overflow:hidden;backdrop-filter:blur(12px)}
+  .visa-row{display:grid;grid-template-columns:60px 1.4fr 1fr 1fr 1fr 1fr 40px;gap:18px;padding:22px 26px;border-bottom:1px solid var(--line);align-items:center;cursor:pointer;transition:background .2s}
+  .visa-row:last-child{border-bottom:none}
+  .visa-row:hover{background:rgba(125,211,192,.05)}
+  .visa-flag{font-size:34px;line-height:1}
+  .visa-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;line-height:1.1}
+  .visa-name em{font-style:italic;color:var(--accent)}
+  .visa-name .nm{font-family:'Geist Mono',monospace;font-size:10px;color:var(--paper-dim);letter-spacing:.15em;display:block;margin-top:4px;text-transform:uppercase}
+  .visa-meta{font-family:'Geist Mono',monospace;font-size:13px}
+  .visa-meta .l{font-size:9px;letter-spacing:.18em;color:var(--paper-dim);text-transform:uppercase;display:block;margin-bottom:3px}
+  .visa-meta .v{color:var(--paper)}
+  .visa-meta .v.hi{color:var(--accent-2)}
+  .visa-arrow{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--paper-dim);text-align:right}
+  .visa-row:hover .visa-arrow{color:var(--accent);transform:translateX(4px)}
+  .visa-head{display:grid;grid-template-columns:60px 1.4fr 1fr 1fr 1fr 1fr 40px;gap:18px;padding:14px 26px;background:rgba(244,238,228,.04);border-bottom:1px solid var(--line);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--paper-dim);text-transform:uppercase}
+
+  .compare-feature{background:linear-gradient(135deg,rgba(255,107,61,.08),rgba(125,211,192,.05));border:1px solid var(--line);border-radius:24px;padding:60px;position:relative;overflow:hidden;backdrop-filter:blur(12px)}
+  .compare-feature::before{content:"vs.";position:absolute;font-family:'Cormorant Garamond',serif;font-size:360px;font-style:italic;font-weight:300;color:rgba(244,238,228,.04);right:-30px;top:-100px;line-height:.8;pointer-events:none}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;position:relative;z-index:1;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(13,23,33,.4)}
+  .compare-side{padding:36px}
+  .compare-side:first-child{border-right:1px solid var(--line)}
+  .compare-flag{font-size:48px;line-height:1;margin-bottom:14px}
+  .compare-city{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:500;line-height:1;margin-bottom:6px;letter-spacing:-.015em}
+  .compare-city em{font-style:italic;color:var(--accent)}
+  .compare-ctry{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:30px}
+  .compare-stats{display:flex;flex-direction:column;gap:0}
+  .compare-stat{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .compare-stat:last-child{border-bottom:none}
+  .compare-stat .l{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--paper-dim);text-transform:uppercase}
+  .compare-stat .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
+  .compare-stat .v em{font-style:italic;color:var(--accent-2)}
+
+  .climate{display:grid;grid-template-columns:repeat(12,1fr);gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(244,238,228,.02)}
+  .clim-mo{padding:18px 10px;text-align:center;border-right:1px solid var(--line)}
+  .clim-mo:last-child{border-right:none}
+  .clim-mo .nm{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:10px}
+  .clim-mo .temp{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
+  .clim-mo .temp em{color:var(--accent-2);font-style:italic}
+  .clim-mo .em{font-size:18px;margin:5px 0}
+
+  .bestfor{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .bf{background:rgba(244,238,228,.03);border:1px solid var(--line);border-radius:18px;padding:28px 24px;backdrop-filter:blur(10px);cursor:pointer;transition:transform .25s,border-color .25s}
+  .bf:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .bf-icon{width:42px;height:42px;border-radius:12px;background:rgba(255,107,61,.15);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:18px}
+  .bf-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;font-style:italic;color:var(--accent);line-height:1;margin-bottom:14px}
+  .bf-list{display:flex;flex-direction:column;gap:8px;font-family:'Geist',sans-serif;font-size:14px;color:var(--paper-dim)}
+  .bf-list div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .bf-list .flg{display:inline-block;margin-right:6px;font-size:16px}
+  .bf-list .score{font-family:'Geist Mono',monospace;color:var(--accent-2);font-size:11px}
+
+  .foot{padding:80px 32px 40px;border-top:1px solid var(--line);background:rgba(13,23,33,.5);backdrop-filter:blur(10px)}
+  .foot-inner{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+  .foot-logo{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:500;line-height:1;letter-spacing:-.015em}
+  .foot-logo em{font-style:italic;color:var(--accent)}
+  .foot p{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--paper-dim);margin-top:14px;line-height:1.55;max-width:380px}
+  .foot h4{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:16px}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot ul a{font-family:'Cormorant Garamond',serif;font-size:18px}
+  .foot ul a:hover{color:var(--accent);font-style:italic}
+  .colo{max-width:1500px;margin:60px auto 0;padding-top:24px;border-top:1px solid var(--line);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--paper-dim);text-transform:uppercase;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(13,23,33,.85);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:100;padding:30px}
+  .modal-bg.on{display:flex}
+  .modal{background:var(--bg-2);border:1px solid var(--line);border-radius:24px;max-width:860px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+  .close{position:absolute;top:16px;right:16px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.15em;padding:9px 14px;border-radius:100px;border:1px solid var(--line);background:rgba(13,23,33,.6);backdrop-filter:blur(8px);z-index:2;text-transform:uppercase}
+  .close:hover{background:var(--paper);color:var(--bg);border-color:var(--paper)}
+  .modal-hero{padding:50px 40px 36px;background:linear-gradient(180deg,rgba(255,107,61,.08),transparent);border-bottom:1px solid var(--line)}
+  .modal-flag{font-size:48px;line-height:1;margin-bottom:14px}
+  .modal h2{font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:500;line-height:.95;letter-spacing:-.02em;margin-bottom:6px}
+  .modal h2 em{font-style:italic;color:var(--accent)}
+  .modal .ctry-line{font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.18em;color:var(--paper-dim);text-transform:uppercase}
+  .modal-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+  .modal-stats > div{padding:18px;border-right:1px solid var(--line);text-align:center}
+  .modal-stats > div:last-child{border-right:none}
+  .modal-stats .l{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--paper-dim);text-transform:uppercase;margin-bottom:4px}
+  .modal-stats .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
+  .modal-stats .v em{font-style:italic;color:var(--accent-2)}
+  .modal-body{padding:36px 40px}
+  .modal h3{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin:24px 0 10px}
+  .modal h3:first-child{margin-top:0}
+  .modal p,.modal li{font-family:'Cormorant Garamond',serif;font-size:18px;line-height:1.55;color:var(--paper-dim)}
+  .modal ul{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+
+  @media (max-width:1000px){
+    .hero-grid{grid-template-columns:1fr}
+    .cities{grid-template-columns:1fr 1fr}
+    .budget-panel{grid-template-columns:1fr;gap:24px}
+    .tz-panel{padding:24px}
+    .itin-grid{grid-template-columns:1fr 1fr}
+    .itin-summary{grid-template-columns:1fr 1fr}
+    .itin-sum-cell:nth-child(2){border-right:none}
+    .bestfor{grid-template-columns:1fr 1fr}
+    .climate{grid-template-columns:repeat(6,1fr)}
+    .compare-feature{padding:30px}
+    .compare-grid{grid-template-columns:1fr}
+    .compare-side:first-child{border-right:none;border-bottom:1px solid var(--line)}
+    .visa-row,.visa-head{grid-template-columns:50px 1fr;gap:14px}
+    .visa-meta:nth-child(n+3),.visa-arrow{display:none}
+    .visa-head > span:nth-child(n+3){display:none}
+    .foot-inner{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){.cities{grid-template-columns:1fr}.bestfor{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-left">
+    <span class="live">LIVE</span>
+    <span>62 visas tracked · 114 cities indexed</span>
+  </div>
+  <span id="clk">—</span>
+</div>
+
+<header class="header">
+  <div class="logo">The Remote <em>Index</em><span class="sub">A field guide to working anywhere · 2026</span></div>
+  <nav class="nav">
+    <a class="on">Cities</a><a>Visas</a><a>Costs</a><a>Internet</a><a>Compare</a><a>Time Zones</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-kicker">An open atlas for borderless work</div>
+      <h1>Live <em>well.</em><br/>Work <em>anywhere.</em><br/><span class="small">Pay attention to <em>the visa.</em></span></h1>
+      <p>An honest, ad-free reference for digital nomads, remote workers, and anyone weighing a year — or a life — abroad. Every figure on this site is traceable to an official source.</p>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-label">▲ Cities trending now</div>
+      <div class="hero-card-row"><div class="city"><span class="flg">🇯🇵</span><span class="nm">Fukuoka</span></div><span class="v">+18%</span></div>
+      <div class="hero-card-row"><div class="city"><span class="flg">🇵🇹</span><span class="nm">Madeira</span></div><span class="v">+12%</span></div>
+      <div class="hero-card-row"><div class="city"><span class="flg">🇲🇽</span><span class="nm">Oaxaca</span></div><span class="v">+9%</span></div>
+      <div class="hero-card-row"><div class="city"><span class="flg">🇪🇪</span><span class="nm">Tallinn</span></div><span class="v">+7%</span></div>
+      <div class="hero-card-row"><div class="city"><span class="flg">🇬🇪</span><span class="nm">Tbilisi</span></div><span class="v">+5%</span></div>
+      <a class="hero-cta">Open the atlas →</a>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="item"><span class="city">LISBON</span> · $/mo $1,840 <span class="delta-pos">▲ 2.1%</span></span>
+    <span class="item"><span class="city">CHIANG MAI</span> · $/mo $920 <span class="delta-pos">▲ 0.4%</span></span>
+    <span class="item"><span class="city">BALI</span> · $/mo $1,150 <span class="delta-neg">▼ 1.2%</span></span>
+    <span class="item"><span class="city">TBILISI</span> · $/mo $980 <span class="delta-pos">▲ 3.4%</span></span>
+    <span class="item"><span class="city">MEDELLÍN</span> · $/mo $1,210 <span class="delta-pos">▲ 1.8%</span></span>
+    <span class="item"><span class="city">BERLIN</span> · $/mo $2,180 <span class="delta-neg">▼ 0.6%</span></span>
+    <span class="item"><span class="city">MEXICO CITY</span> · $/mo $1,340 <span class="delta-pos">▲ 2.2%</span></span>
+    <span class="item"><span class="city">DUBAI</span> · $/mo $3,420 <span class="delta-pos">▲ 1.4%</span></span>
+    <span class="item"><span class="city">LISBON</span> · $/mo $1,840 <span class="delta-pos">▲ 2.1%</span></span>
+    <span class="item"><span class="city">CHIANG MAI</span> · $/mo $920 <span class="delta-pos">▲ 0.4%</span></span>
+    <span class="item"><span class="city">BALI</span> · $/mo $1,150 <span class="delta-neg">▼ 1.2%</span></span>
+    <span class="item"><span class="city">TBILISI</span> · $/mo $980 <span class="delta-pos">▲ 3.4%</span></span>
+    <span class="item"><span class="city">MEDELLÍN</span> · $/mo $1,210 <span class="delta-pos">▲ 1.8%</span></span>
+    <span class="item"><span class="city">BERLIN</span> · $/mo $2,180 <span class="delta-neg">▼ 0.6%</span></span>
+    <span class="item"><span class="city">MEXICO CITY</span> · $/mo $1,340 <span class="delta-pos">▲ 2.2%</span></span>
+    <span class="item"><span class="city">DUBAI</span> · $/mo $3,420 <span class="delta-pos">▲ 1.4%</span></span>
+  </div>
+</div>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 01 — Cities</div>
+      <h2 class="sec-title">The <em>destination</em> index.</h2>
+    </div>
+    <div class="sec-meta">Showing <span id="city-count">12</span> of 114</div>
+  </div>
+  <div class="itin">
+    <div class="itin-head">
+      <div>
+        <div class="itin-num">§ Interactive tool · The year planner</div>
+        <h3>A <em>year</em> of nomading.</h3>
+        <p>Pick a city for each quarter. We tally the total cost and trace the seasonal arc — so you'll know if you're chasing summer or freezing your way through January in Tbilisi.</p>
+      </div>
+    </div>
+    <div class="itin-grid" id="itin-grid"></div>
+    <div class="itin-summary">
+      <div class="itin-sum-cell"><div class="l">Year total (cost)</div><div class="v"><em>$</em><span id="itin-total">0</span></div></div>
+      <div class="itin-sum-cell"><div class="l">Avg monthly</div><div class="v"><em>$</em><span id="itin-avg">0</span></div></div>
+      <div class="itin-sum-cell"><div class="l">Flights (est)</div><div class="v"><em>$</em><span id="itin-flights">0</span></div></div>
+      <div class="itin-sum-cell"><div class="l">Seasonal arc</div><div class="v" style="font-size:18px;font-style:italic" id="itin-arc">— pick cities —</div></div>
+    </div>
+  </div>
+
+  <div class="budget-panel">
+    <div class="budget-left">
+      <h3>Drag your <em>budget.</em></h3>
+      <p>The grid below re-ranks itself in real time. Cities you can afford, sorted by livability and internet speed.</p>
+      <div class="budget-amount"><em>$</em><span id="budget-v">3500</span><em> /mo</em></div>
+      <div class="budget-slider">
+        <input type="range" id="budget-slider" min="600" max="5000" step="50" value="3500" />
+        <div class="budget-ticks"><span>$600</span><span>$2,000</span><span>$3,500</span><span>$5,000+</span></div>
+      </div>
+      <div class="region-pills">
+        <span style="font-family:'Geist Mono',monospace;font-size:10px;color:var(--paper-dim);letter-spacing:.15em;align-self:center;margin-right:4px">REGION:</span>
+        <button class="region-pill on" data-r="all">Any</button>
+        <button class="region-pill" data-r="europe">Europe</button>
+        <button class="region-pill" data-r="asia">Asia</button>
+        <button class="region-pill" data-r="americas">Americas</button>
+      </div>
+    </div>
+    <div class="budget-stats">
+      <div class="budget-stat"><div class="l">Affordable cities</div><div class="v"><em id="b-cnt">12</em></div></div>
+      <div class="budget-stat"><div class="l">Cheapest match</div><div class="v" style="font-size:24px" id="b-cheap">Chiang Mai</div></div>
+      <div class="budget-stat"><div class="l">Headroom on cheapest</div><div class="v"><em id="b-head">+$2,580</em></div></div>
+      <div class="budget-stat"><div class="l">Avg internet (matches)</div><div class="v"><em id="b-net">187</em> Mbps</div></div>
+    </div>
+  </div>
+  <div class="cities" id="cities"></div>
+
+  <div class="tz-panel">
+    <div class="tz-head">
+      <h3>The <em>time-zone</em> overlap.</h3>
+      <p>Working remotely means thinking in hours, not borders. Pick the cities your team works from — the overlap band shows when you can all be online together.</p>
+    </div>
+    <div class="tz-cities" id="tz-cities"></div>
+    <div class="tz-track" id="tz-track"></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 02 — Visa directory</div>
+      <h2 class="sec-title">Digital nomad <em>visas.</em></h2>
+    </div>
+    <div class="sec-meta">62 nations · Official sources only</div>
+  </div>
+  <div class="visas">
+    <div class="visa-head"><span></span><span>Programme</span><span>Income req.</span><span>Duration</span><span>Tax</span><span>Cost</span><span></span></div>
+    <div class="visa-row"><div class="visa-flag">🇵🇹</div><div class="visa-name">D8 <em>Visa</em><span class="nm">Portugal</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">€3,480/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">5 years</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">NHR available</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">€90</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇪🇪</div><div class="visa-name">Digital Nomad <em>Visa</em><span class="nm">Estonia</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">€4,500/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">1 year</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">Resident if 183d</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">€100</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇮🇸</div><div class="visa-name">Long-term Remote <em>Worker</em><span class="nm">Iceland</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">$7,000/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">6 months</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">Exempt &lt;183d</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">ISK 12,200</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇪🇸</div><div class="visa-name">Digital Nomad <em>Visa</em><span class="nm">Spain</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">€2,762/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">3 + 2 years</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">24% flat (Beckham)</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">€80</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇩🇪</div><div class="visa-name">Freelancer <em>Visa</em><span class="nm">Germany</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">€2,500/mo (proof)</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">3 years</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">Standard German</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">€100</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇲🇽</div><div class="visa-name">Temporary <em>Resident</em><span class="nm">Mexico</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">$2,700/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">4 years</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">Foreign income exempt</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">$50</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇬🇪</div><div class="visa-name">Remotely from <em>Georgia</em><span class="nm">Georgia</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">$2,000/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">1 year</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">1% small business</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">Free</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇦🇪</div><div class="visa-name">Virtual Working <em>Programme</em><span class="nm">UAE</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">$3,500/mo</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">1 year</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">No personal income tax</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">$611</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇹🇭</div><div class="visa-name">Long-Term Resident <em>(LTR)</em><span class="nm">Thailand</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">$80,000/yr</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">10 years</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">17% flat</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">฿50,000</span></div><div class="visa-arrow">→</div></div>
+    <div class="visa-row"><div class="visa-flag">🇮🇩</div><div class="visa-name">E33G Remote <em>Worker</em><span class="nm">Indonesia</span></div><div class="visa-meta"><span class="l">Min income</span><span class="v">$60,000/yr</span></div><div class="visa-meta"><span class="l">Duration</span><span class="v hi">1 year</span></div><div class="visa-meta"><span class="l">Tax</span><span class="v">Foreign income exempt</span></div><div class="visa-meta"><span class="l">Cost</span><span class="v">$800</span></div><div class="visa-arrow">→</div></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 03 — Side by side</div>
+      <h2 class="sec-title">Two cities, <em>weighed.</em></h2>
+    </div>
+  </div>
+  <div class="compare-feature">
+    <div class="compare-grid">
+      <div class="compare-side">
+        <div class="compare-flag">🇵🇹</div>
+        <div class="compare-city"><em>Lisbon</em></div>
+        <div class="compare-ctry">Portugal · Western Europe</div>
+        <div class="compare-stats">
+          <div class="compare-stat"><span class="l">Cost / month</span><span class="v">$1,840</span></div>
+          <div class="compare-stat"><span class="l">Studio rent</span><span class="v">$1,100</span></div>
+          <div class="compare-stat"><span class="l">Internet</span><span class="v"><em>187</em> Mbps</span></div>
+          <div class="compare-stat"><span class="l">Coworking</span><span class="v">$220/mo</span></div>
+          <div class="compare-stat"><span class="l">Visa</span><span class="v">D8 · 5 yr</span></div>
+          <div class="compare-stat"><span class="l">Climate</span><span class="v">Med. · Mild</span></div>
+          <div class="compare-stat"><span class="l">Time zone</span><span class="v">UTC+0 / +1</span></div>
+          <div class="compare-stat"><span class="l">English level</span><span class="v">High</span></div>
+        </div>
+      </div>
+      <div class="compare-side">
+        <div class="compare-flag">🇹🇭</div>
+        <div class="compare-city"><em>Chiang Mai</em></div>
+        <div class="compare-ctry">Thailand · Southeast Asia</div>
+        <div class="compare-stats">
+          <div class="compare-stat"><span class="l">Cost / month</span><span class="v">$920</span></div>
+          <div class="compare-stat"><span class="l">Studio rent</span><span class="v">$340</span></div>
+          <div class="compare-stat"><span class="l">Internet</span><span class="v"><em>312</em> Mbps</span></div>
+          <div class="compare-stat"><span class="l">Coworking</span><span class="v">$120/mo</span></div>
+          <div class="compare-stat"><span class="l">Visa</span><span class="v">LTR · 10 yr</span></div>
+          <div class="compare-stat"><span class="l">Climate</span><span class="v">Tropical · Hot</span></div>
+          <div class="compare-stat"><span class="l">Time zone</span><span class="v">UTC+7</span></div>
+          <div class="compare-stat"><span class="l">English level</span><span class="v">Medium</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 04 — Climate</div>
+      <h2 class="sec-title">A year in <em>Lisbon.</em></h2>
+    </div>
+    <div class="sec-meta">Monthly avg high · % rain days</div>
+  </div>
+  <div class="climate">
+    <div class="clim-mo"><div class="nm">Jan</div><div class="em">🌧</div><div class="temp"><em>15°</em></div></div>
+    <div class="clim-mo"><div class="nm">Feb</div><div class="em">🌧</div><div class="temp"><em>17°</em></div></div>
+    <div class="clim-mo"><div class="nm">Mar</div><div class="em">⛅</div><div class="temp"><em>19°</em></div></div>
+    <div class="clim-mo"><div class="nm">Apr</div><div class="em">⛅</div><div class="temp"><em>21°</em></div></div>
+    <div class="clim-mo"><div class="nm">May</div><div class="em">☀</div><div class="temp"><em>24°</em></div></div>
+    <div class="clim-mo"><div class="nm">Jun</div><div class="em">☀</div><div class="temp"><em>27°</em></div></div>
+    <div class="clim-mo"><div class="nm">Jul</div><div class="em">☀</div><div class="temp"><em>29°</em></div></div>
+    <div class="clim-mo"><div class="nm">Aug</div><div class="em">☀</div><div class="temp"><em>30°</em></div></div>
+    <div class="clim-mo"><div class="nm">Sep</div><div class="em">☀</div><div class="temp"><em>28°</em></div></div>
+    <div class="clim-mo"><div class="nm">Oct</div><div class="em">⛅</div><div class="temp"><em>23°</em></div></div>
+    <div class="clim-mo"><div class="nm">Nov</div><div class="em">🌧</div><div class="temp"><em>19°</em></div></div>
+    <div class="clim-mo"><div class="nm">Dec</div><div class="em">🌧</div><div class="temp"><em>16°</em></div></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 05 — Best for</div>
+      <h2 class="sec-title">Cities, <em>sorted.</em></h2>
+    </div>
+  </div>
+  <div class="bestfor">
+    <div class="bf">
+      <div class="bf-icon">💰</div>
+      <div class="bf-title">Best on a budget</div>
+      <div class="bf-list">
+        <div><span><span class="flg">🇹🇭</span>Chiang Mai</span><span class="score">$920</span></div>
+        <div><span><span class="flg">🇬🇪</span>Tbilisi</span><span class="score">$980</span></div>
+        <div><span><span class="flg">🇻🇳</span>Da Nang</span><span class="score">$1,040</span></div>
+        <div><span><span class="flg">🇮🇩</span>Bali</span><span class="score">$1,150</span></div>
+      </div>
+    </div>
+    <div class="bf">
+      <div class="bf-icon">⚡</div>
+      <div class="bf-title">Fastest internet</div>
+      <div class="bf-list">
+        <div><span><span class="flg">🇸🇬</span>Singapore</span><span class="score">312 Mbps</span></div>
+        <div><span><span class="flg">🇰🇷</span>Seoul</span><span class="score">298 Mbps</span></div>
+        <div><span><span class="flg">🇯🇵</span>Tokyo</span><span class="score">284 Mbps</span></div>
+        <div><span><span class="flg">🇹🇭</span>Chiang Mai</span><span class="score">235 Mbps</span></div>
+      </div>
+    </div>
+    <div class="bf">
+      <div class="bf-icon">☀</div>
+      <div class="bf-title">Best year-round weather</div>
+      <div class="bf-list">
+        <div><span><span class="flg">🇵🇹</span>Madeira</span><span class="score">20° avg</span></div>
+        <div><span><span class="flg">🇪🇸</span>Las Palmas</span><span class="score">22° avg</span></div>
+        <div><span><span class="flg">🇲🇽</span>Oaxaca</span><span class="score">24° avg</span></div>
+        <div><span><span class="flg">🇨🇴</span>Medellín</span><span class="score">22° avg</span></div>
+      </div>
+    </div>
+    <div class="bf">
+      <div class="bf-icon">👥</div>
+      <div class="bf-title">Strongest nomad community</div>
+      <div class="bf-list">
+        <div><span><span class="flg">🇵🇹</span>Lisbon</span><span class="score">★★★★★</span></div>
+        <div><span><span class="flg">🇲🇽</span>Mexico City</span><span class="score">★★★★★</span></div>
+        <div><span><span class="flg">🇪🇸</span>Barcelona</span><span class="score">★★★★☆</span></div>
+        <div><span><span class="flg">🇮🇩</span>Canggu</span><span class="score">★★★★☆</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div>
+      <div class="foot-logo">The Remote <em>Index</em></div>
+      <p>A reference for those who learned that geography is a setting, not a constant. Every figure is publicly sourced. No advice. No bias. No ads.</p>
+    </div>
+    <div><h4>Atlas</h4><ul><a>All cities</a><a>All visas</a><a>By region</a><a>By budget</a></ul></div>
+    <div><h4>Tools</h4><ul><a>Compare cities</a><a>Cost calculator</a><a>Time zone planner</a><a>Climate explorer</a></ul></div>
+    <div><h4>About</h4><ul><a>Methodology</a><a>Submit a city</a><a>Sources</a><a>Contact</a></ul></div>
+  </div>
+  <div class="colo">
+    <span>Set in Cormorant Garamond &amp; Geist</span>
+    <span>© The Remote Index · Sourced from Numbeo · Speedtest · government immigration pages</span>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">CLOSE ×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const cities = [
+  {id:1,name:"Lisbon",country:"Portugal",region:"europe",rank:"#01",flag:"🇵🇹",glyph:"⛅",cost:"$1,840",costTier:"mid",rent:"$1,100",net:"187",coworking:"$220",visa:"D8 · 5yr",climate:"Mediterranean",tz:"UTC+0",tags:["english","community","mid"],fasttag:false,desc:"Europe's nomad capital for a reason — sunny, affordable by Western European standards, a 5-year D8 visa, and a tech scene that has tripled in five years."},
+  {id:2,name:"Chiang Mai",country:"Thailand",region:"asia",rank:"#02",flag:"🇹🇭",glyph:"🌴",cost:"$920",costTier:"budget",rent:"$340",net:"235",coworking:"$120",visa:"LTR · 10yr",climate:"Tropical",tz:"UTC+7",tags:["budget","community","fastnet"],fasttag:true,desc:"The original nomad city. Cheap, friendly, well-connected, with surprisingly fast fibre and the best food-to-dollar ratio in Asia. Burning season Mar–Apr."},
+  {id:3,name:"Mexico City",country:"Mexico",region:"americas",rank:"#03",flag:"🇲🇽",glyph:"🌆",cost:"$1,340",costTier:"mid",rent:"$760",net:"168",coworking:"$180",visa:"TR · 4yr",climate:"Subtropical highland",tz:"UTC-6",tags:["culture","food","mid"],fasttag:false,desc:"One of the world's great cities, period. Spring-like weather year round at 2,250m elevation. Roma Norte and Condesa are the nomad neighborhoods."},
+  {id:4,name:"Tokyo",country:"Japan",region:"asia",rank:"#04",flag:"🇯🇵",glyph:"🏯",cost:"$2,640",costTier:"premium",rent:"$1,420",net:"284",coworking:"$310",visa:"DN · 6mo",climate:"Humid subtropical",tz:"UTC+9",tags:["premium","safe","fastnet"],fasttag:true,desc:"Safest, cleanest, and best public transit of any megacity. New 6-month digital nomad visa launched in 2024. Tokyo is expensive but cheaper than NYC or London."},
+  {id:5,name:"Berlin",country:"Germany",region:"europe",rank:"#05",flag:"🇩🇪",glyph:"🍻",cost:"$2,180",costTier:"premium",rent:"$1,260",net:"176",coworking:"$240",visa:"Freelancer · 3yr",climate:"Oceanic",tz:"UTC+1",tags:["culture","english","premium"],fasttag:false,desc:"Europe's creative capital. The Freelancer Visa (Freiberufler) is famously generous, but the housing market is brutal — expect a multi-month flat hunt."},
+  {id:6,name:"Tbilisi",country:"Georgia",region:"europe",rank:"#06",flag:"🇬🇪",glyph:"🏔",cost:"$980",costTier:"budget",rent:"$520",net:"142",coworking:"$95",visa:"1yr stamp · Free",climate:"Humid subtropical",tz:"UTC+4",tags:["budget","wine","community"],fasttag:false,desc:"One-year visa-free stay for 95+ nationalities, a 1% small business tax regime, and beautiful old-world architecture. Increasingly popular with European nomads."},
+  {id:7,name:"Bali · Canggu",country:"Indonesia",region:"asia",rank:"#07",flag:"🇮🇩",glyph:"🌊",cost:"$1,150",costTier:"budget",rent:"$560",net:"118",coworking:"$140",visa:"E33G · 1yr",climate:"Tropical monsoon",tz:"UTC+8",tags:["surf","community","budget"],fasttag:false,desc:"Canggu and Ubud have built nomad ecosystems that rival anywhere in the world. New E33G remote worker visa makes the once-grey legal status much clearer."},
+  {id:8,name:"Medellín",country:"Colombia",region:"americas",rank:"#08",flag:"🇨🇴",glyph:"⛰",cost:"$1,210",costTier:"budget",rent:"$640",net:"154",coworking:"$160",visa:"DN · 2yr",climate:"Tropical · Eternal spring",tz:"UTC-5",tags:["weather","budget","community"],fasttag:false,desc:"'The City of Eternal Spring' — 22°C year round at 1,500m elevation. El Poblado is the nomad core. Spanish helps; English-comfortable cafés and coworkings."},
+  {id:9,name:"Singapore",country:"Singapore",region:"asia",rank:"#09",flag:"🇸🇬",glyph:"🏙",cost:"$3,420",costTier:"premium",rent:"$2,280",net:"312",coworking:"$420",visa:"Tech.Pass · 2yr",climate:"Tropical rainforest",tz:"UTC+8",tags:["premium","fastnet","english"],fasttag:true,desc:"Fastest internet on the planet, lowest crime rate, and the most English-friendly city in Asia. Eye-watering rent is the trade-off."},
+  {id:10,name:"Madeira",country:"Portugal",region:"europe",rank:"#10",flag:"🇵🇹",glyph:"🌺",cost:"$1,520",costTier:"mid",rent:"$820",net:"168",coworking:"$140",visa:"D8 · 5yr",climate:"Subtropical · 20° avg",tz:"UTC+0",tags:["weather","community","english"],fasttag:false,desc:"A Portuguese island in the Atlantic with the most stable climate in Europe. Ponta do Sol's nomad village kickstarted Europe's coliving boom."},
+  {id:11,name:"Buenos Aires",country:"Argentina",region:"americas",rank:"#11",flag:"🇦🇷",glyph:"💃",cost:"$1,180",costTier:"budget",rent:"$580",net:"148",coworking:"$130",visa:"DN · 6mo",climate:"Humid subtropical",tz:"UTC-3",tags:["culture","budget","food"],fasttag:false,desc:"Belle Époque architecture, world-class beef, and a peso situation that makes USD go incredibly far. Palermo is the nomad neighbourhood of choice."},
+  {id:12,name:"Dubai",country:"UAE",region:"asia",rank:"#12",flag:"🇦🇪",glyph:"🏜",cost:"$3,420",costTier:"premium",rent:"$2,140",net:"260",coworking:"$340",visa:"Virtual Working · 1yr",climate:"Hot desert",tz:"UTC+4",tags:["premium","tax","english","fastnet"],fasttag:true,desc:"No personal income tax, world-class infrastructure, and a one-year remote-worker programme. Summer (Jun–Aug) is brutally hot — 45°C+."}
+];
+
+const grid = document.getElementById('cities');
+let budgetState = {amount:3500,region:'all'};
+
+function parseCost(c){return parseInt(c.cost.replace(/[$,]/g,''))}
+
+function renderCities(){
+  grid.innerHTML='';
+  let filtered = cities.filter(c => {
+    if(parseCost(c) > budgetState.amount) return false;
+    if(budgetState.region!=='all' && c.region!==budgetState.region) return false;
+    return true;
+  }).sort((a,b)=>parseCost(a)-parseCost(b));
+
+  document.getElementById('b-cnt').textContent = filtered.length;
+  if(filtered.length>0){
+    const cheapest = filtered[0];
+    document.getElementById('b-cheap').textContent = cheapest.name;
+    document.getElementById('b-head').textContent = '+$'+(budgetState.amount-parseCost(cheapest)).toLocaleString();
+    document.getElementById('b-net').textContent = Math.round(filtered.reduce((s,c)=>s+parseInt(c.net),0)/filtered.length);
+  } else {
+    document.getElementById('b-cheap').textContent = 'No match';
+    document.getElementById('b-head').textContent = '—';
+    document.getElementById('b-net').textContent = '—';
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:var(--paper-dim)">No cities under that budget in this region. Drag the slider up.</div>`;
+    return;
+  }
+  filtered.forEach(c=>{
+    const card = document.createElement('div');
+    card.className='city-card';
+    card.innerHTML = `
+      <div class="city-img">
+        <div class="city-img-bg">${c.glyph}</div>
+        <div class="city-img-overlay"></div>
+        <div class="city-img-meta">
+          <span class="city-rank">${c.rank}</span>
+          <span class="city-flag">${c.flag}</span>
+        </div>
+        <div class="city-img-title">
+          <h3><em>${c.name}</em></h3>
+          <div class="ctry">${c.country}</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v">${c.cost}</div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>${c.net}</em> Mbps</div></div>
+          <div class="city-stat"><div class="l">Studio rent</div><div class="v">${c.rent}</div></div>
+          <div class="city-stat"><div class="l">Coworking</div><div class="v">${c.coworking}</div></div>
+        </div>
+        <div class="city-tags">
+          <span class="city-tag">${c.climate}</span>
+          <span class="city-tag">${c.tz}</span>
+        </div>
+        <div class="city-visa">→ ${c.visa}</div>
+      </div>
+    `;
+    card.onclick = ()=>openModal(c);
+    grid.appendChild(card);
+  });
+  document.getElementById('city-count').textContent = filtered.length;
+}
+
+document.getElementById('budget-slider').oninput = e=>{
+  budgetState.amount = +e.target.value;
+  document.getElementById('budget-v').textContent = (+e.target.value).toLocaleString();
+  renderCities();
+};
+document.querySelectorAll('.region-pill').forEach(p=>{
+  p.onclick = ()=>{
+    document.querySelectorAll('.region-pill').forEach(x=>x.classList.remove('on'));
+    p.classList.add('on');
+    budgetState.region = p.dataset.r;
+    renderCities();
+  };
+});
+
+const itin = [null,null,null,null];
+const quarters = ['Q1 · Jan – Mar','Q2 · Apr – Jun','Q3 · Jul – Sep','Q4 · Oct – Dec'];
+
+function renderItin(){
+  const wrap = document.getElementById('itin-grid');
+  wrap.innerHTML='';
+  itin.forEach((c,i)=>{
+    const slot = document.createElement('div');
+    slot.className = 'itin-slot'+(c?' filled':'');
+    if(c){
+      slot.innerHTML = `
+        <button class="itin-clear" data-i="${i}">REMOVE</button>
+        <div>
+          <div class="itin-quarter">${quarters[i]}</div>
+          <div class="itin-flag">${c.flag}</div>
+          <div class="itin-city"><em>${c.name}</em></div>
+        </div>
+        <div class="itin-detail"><span>${c.country}</span><span class="v">${c.cost}/mo</span></div>
+      `;
+    } else {
+      slot.innerHTML = `
+        <div class="itin-quarter">${quarters[i]}</div>
+        <div class="itin-empty">Empty slot<span>+ click to add a city</span></div>
+        <div class="itin-picker" data-pick="${i}">${cities.map(c=>`<div class="itin-pick" data-cid="${c.id}" data-slot="${i}"><span><span class="flg">${c.flag}</span><span class="nm">${c.name}</span></span><span class="ct">${c.cost}</span></div>`).join('')}</div>
+      `;
+    }
+    wrap.appendChild(slot);
+  });
+  // Wire interactions
+  wrap.querySelectorAll('.itin-slot').forEach((s,i)=>{
+    if(!itin[i]){
+      s.onclick = (e)=>{
+        if(e.target.classList.contains('itin-pick')||e.target.closest('.itin-pick')) return;
+        document.querySelectorAll('.itin-picker').forEach(p=>p.classList.remove('on'));
+        s.querySelector('.itin-picker').classList.add('on');
+      };
+    }
+  });
+  wrap.querySelectorAll('.itin-pick').forEach(p=>{
+    p.onclick = (e)=>{
+      e.stopPropagation();
+      const cid = +p.dataset.cid;
+      const slot = +p.dataset.slot;
+      itin[slot] = cities.find(c=>c.id===cid);
+      renderItin();
+      updateItinSummary();
+    };
+  });
+  wrap.querySelectorAll('.itin-clear').forEach(b=>{
+    b.onclick = (e)=>{
+      e.stopPropagation();
+      itin[+b.dataset.i] = null;
+      renderItin();
+      updateItinSummary();
+    };
+  });
+  document.addEventListener('click',(e)=>{
+    if(!e.target.closest('.itin-slot')) document.querySelectorAll('.itin-picker').forEach(p=>p.classList.remove('on'));
+  });
+}
+
+function updateItinSummary(){
+  const picks = itin.filter(c=>c);
+  const total = picks.reduce((s,c)=>s+parseCost(c)*3,0);
+  document.getElementById('itin-total').textContent = total.toLocaleString();
+  document.getElementById('itin-avg').textContent = picks.length? Math.round(total/(picks.length*3)).toLocaleString() : '0';
+  // Rough flight estimate: $400 per move
+  const moves = picks.length>0 ? picks.length : 0;
+  document.getElementById('itin-flights').textContent = (moves*400).toLocaleString();
+  // Climate arc
+  let arc;
+  if(picks.length<4) arc = `${picks.length}/4 slots filled`;
+  else {
+    const climates = picks.map(c=>c.climate);
+    const tropical = climates.filter(c=>c.includes('Tropical')).length;
+    const med = climates.filter(c=>c.includes('Mediterranean')||c.includes('subtropical')).length;
+    if(tropical>=3) arc = 'Endless summer ☀';
+    else if(climates.every(c=>c.includes('Tropical')||c.includes('subtropical'))) arc = 'Warm year-round';
+    else if(tropical>=2) arc = 'Sun-chaser route';
+    else arc = 'Mixed climates';
+  }
+  document.getElementById('itin-arc').textContent = arc;
+}
+renderItin();
+updateItinSummary();
+
+const tzPool = [
+  {name:'San Francisco',offset:-8,short:'SF'},
+  {name:'New York',offset:-5,short:'NYC'},
+  {name:'Lisbon',offset:0,short:'LIS'},
+  {name:'Berlin',offset:1,short:'BER'},
+  {name:'Tbilisi',offset:4,short:'TBS'},
+  {name:'Bangkok',offset:7,short:'BKK'},
+  {name:'Tokyo',offset:9,short:'TYO'},
+  {name:'Sydney',offset:11,short:'SYD'},
+];
+let tzActive = new Set([0,2,6]);
+
+function renderTzCities(){
+  const wrap = document.getElementById('tz-cities');
+  wrap.innerHTML='';
+  tzPool.forEach((c,i)=>{
+    const b = document.createElement('button');
+    b.className = 'tz-add'+(tzActive.has(i)?' on':'');
+    b.textContent = `${c.short} · UTC${c.offset>=0?'+':''}${c.offset}`;
+    b.onclick = ()=>{
+      if(tzActive.has(i)) tzActive.delete(i);
+      else tzActive.add(i);
+      renderTzCities();renderTzTrack();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function renderTzTrack(){
+  const track = document.getElementById('tz-track');
+  track.innerHTML = '';
+
+  const active = [...tzActive].map(i=>tzPool[i]);
+  if(active.length===0){
+    track.innerHTML = '<div style="padding:30px;text-align:center;font-family:\'Cormorant Garamond\',serif;font-style:italic;color:var(--paper-dim)">Pick at least one city above.</div>';
+    return;
+  }
+  const ref = active[0];
+
+  for(let h=0;h<24;h++){
+    const col = document.createElement('div');
+    col.className = 'tz-hour'+(h>=9&&h<=17?' work':'');
+    col.style.left = (h/24*100)+'%';
+    col.style.width = (1/24*100)+'%';
+    col.textContent = (h%12||12)+(h<12?'a':'p');
+    track.appendChild(col);
+  }
+
+  const rowHeight = 30;
+  const topPad = 14;
+  active.forEach((c,idx)=>{
+    const row = document.createElement('div');
+    row.className = 'tz-row';
+    row.style.top = (topPad+idx*rowHeight)+'px';
+    row.innerHTML = `<div class="label">${c.short} · UTC${c.offset>=0?'+':''}${c.offset}</div>`;
+
+    const localStart = 9 - (c.offset - ref.offset);
+    let s = ((localStart%24)+24)%24;
+    let e = ((localStart+8)%24+24)%24;
+    const addBlock=(start,end)=>{
+      const block = document.createElement('div');
+      block.className='tz-block';
+      block.style.left = (start/24*100)+'%';
+      block.style.width = ((end-start)/24*100)+'%';
+      row.appendChild(block);
+    };
+    if(s<e) addBlock(s,e);
+    else { addBlock(s,24); addBlock(0,e); }
+    track.appendChild(row);
+  });
+
+  const minutes = new Array(24*60).fill(active.length);
+  active.forEach(c=>{
+    const localStart = 9 - (c.offset - ref.offset);
+    const s = ((localStart%24)+24)%24*60;
+    const e = s+8*60;
+    const mask = new Array(24*60).fill(0);
+    for(let i=0;i<8*60;i++) mask[(s+i)%(24*60)]=1;
+    for(let i=0;i<24*60;i++) if(!mask[i]) minutes[i]--;
+  });
+
+  let bestStart=-1,bestLen=0,curStart=-1,curLen=0;
+  for(let i=0;i<24*60;i++){
+    if(minutes[i]===active.length){
+      if(curStart<0) curStart=i;
+      curLen++;
+      if(curLen>bestLen){bestLen=curLen;bestStart=curStart}
+    } else {
+      curStart=-1;curLen=0;
+    }
+  }
+  if(bestLen>0){
+    const ov = document.createElement('div');
+    ov.className = 'tz-overlap';
+    ov.style.left = (bestStart/(24*60)*100)+'%';
+    ov.style.width = (bestLen/(24*60)*100)+'%';
+    const hrs = (bestLen/60).toFixed(1);
+    ov.innerHTML = `<div class="tz-overlap-label">${hrs}h overlap window</div>`;
+    track.appendChild(ov);
+  }
+}
+renderTzCities();renderTzTrack();
+
+function openModal(c){
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-hero">
+      <div class="modal-flag">${c.flag}</div>
+      <h2><em>${c.name}</em></h2>
+      <div class="ctry-line">${c.country} · ${c.tz}</div>
+    </div>
+    <div class="modal-stats">
+      <div><div class="l">Monthly cost</div><div class="v">${c.cost}</div></div>
+      <div><div class="l">Internet</div><div class="v"><em>${c.net}</em> Mbps</div></div>
+      <div><div class="l">Climate</div><div class="v" style="font-size:14px">${c.climate}</div></div>
+      <div><div class="l">Visa</div><div class="v" style="font-size:14px">${c.visa}</div></div>
+    </div>
+    <div class="modal-body">
+      <h3>The pitch</h3><p>${c.desc}</p>
+      <h3>The numbers</h3>
+      <ul>
+        <li>Studio rent · ${c.rent}/mo</li>
+        <li>Coworking pass · ${c.coworking}/mo</li>
+        <li>Time zone · ${c.tz}</li>
+        <li>Climate · ${c.climate}</li>
+      </ul>
+      <h3>Visa pathway</h3><p>${c.visa}</p>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('on');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+function tick(){
+  const d = new Date();
+  document.getElementById('clk').textContent = d.toISOString().slice(11,19)+' UTC';
+}
+tick();setInterval(tick,1000);
+renderCities();
+</script>
+<script src="enhance.js"></script>
+</body>
+</html>

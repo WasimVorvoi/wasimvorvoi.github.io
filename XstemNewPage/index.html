@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SBHS XSTEM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500;1,9..144,700&display=swap" rel="stylesheet" />
+<template id="__bundler_thumbnail">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#0B0D12"/>
+    <rect x="60" y="60" width="80" height="80" rx="16" fill="#7C6BFF"/>
+    <text x="100" y="118" text-anchor="middle" font-family="system-ui, sans-serif" font-size="40" font-weight="800" fill="#fff" letter-spacing="-2">X</text>
+    <rect x="128" y="128" width="18" height="18" rx="4" fill="#FDC470"/>
+  </svg>
+</template>
+<style>
+/* ---------- TOKENS ---------- */
+:root{
+  --bg: #0B0D12;
+  --bg-2: #0F1218;
+  --card: #14181F;
+  --card-2: #181C24;
+  --line: #232831;
+  --line-2: #2C323D;
+
+  --ink: #F4F2EC;
+  --ink-2: #DCDAD3;
+  --ink-3: #9CA1AC;
+  --ink-4: #6B7180;
+
+  --accent: #7C6BFF;
+  --accent-ink: #5C4BFF;
+  --accent-soft: rgba(124,107,255,.15);
+  --accent-softer: rgba(124,107,255,.08);
+
+  --amber: #FDC470;
+  --amber-soft: rgba(253,196,112,.12);
+
+  --radius: 14px;
+  --radius-lg: 22px;
+
+  --shadow: 0 8px 28px -10px rgba(0,0,0,.55), 0 2px 6px -2px rgba(0,0,0,.35);
+  --shadow-lg: 0 30px 70px -24px rgba(0,0,0,.7), 0 12px 30px -10px rgba(0,0,0,.45);
+
+  --pad-section: clamp(80px, 11vw, 140px);
+  --pad-x: clamp(20px, 4vw, 56px);
+
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-out: cubic-bezier(.22,1,.36,1);
+
+  --hand: 'Caveat', 'Bradley Hand', cursive;
+  --serif: 'Fraunces', Georgia, serif;
+}
+
+/* ---------- RESET ---------- */
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth; scroll-padding-top:84px;}
+body{
+  margin:0;
+  font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-size:17px;
+  line-height:1.6;
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%; display:block;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+
+/* ---------- TYPE ---------- */
+h1,h2,h3,h4{margin:0; letter-spacing:-0.02em; line-height:1.06; color:var(--ink); text-wrap:balance;}
+h1{font-weight:800; font-size:clamp(3rem, 7.4vw, 6.6rem);}
+h2{font-weight:700; font-size:clamp(2.1rem, 4.2vw, 3.6rem); letter-spacing:-0.028em;}
+h3{font-weight:700; font-size:1.25rem;}
+p{margin:0; color:var(--ink-3); text-wrap:pretty;}
+.serif{font-family:var(--serif); font-style:italic; font-weight:500; letter-spacing:-0.015em;}
+.hand{font-family:var(--hand); font-weight:500;}
+
+.container{max-width:1240px; margin:0 auto; padding:0 var(--pad-x);}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:.74rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); padding:6px 0;
+}
+.eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--accent);}
+.eyebrow.amber .dot{background:var(--amber);}
+.section{padding:var(--pad-section) 0;}
+.section-head{margin-bottom:48px; max-width:760px;}
+.section-head h2{margin-top:10px;}
+.section-head .lede{margin-top:18px; font-size:1.125rem; color:var(--ink-3); max-width:54ch;}
+
+/* ---------- ANNOUNCEMENT ---------- */
+.announce{
+  background:linear-gradient(90deg, #1A1E27 0%, #14181F 100%);
+  border-bottom:1px solid var(--line);
+  color:var(--ink);
+  font-size:.9rem;
+  position:relative;
+  z-index:60;
+  transition:max-height .4s var(--ease), opacity .25s var(--ease);
+  overflow:hidden;
+  max-height:80px;
+}
+.announce.hidden{max-height:0; opacity:0;}
+.announce-inner{
+  display:flex; align-items:center; gap:14px;
+  padding:12px var(--pad-x);
+  max-width:1320px; margin:0 auto;
+}
+.announce-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  background:var(--amber); color:#1A1306;
+  padding:4px 10px; border-radius:999px; flex-shrink:0;
+}
+.announce-text{flex:1; color:var(--ink-2);}
+.announce-text strong{color:var(--ink); font-weight:600;}
+.announce-close{
+  opacity:.5; padding:6px;
+  transition:opacity .2s var(--ease);
+  display:grid; place-items:center;
+}
+.announce-close:hover{opacity:1;}
+.announce-close svg{width:14px; height:14px;}
+
+/* ---------- HEADER ---------- */
+header{
+  position:sticky; top:0; z-index:50;
+  background:rgba(11,13,18,.72);
+  backdrop-filter:blur(14px) saturate(1.4);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s var(--ease), background .3s var(--ease);
+}
+header.scrolled{
+  border-bottom-color:var(--line);
+  background:rgba(11,13,18,.88);
+}
+.nav{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px var(--pad-x);
+  max-width:1320px; margin:0 auto;
+}
+.logo{
+  font-weight:800;
+  font-size:1.1rem;
+  letter-spacing:-0.02em;
+  display:inline-flex; align-items:center; gap:10px;
+}
+.logo-mark{
+  width:30px; height:30px;
+  background:var(--ink);
+  color:var(--bg);
+  border-radius:8px;
+  display:grid; place-items:center;
+  font-weight:800; font-size:.8rem;
+  letter-spacing:-.05em;
+  position:relative;
+}
+.logo-mark::after{
+  content:''; position:absolute; inset:auto -3px -3px auto;
+  width:10px; height:10px; background:var(--accent); border-radius:3px;
+  border:2px solid var(--bg);
+}
+nav ul{
+  display:flex; gap:4px;
+  list-style:none; margin:0; padding:0;
+}
+nav a.nav-link{
+  position:relative;
+  font-size:.92rem; font-weight:500;
+  color:var(--ink-3);
+  padding:8px 14px;
+  border-radius:999px;
+  transition:color .2s var(--ease), background .2s var(--ease);
+}
+nav a.nav-link:hover{color:var(--ink);}
+nav a.nav-link.active{
+  color:#fff;
+  background:var(--accent-soft);
+}
+.nav-cta{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:.9rem; font-weight:600;
+  color:var(--bg); background:var(--ink);
+  padding:10px 18px; border-radius:999px;
+  transition:background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+}
+.nav-cta:hover{background:var(--accent); color:#fff; transform:translateY(-1px);}
+.nav-cta svg{width:14px; height:14px;}
+.hamburger{display:none;}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative;
+  padding:clamp(60px, 9vw, 110px) 0 calc(var(--pad-section) - 30px);
+  overflow:hidden;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap:clamp(40px, 6vw, 80px);
+  align-items:center;
+}
+.hero-copy .eyebrow{margin-bottom:20px;}
+.hero h1{
+  font-size:clamp(3rem, 8.5vw, 6.8rem);
+  letter-spacing:-0.038em;
+  margin-bottom:22px;
+}
+.hero h1 .squig{position:relative; white-space:nowrap;}
+.hero h1 .squig svg{
+  position:absolute;
+  left:-2%; right:-2%; bottom:-.18em;
+  width:104%; height:.32em;
+  overflow:visible;
+}
+.hero h1 .squig svg path{
+  fill:none; stroke:var(--accent); stroke-width:8;
+  stroke-linecap:round;
+  stroke-dasharray:600;
+  stroke-dashoffset:600;
+  animation:draw 1.4s var(--ease-out) .5s forwards;
+}
+@keyframes draw{to{stroke-dashoffset:0;}}
+.hero h1 .aside{
+  font-family:var(--hand);
+  color:var(--amber);
+  font-size:.32em;
+  font-weight:500;
+  letter-spacing:0;
+  display:inline-block;
+  transform:rotate(-4deg) translateY(-.1em);
+  margin-left:.2em;
+  opacity:0;
+  animation:fadeUp .8s var(--ease-out) 1.4s forwards;
+}
+@keyframes fadeUp{from{opacity:0; transform:rotate(-4deg) translateY(.2em);} to{opacity:1; transform:rotate(-4deg) translateY(-.1em);}}
+
+.hero .subtitle{
+  font-size:clamp(1.1rem, 1.5vw, 1.32rem);
+  color:var(--ink-2);
+  max-width:520px;
+  margin-bottom:34px;
+  line-height:1.5;
+}
+.hero .subtitle .hl{
+  background:linear-gradient(transparent 64%, var(--accent-soft) 64%);
+  padding:0 2px;
+}
+.hero-ctas{display:flex; flex-wrap:wrap; gap:14px; align-items:center;}
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:1rem; font-weight:600;
+  padding:15px 26px;
+  border-radius:999px;
+  transition:transform .2s var(--ease), box-shadow .25s var(--ease), background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+}
+.btn-primary{
+  background:var(--accent); color:#fff;
+  box-shadow:0 10px 30px -8px rgba(124,107,255,.6);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 38px -10px rgba(124,107,255,.7);
+  background:var(--accent-ink);
+}
+.btn-primary svg{transition:transform .25s var(--ease);}
+.btn-primary:hover svg{transform:translateX(3px);}
+.btn-ghost{
+  color:var(--ink);
+  background:transparent;
+  border:1px solid var(--line-2);
+  padding:14px 22px;
+}
+.btn-ghost:hover{background:var(--card); border-color:var(--ink-3); transform:translateY(-2px);}
+
+.hero-stats{
+  display:flex; gap:36px; margin-top:48px;
+  padding-top:30px; border-top:1px solid var(--line);
+  flex-wrap:wrap;
+}
+.hero-stat .num{
+  font-size:1.85rem; font-weight:700;
+  letter-spacing:-.02em; color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.hero-stat .lbl{
+  font-size:.82rem; color:var(--ink-3);
+  margin-top:2px;
+}
+
+.hero-media{
+  position:relative;
+  aspect-ratio:4/5;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-lg);
+  will-change:transform;
+}
+.hero-media img{
+  width:100%; height:100%; object-fit:cover;
+  transition:transform .1s linear;
+  will-change:transform;
+}
+.hero-media::after{
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 40%, rgba(15,17,21,.4) 100%);
+}
+.hero-floater{
+  position:absolute; left:22px; bottom:22px; right:22px;
+  background:rgba(20,24,31,.85);
+  backdrop-filter:blur(14px) saturate(1.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  border-radius:var(--radius);
+  padding:13px 16px;
+  display:flex; align-items:center; gap:14px;
+  z-index:2;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:var(--shadow);
+}
+.hero-floater-icon{
+  width:40px; height:40px; flex-shrink:0;
+  background:var(--accent-soft);
+  border-radius:10px;
+  display:grid; place-items:center;
+  color:var(--accent);
+}
+.hero-floater-icon svg{width:20px; height:20px;}
+.hero-floater-text{font-size:.85rem; line-height:1.35;}
+.hero-floater-text strong{color:var(--ink); display:block; font-weight:600;}
+.hero-floater-text span{color:var(--ink-3); font-size:.78rem;}
+
+/* Sticky note pinned to hero image */
+.sticky-note{
+  position:absolute;
+  top:-14px; right:-18px;
+  z-index:3;
+  background:#FDE49C;
+  color:#3B2A0A;
+  padding:18px 20px 16px;
+  font-family:var(--hand);
+  font-weight:700;
+  font-size:1.25rem;
+  line-height:1.05;
+  transform:rotate(6deg);
+  box-shadow:0 14px 30px -10px rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.25);
+  max-width:170px;
+  border-radius:2px;
+}
+.sticky-note::before{
+  content:'';
+  position:absolute; top:-6px; left:30px;
+  width:40px; height:14px;
+  background:rgba(255,255,255,.4);
+  transform:rotate(-2deg);
+  border-radius:1px;
+}
+.sticky-note .small{display:block; font-size:.85rem; font-family:'Plus Jakarta Sans'; font-weight:600; color:#7a5500; margin-top:6px; letter-spacing:.02em;}
+
+/* ---------- SCROLL REEL (MEETINGS) ---------- */
+.reel-section{
+  position:relative;
+  background:var(--bg);
+  /* outer container provides scroll length; inner stage is sticky */
+}
+.reel-stage{
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* giant background month names */
+.reel-month-bg{
+  position:absolute;
+  inset:0;
+  display:grid; place-items:center;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.reel-month-bg .word{
+  position:absolute;
+  font-family:var(--serif);
+  font-style:italic;
+  font-weight:500;
+  font-size:clamp(14rem, 32vw, 30rem);
+  line-height:.85;
+  letter-spacing:-.06em;
+  color:transparent;
+  -webkit-text-stroke:1.5px rgba(124,107,255,.22);
+  white-space:nowrap;
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity .6s var(--ease-out), transform .9s var(--ease-out);
+  user-select:none;
+}
+.reel-month-bg .word.active{opacity:1; transform:translateY(0);}
+.reel-month-bg .word.exit{opacity:0; transform:translateY(-20px);}
+
+/* reel header */
+.reel-header{
+  position:relative; z-index:5;
+  padding:clamp(28px, 5vw, 56px) var(--pad-x) 0;
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:32px;
+  max-width:1320px; margin:0 auto; width:100%;
+}
+.reel-header h2{
+  font-size:clamp(2rem, 4.4vw, 3.6rem);
+  letter-spacing:-.03em;
+}
+.reel-header h2 .underline-it{
+  position:relative; display:inline-block;
+}
+.reel-header h2 .underline-it::after{
+  content:'';
+  position:absolute; left:-4px; right:-4px; bottom:.05em;
+  height:.18em;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 8 Q 50 1, 100 7 T 198 5' fill='none' stroke='%23FDC470' stroke-width='3' stroke-linecap='round'/></svg>") no-repeat;
+  background-size:100% 100%;
+  pointer-events:none;
+}
+.reel-meta{
+  text-align:right;
+  display:flex; flex-direction:column; align-items:flex-end; gap:6px;
+}
+.reel-counter{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:clamp(2.2rem, 4vw, 3.4rem);
+  font-weight:500;
+  letter-spacing:-.03em;
+  line-height:1;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  display:flex; align-items:baseline; gap:4px;
+}
+.reel-counter .total{color:var(--ink-4); font-size:.6em;}
+.reel-counter .slash{color:var(--ink-4); font-size:.6em; margin:0 4px;}
+.reel-tagline{
+  font-size:.78rem; color:var(--ink-3);
+  letter-spacing:.14em; text-transform:uppercase;
+  font-weight:600;
+}
+
+/* the stage where the cards live */
+.reel-viewport{
+  position:relative;
+  flex:1;
+  overflow:hidden;
+  z-index:2;
+  display:flex; align-items:center;
+}
+.reel-track{
+  display:flex;
+  align-items:center;
+  gap:28px;
+  padding:0 50vw;       /* half-viewport padding so first/last cards can center */
+  will-change:transform;
+}
+
+/* connecting timeline line behind cards */
+.reel-line{
+  position:absolute;
+  left:0; right:0;
+  top:50%; transform:translateY(-50%);
+  height:2px;
+  background:repeating-linear-gradient(90deg, var(--line-2) 0 6px, transparent 6px 12px);
+  z-index:1;
+  pointer-events:none;
+}
+.reel-line-fill{
+  position:absolute;
+  left:0; top:50%; transform:translateY(-50%);
+  height:2px;
+  background:linear-gradient(90deg, var(--accent), var(--amber));
+  z-index:2;
+  pointer-events:none;
+  width:0;
+  transition:width .12s linear;
+}
+
+/* the playhead */
+.reel-playhead{
+  position:absolute;
+  left:50%;
+  top:0; bottom:0;
+  width:1px;
+  background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,.06) 20%, rgba(255,255,255,.18) 50%, rgba(255,255,255,.06) 80%, transparent 100%);
+  transform:translateX(-50%);
+  z-index:3;
+  pointer-events:none;
+}
+.reel-playhead::before, .reel-playhead::after{
+  content:'';
+  position:absolute; left:50%;
+  width:10px; height:10px;
+  background:var(--amber);
+  border-radius:50%;
+  transform:translateX(-50%);
+  box-shadow:0 0 18px rgba(253,196,112,.7);
+}
+.reel-playhead::before{top:18%;}
+.reel-playhead::after{bottom:18%;}
+
+/* card itself */
+.reel-card{
+  flex:0 0 auto;
+  width:180px;
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:22px 18px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:4px;
+  transition:transform .35s var(--ease-out), background .35s var(--ease-out), border-color .35s var(--ease-out), box-shadow .35s var(--ease-out);
+  transform-origin:center bottom;
+  will-change:transform;
+}
+.reel-card .m-month{
+  font-size:.72rem; font-weight:700; letter-spacing:.18em;
+  color:var(--ink-3); text-transform:uppercase;
+  transition:color .35s var(--ease-out);
+}
+.reel-card .m-day{
+  font-size:3.2rem; font-weight:800;
+  letter-spacing:-.05em; line-height:1;
+  margin-top:6px; color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  transition:font-size .35s var(--ease-out);
+}
+.reel-card .m-year{
+  font-size:.74rem; color:var(--ink-4); margin-top:8px;
+  font-variant-numeric:tabular-nums;
+  transition:color .35s var(--ease-out);
+}
+.reel-card .m-weekday{
+  margin-top:14px;
+  font-family:var(--serif);
+  font-style:italic;
+  font-weight:500;
+  font-size:1.05rem;
+  color:var(--ink-2);
+  letter-spacing:-.01em;
+  opacity:0;
+  max-height:0;
+  transform:translateY(8px);
+  transition:opacity .35s var(--ease-out), transform .45s var(--ease-out), max-height .45s var(--ease-out);
+  overflow:hidden;
+}
+.reel-card .m-note{
+  margin-top:6px;
+  font-family:var(--hand);
+  font-weight:500;
+  font-size:1.15rem;
+  color:var(--amber);
+  line-height:1.1;
+  opacity:0;
+  max-height:0;
+  transform:translateY(8px);
+  transition:opacity .4s var(--ease-out) .05s, transform .5s var(--ease-out) .05s, max-height .5s var(--ease-out);
+  overflow:hidden;
+  letter-spacing:.005em;
+}
+.reel-card .m-dot{
+  position:absolute;
+  left:50%; bottom:-30px;
+  width:14px; height:14px;
+  background:var(--line-2);
+  border:2px solid var(--bg);
+  border-radius:50%;
+  transform:translateX(-50%);
+  transition:background .35s var(--ease-out), transform .35s var(--ease-out), box-shadow .35s var(--ease-out);
+  z-index:4;
+}
+.reel-card .m-stamp{
+  position:absolute;
+  top:14px; right:14px;
+  font-size:.6rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  background:var(--amber-soft); color:var(--amber);
+  padding:3px 7px; border-radius:999px;
+  border:1px solid rgba(253,196,112,.25);
+  font-variant-numeric:tabular-nums;
+}
+
+/* state: distance-based scaling controlled by JS via CSS var --d (0..1) */
+.reel-card{
+  --d: 1;                                /* 0 = at playhead, 1 = far */
+  transform: scale(calc(0.7 + (1 - var(--d)) * 0.65)) translateY(calc(var(--d) * 14px));
+  opacity: calc(0.35 + (1 - var(--d)) * 0.65);
+  filter: blur(calc(var(--d) * 2.5px));
+}
+.reel-card.active{
+  --d:0;
+  background:linear-gradient(180deg, rgba(124,107,255,.10) 0%, var(--card-2) 100%);
+  border-color:rgba(124,107,255,.35);
+  box-shadow:0 20px 60px -16px rgba(124,107,255,.45), 0 6px 16px -6px rgba(0,0,0,.5);
+  z-index:5;
+}
+.reel-card.active .m-month{color:var(--accent);}
+.reel-card.active .m-year{color:var(--ink-3);}
+.reel-card.active .m-weekday{opacity:1; max-height:60px; transform:none;}
+.reel-card.active .m-note{opacity:1; max-height:60px; transform:none;}
+.reel-card.active .m-dot{
+  background:var(--amber);
+  transform:translateX(-50%) scale(1.6);
+  box-shadow:0 0 0 6px rgba(253,196,112,.18), 0 0 22px rgba(253,196,112,.6);
+}
+.reel-card.special.active{
+  background:linear-gradient(180deg, rgba(253,196,112,.14) 0%, var(--card-2) 100%);
+  border-color:rgba(253,196,112,.45);
+  box-shadow:0 20px 60px -16px rgba(253,196,112,.45), 0 6px 16px -6px rgba(0,0,0,.5);
+}
+.reel-card.special.active .m-month{color:var(--amber);}
+.reel-card.special.active .m-stamp{
+  background:var(--amber); color:#1A1306;
+  border-color:var(--amber);
+}
+
+/* hint / scroll instruction */
+.reel-hint{
+  position:absolute;
+  bottom:32px; left:50%; transform:translateX(-50%);
+  z-index:6;
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:.74rem; color:var(--ink-4);
+  font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+}
+.reel-hint .arrow{
+  display:inline-block; width:24px; height:1px; background:var(--ink-4); position:relative;
+  animation:hintLine 1.8s var(--ease) infinite;
+}
+.reel-hint .arrow::after{
+  content:''; position:absolute; right:0; top:-3px;
+  width:7px; height:7px; border-right:1px solid var(--ink-4); border-top:1px solid var(--ink-4);
+  transform:rotate(45deg);
+}
+@keyframes hintLine{0%,100%{transform:translateX(0); opacity:.5;} 50%{transform:translateX(8px); opacity:1;}}
+
+/* mobile fallback: cards stack as a regular grid */
+.reel-fallback{display:none;}
+
+/* the note below the reel section */
+.reel-followup{
+  background:var(--bg);
+  padding:0 0 var(--pad-section);
+}
+.reel-followup .container{
+  display:flex; gap:20px; align-items:flex-start;
+  padding-top:50px;
+  flex-wrap:wrap;
+}
+.reel-note{
+  flex:1; min-width:280px;
+  display:flex; gap:14px; align-items:flex-start;
+  padding:18px 22px;
+  background:var(--accent-softer);
+  border:1px solid var(--accent-soft);
+  border-radius:var(--radius);
+}
+.reel-note-icon{
+  width:32px; height:32px; flex-shrink:0;
+  background:var(--accent); color:#fff;
+  border-radius:50%;
+  display:grid; place-items:center;
+}
+.reel-note-icon svg{width:14px; height:14px;}
+.reel-note p{color:var(--ink-2); font-weight:500;}
+.reel-note p .hand{color:var(--amber); font-size:1.15rem; margin-left:4px;}
+
+/* ---------- ABOUT ---------- */
+.about{background:var(--bg-2);}
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:clamp(40px, 6vw, 80px);
+  align-items:center;
+}
+.about-text p + p{margin-top:18px;}
+.about-text p{font-size:1.08rem; color:var(--ink-2); line-height:1.7;}
+.about-text .lead{font-size:1.22rem; color:var(--ink); font-weight:500; line-height:1.5;}
+.about-text .lead .hl{
+  background:linear-gradient(transparent 64%, var(--accent-soft) 64%);
+  padding:0 3px;
+}
+
+.features{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:14px;
+  margin-top:36px;
+}
+.feature{
+  background:var(--card);
+  border:1px solid var(--line);
+  padding:18px 16px 16px;
+  border-radius:var(--radius);
+  transition:transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
+}
+.feature:hover{transform:translateY(-3px); border-color:var(--accent); background:var(--card-2);}
+.feature .num{
+  font-family:var(--serif); font-style:italic;
+  font-size:1.5rem; font-weight:500;
+  color:var(--accent);
+  margin-bottom:10px;
+  line-height:1;
+}
+.feature h3{font-size:.98rem; font-weight:600;}
+.feature p{font-size:.85rem; color:var(--ink-4); margin-top:4px; line-height:1.4;}
+
+.about-image{
+  position:relative;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  aspect-ratio:4/5;
+  border:1px solid var(--line);
+}
+.about-image img{width:100%; height:100%; object-fit:cover; opacity:.94;}
+.about-tag{
+  position:absolute; left:20px; bottom:20px;
+  background:rgba(11,13,18,.78);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.08);
+  color:var(--ink);
+  font-size:.85rem; font-weight:500;
+  padding:8px 14px; border-radius:999px;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.about-tag .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
+.about-doodle{
+  position:absolute; right:-18px; top:-12px;
+  font-family:var(--hand);
+  color:var(--amber); font-weight:700;
+  font-size:1.4rem; line-height:1;
+  transform:rotate(8deg);
+  text-shadow:0 4px 14px rgba(0,0,0,.4);
+}
+.about-doodle svg{
+  display:block;
+  width:60px; height:auto;
+  margin:-6px 0 0 50px;
+  transform:rotate(-10deg);
+}
+
+/* ---------- COMPETITIONS · CUBE PRISM ---------- */
+.competitions{background:var(--bg); position:relative;}
+.cube-stage{
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:clamp(20px, 4vw, 60px);
+  align-items:center;
+  padding:0 var(--pad-x);
+  max-width:1320px; margin:0 auto;
+  overflow:hidden;
+}
+.cube-left{
+  display:flex; flex-direction:column;
+  gap:24px;
+  max-width:480px;
+  position:relative;
+  z-index:2;
+}
+.cube-left h2{font-size:clamp(2.2rem, 4.6vw, 3.8rem); letter-spacing:-.03em; line-height:1.02;}
+.cube-left h2 .underline-it{position:relative; display:inline-block;}
+.cube-left h2 .underline-it::after{
+  content:'';
+  position:absolute; left:-4px; right:-4px; bottom:.05em;
+  height:.18em;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 6 Q 40 11, 80 5 T 160 7 T 198 4' fill='none' stroke='%237C6BFF' stroke-width='3' stroke-linecap='round'/></svg>") no-repeat;
+  background-size:100% 100%;
+  pointer-events:none;
+}
+.cube-lede{font-size:1.06rem; color:var(--ink-3); max-width:42ch; line-height:1.55;}
+
+.cube-status{
+  display:flex; align-items:baseline; gap:14px;
+  margin-top:10px;
+  font-variant-numeric:tabular-nums;
+}
+.cube-status .num{
+  font-family:var(--serif); font-style:italic; font-weight:500;
+  font-size:clamp(3rem, 6vw, 5.2rem);
+  line-height:1;
+  letter-spacing:-.03em;
+  color:var(--accent);
+  position:relative;
+  overflow:hidden;
+  display:inline-block;
+  min-width:1.4em;
+  height:1em;
+  vertical-align:bottom;
+}
+.cube-status .num span{
+  position:absolute;
+  left:0; top:0;
+  display:inline-block;
+  line-height:1;
+  transition:transform .55s cubic-bezier(.7,.2,.2,1), opacity .35s ease;
+}
+.cube-status .num span.out{transform:translateY(-100%); opacity:0;}
+.cube-status .num span.in-from-below{transform:translateY(100%); opacity:0;}
+.cube-status .total{color:var(--ink-4); font-size:1.4rem;}
+.cube-status .slash{color:var(--ink-4); font-size:1.4rem;}
+
+.cube-active-title{
+  font-size:clamp(1.4rem, 2.4vw, 2rem);
+  font-weight:700; letter-spacing:-.02em;
+  line-height:1.18;
+  color:var(--ink);
+  min-height:2.4em;
+}
+.cube-active-title a{
+  border-bottom:2px solid var(--accent-soft);
+  padding-bottom:2px;
+  transition:border-color .2s var(--ease), color .2s var(--ease);
+}
+.cube-active-title a:hover{color:var(--accent); border-color:var(--accent);}
+
+.cube-dots{
+  display:flex; gap:10px; margin-top:4px;
+}
+.cube-dot{
+  flex:1;
+  height:3px;
+  background:var(--line-2);
+  border-radius:2px;
+  position:relative;
+  overflow:hidden;
+  transition:background .3s var(--ease);
+  cursor:pointer;
+  border:none;
+}
+.cube-dot::after{
+  content:'';
+  position:absolute; left:0; top:0; bottom:0; width:0;
+  background:linear-gradient(90deg, var(--accent), var(--amber));
+  transition:width .25s linear;
+}
+.cube-dot.done::after{width:100%;}
+.cube-dot.current::after{width:var(--fill, 0%);}
+.cube-dot.required-mark{background:rgba(253,196,112,.25);}
+
+.cube-hint{
+  margin-top:8px;
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:.74rem; color:var(--ink-4);
+  font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+  transition:opacity .3s ease;
+}
+.cube-hint .arrow{
+  display:inline-block; width:24px; height:1px; background:var(--ink-4); position:relative;
+  animation:hintLine 1.8s var(--ease) infinite;
+}
+.cube-hint .arrow::after{
+  content:''; position:absolute; right:0; top:-3px;
+  width:7px; height:7px; border-right:1px solid var(--ink-4); border-top:1px solid var(--ink-4);
+  transform:rotate(45deg);
+}
+
+/* the prism */
+.cube-right{
+  position:relative;
+  display:grid; place-items:center;
+  height:100%;
+  perspective:1800px;
+  perspective-origin:50% 45%;
+}
+.cube-right::before{
+  content:'';
+  position:absolute;
+  width:520px; height:520px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(124,107,255,.16), transparent 65%);
+  filter:blur(20px);
+  z-index:0;
+  pointer-events:none;
+}
+.cube{
+  position:relative;
+  width:380px;
+  height:500px;
+  transform-style:preserve-3d;
+  transform: rotateX(-6deg) rotateY(var(--rot, 0deg));
+  transition: transform .12s linear;
+  will-change:transform;
+  z-index:1;
+}
+.cube-face{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, var(--card-2) 0%, var(--card) 100%);
+  border:1px solid var(--line-2);
+  border-radius:20px;
+  padding:34px 30px;
+  display:flex; flex-direction:column;
+  gap:20px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
+  transform-origin:50% 50%;
+}
+/* 6 faces around a hex prism. radius = 380 / (2 * tan(30deg)) ≈ 329px */
+.cube-face[data-idx="0"]{transform: rotateY(  0deg) translateZ(329px);}
+.cube-face[data-idx="1"]{transform: rotateY( 60deg) translateZ(329px);}
+.cube-face[data-idx="2"]{transform: rotateY(120deg) translateZ(329px);}
+.cube-face[data-idx="3"]{transform: rotateY(180deg) translateZ(329px);}
+.cube-face[data-idx="4"]{transform: rotateY(240deg) translateZ(329px);}
+.cube-face[data-idx="5"]{transform: rotateY(300deg) translateZ(329px);}
+
+.cube-face.is-required{
+  background:linear-gradient(180deg, rgba(253,196,112,.10) 0%, var(--card-2) 80%);
+  border-color:rgba(253,196,112,.4);
+  box-shadow:0 30px 80px -30px rgba(253,196,112,.35), inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.cube-face .face-top{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+}
+.cube-face .face-num{
+  font-family:var(--serif); font-style:italic;
+  font-size:3.6rem; font-weight:500;
+  color:var(--accent); line-height:.85;
+  letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+}
+.cube-face.is-required .face-num{color:var(--amber);}
+.cube-face .face-badge{
+  font-size:.66rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:6px 11px; border-radius:999px;
+  white-space:nowrap;
+  display:inline-flex; align-items:center; gap:6px;
+  border:1px solid var(--line-2);
+  color:var(--ink-4);
+}
+.cube-face .face-badge.required{
+  background:var(--amber); color:#1A1306; border-color:var(--amber);
+}
+.cube-face .face-badge .pulse{width:5px; height:5px; border-radius:50%; background:#1A1306;}
+
+.cube-face .face-title{
+  font-size:1.5rem; font-weight:700;
+  line-height:1.18; letter-spacing:-.018em;
+  color:var(--ink);
+}
+.cube-face .face-title a{
+  border-bottom:1.5px solid var(--accent-soft);
+  padding-bottom:2px;
+  transition:color .2s var(--ease), border-color .2s var(--ease);
+}
+.cube-face .face-title a:hover{color:var(--accent); border-color:var(--accent);}
+.cube-face.is-required .face-title a{border-color:rgba(253,196,112,.35);}
+
+.cube-face .face-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  margin-top:auto;
+}
+.cube-face.is-required .face-meta{background:rgba(253,196,112,.22); border-color:rgba(253,196,112,.25);}
+.cube-face .face-meta-item{
+  background:var(--bg-2);
+  padding:14px 16px;
+}
+.cube-face.is-required .face-meta-item{background:rgba(253,196,112,.05);}
+.cube-face .face-meta-item .lbl{
+  font-size:.66rem; font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.12em; text-transform:uppercase;
+  margin-bottom:4px;
+}
+.cube-face .face-meta-item .val{
+  font-size:1rem; font-weight:600; color:var(--ink);
+  letter-spacing:-.01em;
+}
+
+.cube-face .face-link{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:.85rem; font-weight:600;
+  color:var(--accent);
+  align-self:flex-start;
+}
+.cube-face.is-required .face-link{color:var(--amber);}
+.cube-face .face-link svg{width:13px; height:13px;}
+
+/* the comp-grid class kept only for mobile fallback rendering */
+.comp-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+  gap:18px;
+}
+.comp-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px 22px;
+  display:flex; flex-direction:column;
+  gap:16px;
+  position:relative;
+  transition:transform .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+}
+.comp-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--line-2);
+  background:var(--card-2);
+  box-shadow:var(--shadow);
+}
+.comp-header{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+}
+.comp-num{
+  font-family:var(--serif); font-style:italic;
+  font-size:1.6rem; font-weight:500;
+  color:var(--accent);
+  line-height:1;
+}
+.comp-badge{
+  font-size:.66rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:5px 10px; border-radius:999px;
+  white-space:nowrap;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.comp-badge.required{
+  background:var(--amber); color:#1A1306;
+}
+.comp-badge.optional{
+  background:transparent; color:var(--ink-4);
+  border:1px solid var(--line-2);
+}
+.comp-badge .pulse{
+  width:5px; height:5px; border-radius:50%; background:#1A1306;
+}
+.comp-title{
+  font-size:1.18rem; font-weight:700;
+  line-height:1.22; letter-spacing:-.015em;
+  color:var(--ink);
+}
+.comp-title a{
+  background:linear-gradient(var(--accent), var(--accent)) left bottom / 0 1.5px no-repeat;
+  transition:background-size .3s var(--ease), color .2s var(--ease);
+  padding-bottom:2px;
+}
+.comp-card:hover .comp-title a{
+  background-size:100% 1.5px;
+  color:var(--accent);
+}
+.comp-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid var(--line);
+}
+.comp-meta-item{
+  background:var(--bg-2);
+  padding:11px 14px;
+}
+.comp-meta-item .lbl{
+  font-size:.66rem; font-weight:600;
+  color:var(--ink-4);
+  letter-spacing:.12em; text-transform:uppercase;
+  margin-bottom:3px;
+}
+.comp-meta-item .val{
+  font-size:.92rem; font-weight:600; color:var(--ink);
+  letter-spacing:-.01em;
+}
+.comp-link{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:.82rem; font-weight:600;
+  color:var(--accent);
+  margin-top:auto;
+}
+.comp-link svg{width:12px; height:12px; transition:transform .2s var(--ease);}
+.comp-card:hover .comp-link svg{transform:translate(2px, -2px);}
+
+/* ---------- LAUNCHSB ---------- */
+@media (max-width: 960px){
+  /* drop the cube on smaller widths and render a normal stacked grid */
+  .competitions{height:auto !important;}
+  .cube-stage{position:static; height:auto; display:block; padding:var(--pad-section) var(--pad-x);}
+  .cube-left{max-width:none; margin-bottom:36px;}
+  .cube-right{display:none;}
+  .cube-mobile{display:grid !important; grid-template-columns:1fr; gap:14px;}
+  .cube-mobile .comp-card.reveal{opacity:1; transform:none;}
+}
+.cube-mobile{display:none;}
+.cube-mobile .comp-card{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--radius); padding:24px 22px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.cube-mobile .comp-card.is-required{
+  background:linear-gradient(180deg, rgba(253,196,112,.06) 0%, var(--card) 60%);
+  border-color:rgba(253,196,112,.35);
+}
+.cube-mobile .face-top{display:flex; justify-content:space-between; align-items:center;}
+.cube-mobile .face-num{font-family:var(--serif); font-style:italic; color:var(--accent); font-size:1.6rem;}
+.cube-mobile .is-required .face-num{color:var(--amber);}
+.cube-mobile .face-badge{
+  font-size:.66rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:5px 10px; border-radius:999px;
+  border:1px solid var(--line-2); color:var(--ink-4);
+}
+.cube-mobile .face-badge.required{background:var(--amber); color:#1A1306; border-color:var(--amber);}
+.cube-mobile .face-title{font-size:1.15rem; font-weight:700; letter-spacing:-.015em;}
+.cube-mobile .face-meta{
+  display:grid; grid-template-columns:1fr 1fr; gap:1px;
+  background:var(--line); border-radius:10px; overflow:hidden; border:1px solid var(--line);
+}
+.cube-mobile .face-meta-item{background:var(--bg-2); padding:12px 14px;}
+.cube-mobile .face-meta-item .lbl{font-size:.66rem; font-weight:600; color:var(--ink-4); letter-spacing:.12em; text-transform:uppercase; margin-bottom:3px;}
+.cube-mobile .face-meta-item .val{font-size:.92rem; font-weight:600; color:var(--ink);}
+.cube-mobile .face-link{color:var(--accent); font-size:.85rem; font-weight:600; display:inline-flex; gap:6px; align-items:center;}
+.cube-mobile .is-required .face-link{color:var(--amber);}
+
+
+.launchsb{background:var(--bg-2); color:var(--ink); position:relative; overflow:hidden;}
+.launchsb::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 20% 0%, rgba(124,107,255,.10), transparent 40%),
+             radial-gradient(circle at 80% 80%, rgba(253,196,112,.06), transparent 45%);
+  pointer-events:none;
+}
+.launchsb .container{position:relative; z-index:1;}
+
+.lsb-hero{
+  margin-top:40px;
+  background:linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  padding:36px;
+  display:grid;
+  grid-template-columns:.85fr 1.4fr;
+  gap:40px;
+  align-items:center;
+  box-shadow:var(--shadow);
+}
+.lsb-bigdate{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:34px 20px;
+  background:linear-gradient(180deg, rgba(124,107,255,.10) 0%, transparent 100%), var(--bg);
+  border:1px solid var(--line-2);
+  border-radius:var(--radius);
+  position:relative;
+}
+.lsb-bigdate::before{
+  content:'LaunchSB';
+  position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  font-size:.65rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--amber); padding:3px 10px;
+  background:var(--amber-soft);
+  border:1px solid rgba(253,196,112,.25);
+  border-radius:999px;
+}
+.lsb-bigdate .month{
+  font-size:.85rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--accent); margin-top:14px;
+}
+.lsb-bigdate .day{
+  font-size:6rem; font-weight:800; letter-spacing:-.05em; line-height:.9;
+  margin:4px 0;
+  font-variant-numeric:tabular-nums;
+}
+.lsb-bigdate .weekday{
+  font-family:var(--serif); font-style:italic; font-weight:500;
+  font-size:1rem; color:var(--ink-3);
+}
+.lsb-info-row{display:grid; gap:14px;}
+.lsb-info-item{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 18px;
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.lsb-info-icon{
+  width:36px; height:36px;
+  border-radius:10px;
+  background:var(--accent-soft); color:var(--accent);
+  display:grid; place-items:center;
+  flex-shrink:0;
+}
+.lsb-info-icon svg{width:18px; height:18px;}
+.lsb-info-item .key{
+  font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-4);
+}
+.lsb-info-item .val{font-size:1rem; font-weight:600; color:var(--ink);}
+.lsb-required{
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:18px;
+  background:var(--amber); color:#1A1306;
+  padding:7px 14px; border-radius:999px;
+  font-size:.74rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+}
+.lsb-required .dot{width:6px; height:6px; border-radius:50%; background:#1A1306;}
+.lsb-pitch{
+  font-family:var(--serif); font-style:italic;
+  color:var(--ink-2);
+  font-size:1.05rem; margin-top:18px;
+  padding-left:16px;
+  border-left:2px solid var(--amber);
+  line-height:1.45;
+}
+
+.lsb-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-top:22px;
+}
+.lsb-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px;
+  transition:border-color .25s var(--ease), transform .25s var(--ease), background .25s var(--ease);
+}
+.lsb-card:hover{border-color:var(--line-2); background:var(--card-2); transform:translateY(-3px);}
+.lsb-card h3{color:var(--ink); margin-bottom:6px;}
+.lsb-card .sub{font-size:.86rem; color:var(--ink-4); margin-bottom:18px; font-family:var(--serif); font-style:italic;}
+
+.checklist{
+  list-style:none; padding:0; margin:0;
+  display:grid; gap:10px;
+}
+.checklist li{
+  display:flex; align-items:center; gap:12px;
+  padding:11px 14px;
+  background:var(--bg-2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--ink-2);
+  font-size:.92rem; font-weight:500;
+  transition:transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
+}
+.checklist li:hover{background:var(--bg); border-color:var(--line-2); transform:translateX(2px);}
+.checklist li .chk{
+  width:20px; height:20px; flex-shrink:0;
+  border-radius:50%;
+  background:var(--accent-soft); color:var(--accent);
+  display:grid; place-items:center;
+}
+.checklist li .chk svg{width:10px; height:10px;}
+.dress-list li .chk{background:var(--amber); color:#1A1306; border-radius:6px;}
+
+.lsb-note{
+  margin-top:28px;
+  display:flex; gap:14px; align-items:flex-start;
+  padding:18px 22px;
+  background:rgba(253,196,112,.06);
+  border:1px solid rgba(253,196,112,.2);
+  border-radius:var(--radius);
+}
+.lsb-note-icon{
+  width:32px; height:32px; flex-shrink:0;
+  background:var(--amber); color:#1A1306;
+  border-radius:50%;
+  display:grid; place-items:center;
+}
+.lsb-note-icon svg{width:14px; height:14px;}
+.lsb-note p{color:var(--ink-2); font-size:.95rem;}
+.lsb-note a{color:var(--amber); text-decoration:underline; text-underline-offset:3px;}
+
+/* ---------- CONTACT ---------- */
+.contact{background:var(--bg);}
+.contact-card{
+  background:
+    radial-gradient(circle at 100% 0%, rgba(124,107,255,.14), transparent 50%),
+    linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  padding:clamp(40px, 6vw, 68px);
+  display:grid;
+  grid-template-columns:1.2fr 1fr;
+  gap:44px;
+  align-items:center;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.contact-card::before{
+  content:''; position:absolute; top:-100px; right:-100px;
+  width:340px; height:340px; border-radius:50%;
+  background:radial-gradient(circle, rgba(124,107,255,.18), transparent 70%);
+  pointer-events:none;
+}
+.contact-card h3{
+  font-size:clamp(1.6rem, 2.4vw, 2.1rem); font-weight:700;
+  letter-spacing:-.025em;
+  line-height:1.15;
+  margin-bottom:12px;
+  position:relative;
+  color:var(--ink);
+}
+.contact-card .pitch{
+  color:var(--ink-3);
+  margin-bottom:28px;
+  font-size:1.02rem;
+  position:relative;
+  max-width:42ch;
+}
+.email-block{display:flex; flex-direction:column; gap:14px; position:relative;}
+.email-link{
+  display:flex; align-items:center; gap:16px;
+  padding:16px 20px;
+  background:var(--bg-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  transition:transform .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+}
+.email-link:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent);
+  background:var(--bg);
+  box-shadow:var(--shadow);
+}
+.email-icon{
+  width:44px; height:44px;
+  background:var(--accent); color:#fff;
+  border-radius:12px;
+  display:grid; place-items:center;
+  flex-shrink:0;
+}
+.email-icon svg{width:22px; height:22px;}
+.email-text .lbl{
+  font-size:.7rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-4); margin-bottom:2px;
+}
+.email-text .addr{
+  font-size:1rem; font-weight:600; color:var(--ink);
+  word-break:break-all;
+}
+.socials{
+  display:flex; gap:10px; align-items:center; margin-top:10px;
+  flex-wrap:wrap;
+}
+.socials .lbl{
+  font-size:.7rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-4); margin-right:6px;
+}
+.social-link{
+  width:42px; height:42px;
+  display:grid; place-items:center;
+  background:var(--bg-2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--ink-2);
+  transition:transform .2s var(--ease), background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+  position:relative;
+}
+.social-link:hover{transform:translateY(-2px); background:var(--accent); color:#fff; border-color:var(--accent);}
+.social-link.placeholder{
+  border-style:dashed;
+  border-color:var(--ink-4);
+  color:var(--ink-4);
+  background:transparent;
+}
+.social-link.placeholder:hover{
+  background:transparent; color:var(--ink-2); border-color:var(--ink-3);
+}
+.social-link svg{width:18px; height:18px;}
+
+/* ---------- FOOTER ---------- */
+footer{
+  background:var(--bg-2);
+  border-top:1px solid var(--line);
+  color:var(--ink-3);
+  padding:60px 0 36px;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr;
+  gap:40px;
+  padding-bottom:36px;
+  border-bottom:1px solid var(--line);
+}
+.footer-brand .logo{color:var(--ink); font-size:1.35rem;}
+.footer-brand p{
+  margin-top:14px;
+  font-size:.92rem;
+  color:var(--ink-3);
+  max-width:340px;
+}
+.footer-col h4{
+  color:var(--ink); font-size:.74rem;
+  font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  margin-bottom:16px;
+}
+.footer-col a{
+  display:block;
+  font-size:.94rem;
+  color:var(--ink-3);
+  padding:5px 0;
+  transition:color .2s var(--ease), transform .2s var(--ease);
+}
+.footer-col a:hover{color:var(--ink); transform:translateX(2px);}
+.footer-bottom{
+  display:flex; justify-content:space-between; align-items:center;
+  padding-top:22px;
+  font-size:.85rem;
+  color:var(--ink-4);
+  flex-wrap:wrap; gap:14px;
+}
+.footer-meta{display:flex; gap:24px; color:var(--ink-4);}
+.footer-signed{
+  font-family:var(--hand);
+  color:var(--amber);
+  font-size:1.15rem;
+}
+
+/* ---------- BACK TO TOP ---------- */
+.back-to-top{
+  position:fixed; right:24px; bottom:24px; z-index:40;
+  width:46px; height:46px;
+  background:var(--card-2); color:var(--ink);
+  border:1px solid var(--line-2);
+  border-radius:50%;
+  display:grid; place-items:center;
+  opacity:0; pointer-events:none;
+  transform:translateY(10px);
+  transition:opacity .25s var(--ease), transform .25s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
+  box-shadow:var(--shadow-lg);
+}
+.back-to-top.visible{opacity:1; pointer-events:auto; transform:translateY(0);}
+.back-to-top:hover{background:var(--accent); color:#fff; border-color:var(--accent);}
+.back-to-top svg{width:16px; height:16px;}
+
+/* ---------- REVEAL ANIMATION ---------- */
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .85s var(--ease-out), transform .85s var(--ease-out);
+}
+.reveal.in{opacity:1; transform:none;}
+.reveal[data-delay="1"]{transition-delay:.08s;}
+.reveal[data-delay="2"]{transition-delay:.16s;}
+.reveal[data-delay="3"]{transition-delay:.24s;}
+.reveal[data-delay="4"]{transition-delay:.32s;}
+
+.word-mask{display:inline-block; overflow:hidden; vertical-align:bottom; padding:0 .04em; margin:0 -.04em;}
+.word-mask > span{
+  display:inline-block; transform:translateY(110%);
+  transition:transform 1s cubic-bezier(.22,1,.36,1);
+}
+.word-mask.in > span{transform:translateY(0);}
+
+/* ---------- SCROLL PROGRESS ---------- */
+.scroll-progress{
+  position:fixed; top:0; left:0; right:0; z-index:70;
+  height:2px;
+  background:linear-gradient(90deg, var(--accent) 0%, var(--amber) 100%);
+  transform-origin:left center;
+  transform:scaleX(0);
+  transition:transform .12s linear;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 960px){
+  .hero-grid, .about-grid, .contact-card, .lsb-hero{grid-template-columns:1fr;}
+  .lsb-grid, .features{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr; gap:32px;}
+  .about-image, .hero-media{aspect-ratio:5/4; max-width:560px;}
+  .reel-header{flex-direction:column; align-items:flex-start; gap:14px;}
+  .reel-meta{text-align:left; align-items:flex-start;}
+}
+@media (max-width: 720px){
+  nav ul{display:none;}
+  .nav-cta{display:none;}
+  .hamburger{
+    display:grid; place-items:center;
+    width:38px; height:38px;
+    border-radius:10px;
+    background:var(--card); border:1px solid var(--line-2);
+    color:var(--ink);
+  }
+  .hamburger svg{width:18px; height:18px;}
+  .hero-stats{gap:20px;}
+  .footer-bottom{flex-direction:column; text-align:center;}
+  .features{grid-template-columns:repeat(3,1fr);}
+  .feature{padding:14px 12px;}
+  .feature h3{font-size:.85rem;}
+
+  /* meetings: switch to a regular grid; disable sticky reel */
+  .reel-section{height:auto !important;}
+  .reel-stage{position:static; height:auto; padding:60px 0;}
+  .reel-month-bg, .reel-playhead, .reel-line, .reel-line-fill, .reel-hint{display:none;}
+  .reel-viewport{overflow:visible; display:block;}
+  .reel-track{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:12px;
+    padding:0 var(--pad-x);
+    transform:none !important;
+  }
+  .reel-card{width:auto; opacity:1 !important; filter:none !important; transform:none !important;}
+  .reel-card .m-weekday, .reel-card .m-note{opacity:1; max-height:none; transform:none;}
+}
+@media (max-width: 480px){
+  .features{grid-template-columns:1fr;}
+  .lsb-hero{padding:24px;}
+  .reel-track{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress" class="scroll-progress"></div>
+
+<!-- ANNOUNCEMENT -->
+<div id="announce" class="announce">
+  <div class="announce-inner">
+    <span class="announce-badge">Heads up</span>
+    <div class="announce-text"><strong>First meeting Oct 14th</strong> — DLC, 3rd Floor Annex, 2:30 PM. See you there.</div>
+    <button class="announce-close" aria-label="Dismiss" onclick="document.getElementById('announce').classList.add('hidden')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="nav">
+    <a href="#home" class="logo">
+      <span class="logo-mark">X</span>
+      <span>XSTEM</span>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="#meetings" class="nav-link">Meetings</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#competitions" class="nav-link">Competitions</a></li>
+        <li><a href="#launchsb" class="nav-link">LaunchSB</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+    <a href="#contact" class="nav-cta">
+      Join us
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+    <button class="hamburger" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow reveal"><span class="dot"></span>South Brunswick High · Tuesday afternoons</span>
+        <h1 class="reveal" data-delay="1">
+          Start a company<br>
+          <span class="squig">before college.<svg viewBox="0 0 200 12" preserveAspectRatio="none"><path d="M2 8 Q 50 1, 100 7 T 198 5"/></svg></span>
+          <span class="aside">(yes, really)</span>
+        </h1>
+        <p class="subtitle reveal" data-delay="2">XSTEM is South Brunswick's <span class="hl">entrepreneurship club</span>. We follow an MIT-based curriculum, you build a real business with your team, and we ship it to regional, national, and international competitions.</p>
+        <div class="hero-ctas reveal" data-delay="3">
+          <a href="#meetings" class="btn btn-primary">
+            See the calendar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#about" class="btn btn-ghost">What's the deal?</a>
+        </div>
+        <div class="hero-stats reveal" data-delay="4">
+          <div class="hero-stat"><div class="num">14</div><div class="lbl">Tuesdays this year</div></div>
+          <div class="hero-stat"><div class="num">6</div><div class="lbl">Comps to enter</div></div>
+          <div class="hero-stat"><div class="num">1</div><div class="lbl">Big pitch day</div></div>
+        </div>
+      </div>
+      <div class="hero-media reveal" data-delay="2" id="heroMedia">
+        <img src="assets/1.jpg" alt="XSTEM Banner" id="heroImg" />
+        <div class="sticky-note">
+          we meet in the<br>
+          DLC, 2:30 PM
+          <span class="small">(3rd floor annex)</span>
+        </div>
+        <div class="hero-floater">
+          <div class="hero-floater-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="hero-floater-text">
+            <strong>Next up · Oct 14</strong>
+            <span>kickoff meeting · everyone welcome</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEETINGS — scroll-driven reel -->
+<section id="meetings" class="reel-section">
+  <div class="reel-stage">
+
+    <!-- background month words (one per month, only one visible at a time) -->
+    <div class="reel-month-bg" id="monthBg">
+      <span class="word" data-month="Oct">October</span>
+      <span class="word" data-month="Nov">November</span>
+      <span class="word" data-month="Dec">December</span>
+      <span class="word" data-month="Jan">January</span>
+      <span class="word" data-month="Feb">February</span>
+      <span class="word" data-month="Mar">March</span>
+      <span class="word" data-month="Apr">April</span>
+    </div>
+
+    <!-- header -->
+    <div class="reel-header">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>Calendar · 2025–26</span>
+        <h2 style="margin-top:8px;">Every <span class="underline-it">other Tuesday</span>,<br>'til the school year ends.</h2>
+      </div>
+      <div class="reel-meta">
+        <div class="reel-counter">
+          <span id="reelCurrent">01</span>
+          <span class="slash">/</span>
+          <span class="total">14</span>
+        </div>
+        <span class="reel-tagline" id="reelMonthLabel">October 2025</span>
+      </div>
+    </div>
+
+    <!-- the cards -->
+    <div class="reel-viewport" id="reelViewport">
+      <div class="reel-line"></div>
+      <div class="reel-line-fill" id="reelLineFill"></div>
+      <div class="reel-playhead"></div>
+
+      <div class="reel-track" id="reelTrack">
+        <article class="reel-card" data-month="Oct" data-weekday="Tuesday" data-note="our first one!! pls come">
+          <span class="m-month">Oct</span>
+          <span class="m-day">14</span>
+          <span class="m-year">2025</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">first one!!<br>pls come</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Oct" data-weekday="Tuesday" data-note="we'll pick teams">
+          <span class="m-month">Oct</span>
+          <span class="m-day">28</span>
+          <span class="m-year">2025</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">team picking day</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Nov" data-weekday="Tuesday" data-note="">
+          <span class="m-month">Nov</span>
+          <span class="m-day">11</span>
+          <span class="m-year">2025</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">it's veterans day,<br>still on tho</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Nov" data-weekday="Tuesday">
+          <span class="m-month">Nov</span>
+          <span class="m-day">25</span>
+          <span class="m-year">2025</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">last one before<br>thanksgiving</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Dec" data-weekday="Tuesday">
+          <span class="m-month">Dec</span>
+          <span class="m-day">16</span>
+          <span class="m-year">2025</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">winter break next!</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Jan" data-weekday="Tuesday">
+          <span class="m-month">Jan</span>
+          <span class="m-day">6</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">happy new year</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Jan" data-weekday="Tuesday">
+          <span class="m-month">Jan</span>
+          <span class="m-day">20</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">drafts due :)</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card special" data-month="Feb" data-weekday="Thursday">
+          <span class="m-stamp">Ideathon</span>
+          <span class="m-month">Feb</span>
+          <span class="m-day">5</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Thursday</span>
+          <span class="m-note">snacks provided.<br>show up.</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Feb" data-weekday="Tuesday">
+          <span class="m-month">Feb</span>
+          <span class="m-day">10</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">regroup &amp;<br>plan submissions</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Feb" data-weekday="Tuesday">
+          <span class="m-month">Feb</span>
+          <span class="m-day">24</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">blue ocean prep<br>is hectic</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Mar" data-weekday="Tuesday">
+          <span class="m-month">Mar</span>
+          <span class="m-day">10</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">pitch practice<br>(mock judges)</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Mar" data-weekday="Tuesday">
+          <span class="m-month">Mar</span>
+          <span class="m-day">24</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">spring break is<br>literally next week</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card special" data-month="Apr" data-weekday="Saturday">
+          <span class="m-stamp">LaunchSB</span>
+          <span class="m-month">Apr</span>
+          <span class="m-day">11</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Saturday</span>
+          <span class="m-note">THE big day.<br>suit up.</span>
+          <span class="m-dot"></span>
+        </article>
+        <article class="reel-card" data-month="Apr" data-weekday="Tuesday">
+          <span class="m-month">Apr</span>
+          <span class="m-day">28</span>
+          <span class="m-year">2026</span>
+          <span class="m-weekday">Tuesday</span>
+          <span class="m-note">wrap-up.<br>see you next year ✌</span>
+          <span class="m-dot"></span>
+        </article>
+      </div>
+    </div>
+
+    <div class="reel-hint" id="reelHint">
+      <span class="arrow"></span> Keep scrolling
+    </div>
+  </div>
+</section>
+
+<!-- post-reel note -->
+<div class="reel-followup">
+  <div class="container">
+    <div class="reel-note reveal">
+      <span class="reel-note-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      </span>
+      <p>Show up to at least half of the meetings to get club credit. <span class="hand">we're keeping a list →</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about" class="section about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text">
+        <span class="eyebrow reveal"><span class="dot"></span>About the club</span>
+        <h2 class="reveal" data-delay="1" style="margin-top:14px;">It's a real club for<br>building real companies.</h2>
+        <div class="reveal" data-delay="2" style="margin-top:24px;">
+          <p class="lead">Students form teams, pick a problem they actually care about, and spend the year turning it into a <span class="hl">business with a pitch deck, a product, and a plan</span>.</p>
+          <p>The curriculum comes from MIT. The mentors are real founders and operators. The competitions hand out real prize money. The pitches happen in front of real judges.</p>
+          <p>Meetings are in the <strong style="color:var(--ink);">DLC (3rd Floor Annex)</strong>, every other Tuesday until 4:00 PM.</p>
+        </div>
+        <div class="features reveal" data-delay="3">
+          <div class="feature">
+            <div class="num">01</div>
+            <h3>Build</h3>
+            <p>Form a team, ship a v1, validate with humans.</p>
+          </div>
+          <div class="feature">
+            <div class="num">02</div>
+            <h3>Pitch</h3>
+            <p>Practice in front of mentors before real judges.</p>
+          </div>
+          <div class="feature">
+            <div class="num">03</div>
+            <h3>Compete</h3>
+            <p>Enter 6 competitions across the school year.</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-image reveal" data-delay="2">
+        <img src="assets/2.png" alt="XSTEM Students working together" />
+        <div class="about-tag"><span class="dot"></span>Last year's cohort, mid-pitch</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPETITIONS -->
+<section id="competitions" class="competitions">
+  <div class="cube-stage">
+
+    <!-- Left: title, counter, dot tracker, active title -->
+    <div class="cube-left">
+      <span class="eyebrow"><span class="dot"></span>The competitions</span>
+      <h2>Six <span class="underline-it">shots on goal.</span></h2>
+      <p class="cube-lede">Your team picks which ones to enter — <strong style="color:var(--ink-2);">Blue Ocean is the required one.</strong> Everything else is bonus glory.</p>
+
+      <div class="cube-status">
+        <span class="num" id="cubeCurrent"><span>01</span></span>
+        <span class="slash">/</span>
+        <span class="total">06</span>
+      </div>
+
+      <div class="cube-active-title" id="cubeActiveTitle">NFTE World Series of Innovation</div>
+
+      <div class="cube-dots" id="cubeDots" role="tablist">
+        <button class="cube-dot" data-idx="0" aria-label="Go to competition 1"></button>
+        <button class="cube-dot" data-idx="1" aria-label="Go to competition 2"></button>
+        <button class="cube-dot" data-idx="2" aria-label="Go to competition 3"></button>
+        <button class="cube-dot" data-idx="3" aria-label="Go to competition 4"></button>
+        <button class="cube-dot required-mark" data-idx="4" aria-label="Go to competition 5 (Required)"></button>
+        <button class="cube-dot" data-idx="5" aria-label="Go to competition 6"></button>
+      </div>
+
+      <span class="cube-hint" id="cubeHint"><span class="arrow"></span> Scroll to rotate</span>
+    </div>
+
+    <!-- Right: hex prism -->
+    <div class="cube-right">
+      <div class="cube" id="compCube">
+        <article class="cube-face" data-idx="0">
+          <div class="face-top">
+            <span class="face-num">01</span>
+            <span class="face-badge">Optional</span>
+          </div>
+          <h3 class="face-title"><a href="https://innovation.nfte.com/" target="_blank" rel="noopener">NFTE World Series of Innovation</a></h3>
+          <div class="face-meta">
+            <div class="face-meta-item"><div class="lbl">Team</div><div class="val">1 – 4 members</div></div>
+            <div class="face-meta-item"><div class="lbl">Deadline</div><div class="val">Dec 12</div></div>
+          </div>
+          <a class="face-link" href="https://innovation.nfte.com/" target="_blank" rel="noopener">Visit site
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <article class="cube-face" data-idx="1">
+          <div class="face-top">
+            <span class="face-num">02</span>
+            <span class="face-badge">Optional</span>
+          </div>
+          <h3 class="face-title"><a href="https://solve.mit.edu/" target="_blank" rel="noopener">MIT Solve</a></h3>
+          <div class="face-meta">
+            <div class="face-meta-item"><div class="lbl">Team</div><div class="val">No limit</div></div>
+            <div class="face-meta-item"><div class="lbl">Deadline</div><div class="val">Varies</div></div>
+          </div>
+          <a class="face-link" href="https://solve.mit.edu/" target="_blank" rel="noopener">Visit site
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <article class="cube-face" data-idx="2">
+          <div class="face-top">
+            <span class="face-num">03</span>
+            <span class="face-badge">Optional</span>
+          </div>
+          <h3 class="face-title"><a href="https://diamondchallenge.org/" target="_blank" rel="noopener">Diamond Challenge</a></h3>
+          <div class="face-meta">
+            <div class="face-meta-item"><div class="lbl">Team</div><div class="val">2 – 4 members</div></div>
+            <div class="face-meta-item"><div class="lbl">Deadline</div><div class="val">Jan 15</div></div>
+          </div>
+          <a class="face-link" href="https://diamondchallenge.org/" target="_blank" rel="noopener">Visit site
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <article class="cube-face" data-idx="3">
+          <div class="face-top">
+            <span class="face-num">04</span>
+            <span class="face-badge">Optional</span>
+          </div>
+          <h3 class="face-title"><a href="https://www.nationalgeographic.org/society/projects/slingshot/" target="_blank" rel="noopener">Nat Geo Slingshot Challenge</a></h3>
+          <div class="face-meta">
+            <div class="face-meta-item"><div class="lbl">Team</div><div class="val">1 – 6 members</div></div>
+            <div class="face-meta-item"><div class="lbl">Deadline</div><div class="val">Feb 6</div></div>
+          </div>
+          <a class="face-link" href="https://www.nationalgeographic.org/society/projects/slingshot/" target="_blank" rel="noopener">Visit site
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <article class="cube-face is-required" data-idx="4">
+          <div class="face-top">
+            <span class="face-num">05</span>
+            <span class="face-badge required"><span class="pulse"></span>Required</span>
+          </div>
+          <h3 class="face-title"><a href="https://blueoceancompetition.org/" target="_blank" rel="noopener">Blue Ocean</a></h3>
+          <div class="face-meta">
+            <div class="face-meta-item"><div class="lbl">Team</div><div class="val">2 – 4 members</div></div>
+            <div class="face-meta-item"><div class="lbl">Deadline</div><div class="val">Feb 22</div></div>
+          </div>
+          <a class="face-link" href="https://blueoceancompetition.org/" target="_blank" rel="noopener">Visit site
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <article class="cube-face" data-idx="5">
+          <div class="face-top">
+            <span class="face-num">06</span>
+            <span class="face-badge">Optional</span>
+          </div>
+          <h3 class="face-title"><a href="https://www.gyezone.com/" target="_blank" rel="noopener">Global Youth Entrepreneurship Challenge</a></h3>
+          <div class="face-meta">
+            <div class="face-meta-item"><div class="lbl">Team</div><div class="val">3 – 8 members</div></div>
+            <div class="face-meta-item"><div class="lbl">Deadline</div><div class="val">TBA (~Mar 21)</div></div>
+          </div>
+          <a class="face-link" href="https://www.gyezone.com/" target="_blank" rel="noopener">Visit site
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </article>
+      </div>
+    </div>
+
+    <!-- mobile fallback grid -->
+    <div class="cube-mobile">
+      <article class="comp-card reveal" data-delay="1">
+        <div class="comp-header">
+          <span class="comp-num">01</span>
+          <span class="comp-badge optional">Optional</span>
+        </div>
+        <h3 class="comp-title"><a href="https://innovation.nfte.com/" target="_blank" rel="noopener">NFTE World Series of Innovation</a></h3>
+        <div class="comp-meta">
+          <div class="comp-meta-item">
+            <div class="lbl">Team</div>
+            <div class="val">1 – 4 members</div>
+          </div>
+          <div class="comp-meta-item">
+            <div class="lbl">Deadline</div>
+            <div class="val">Dec 12</div>
+          </div>
+        </div>
+        <a class="comp-link" href="https://innovation.nfte.com/" target="_blank" rel="noopener">Visit site
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+
+      <article class="comp-card reveal" data-delay="2">
+        <div class="comp-header">
+          <span class="comp-num">02</span>
+          <span class="comp-badge optional">Optional</span>
+        </div>
+        <h3 class="comp-title"><a href="https://solve.mit.edu/" target="_blank" rel="noopener">MIT Solve</a></h3>
+        <div class="comp-meta">
+          <div class="comp-meta-item">
+            <div class="lbl">Team</div>
+            <div class="val">No limit</div>
+          </div>
+          <div class="comp-meta-item">
+            <div class="lbl">Deadline</div>
+            <div class="val">Varies</div>
+          </div>
+        </div>
+        <a class="comp-link" href="https://solve.mit.edu/" target="_blank" rel="noopener">Visit site
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+
+      <article class="comp-card reveal" data-delay="3">
+        <div class="comp-header">
+          <span class="comp-num">03</span>
+          <span class="comp-badge optional">Optional</span>
+        </div>
+        <h3 class="comp-title"><a href="https://diamondchallenge.org/" target="_blank" rel="noopener">Diamond Challenge</a></h3>
+        <div class="comp-meta">
+          <div class="comp-meta-item">
+            <div class="lbl">Team</div>
+            <div class="val">2 – 4 members</div>
+          </div>
+          <div class="comp-meta-item">
+            <div class="lbl">Deadline</div>
+            <div class="val">Jan 15</div>
+          </div>
+        </div>
+        <a class="comp-link" href="https://diamondchallenge.org/" target="_blank" rel="noopener">Visit site
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+
+      <article class="comp-card reveal" data-delay="1">
+        <div class="comp-header">
+          <span class="comp-num">04</span>
+          <span class="comp-badge optional">Optional</span>
+        </div>
+        <h3 class="comp-title"><a href="https://www.nationalgeographic.org/society/projects/slingshot/" target="_blank" rel="noopener">Nat Geo Slingshot Challenge</a></h3>
+        <div class="comp-meta">
+          <div class="comp-meta-item">
+            <div class="lbl">Team</div>
+            <div class="val">1 – 6 members</div>
+          </div>
+          <div class="comp-meta-item">
+            <div class="lbl">Deadline</div>
+            <div class="val">Feb 6</div>
+          </div>
+        </div>
+        <a class="comp-link" href="https://www.nationalgeographic.org/society/projects/slingshot/" target="_blank" rel="noopener">Visit site
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+
+      <article class="comp-card reveal" data-delay="2" style="border-color:rgba(253,196,112,.35); background:linear-gradient(180deg, rgba(253,196,112,.04) 0%, var(--card) 60%);">
+        <div class="comp-header">
+          <span class="comp-num" style="color:var(--amber);">05</span>
+          <span class="comp-badge required"><span class="pulse"></span>Required</span>
+        </div>
+        <h3 class="comp-title"><a href="https://blueoceancompetition.org/" target="_blank" rel="noopener">Blue Ocean</a></h3>
+        <div class="comp-meta" style="background:rgba(253,196,112,.18); border-color:rgba(253,196,112,.25);">
+          <div class="comp-meta-item" style="background:rgba(253,196,112,.04);">
+            <div class="lbl">Team</div>
+            <div class="val">2 – 4 members</div>
+          </div>
+          <div class="comp-meta-item" style="background:rgba(253,196,112,.04);">
+            <div class="lbl">Deadline</div>
+            <div class="val">Feb 22</div>
+          </div>
+        </div>
+        <a class="comp-link" href="https://blueoceancompetition.org/" target="_blank" rel="noopener" style="color:var(--amber);">Visit site
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+
+      <article class="comp-card reveal" data-delay="3">
+        <div class="comp-header">
+          <span class="comp-num">06</span>
+          <span class="comp-badge optional">Optional</span>
+        </div>
+        <h3 class="comp-title"><a href="https://www.gyezone.com/" target="_blank" rel="noopener">Global Youth Entrepreneurship Challenge</a></h3>
+        <div class="comp-meta">
+          <div class="comp-meta-item">
+            <div class="lbl">Team</div>
+            <div class="val">3 – 8 members</div>
+          </div>
+          <div class="comp-meta-item">
+            <div class="lbl">Deadline</div>
+            <div class="val">TBA (~Mar 21)</div>
+          </div>
+        </div>
+        <a class="comp-link" href="https://www.gyezone.com/" target="_blank" rel="noopener">Visit site
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- LAUNCHSB -->
+<section id="launchsb" class="section launchsb">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow amber reveal"><span class="dot"></span>The big one</span>
+      <h2 class="reveal" data-delay="1" style="margin-top:8px;">LaunchSB.</h2>
+      <p class="lede reveal" data-delay="2">Our end-of-year showcase. Every team pitches their business to a panel of judges. It's the whole point.</p>
+    </div>
+
+    <div class="lsb-hero reveal">
+      <div class="lsb-bigdate">
+        <span class="month">April</span>
+        <span class="day">11</span>
+        <span class="weekday">Saturday · 2026</span>
+      </div>
+      <div>
+        <div class="lsb-info-row">
+          <div class="lsb-info-item">
+            <span class="lsb-info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </span>
+            <div>
+              <div class="key">Time</div>
+              <div class="val">8:50 AM – 1:00 PM</div>
+            </div>
+          </div>
+          <div class="lsb-info-item">
+            <span class="lsb-info-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <div>
+              <div class="key">Where</div>
+              <div class="val">Annex Cafeteria</div>
+            </div>
+          </div>
+        </div>
+        <div class="lsb-required">
+          <span class="dot"></span>
+          Required for club credit
+        </div>
+        <p class="lsb-pitch">"It's the whole year, condensed into one Saturday morning. Wear something nice."</p>
+      </div>
+    </div>
+
+    <div class="lsb-grid">
+      <div class="lsb-card reveal" data-delay="1">
+        <h3>Bring this stuff</h3>
+        <div class="sub">— don't forget your charger.</div>
+        <ul class="checklist">
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Laptop &amp; charger</li>
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Team poster board</li>
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Slide deck (ready to present)</li>
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Demo materials, if you have any</li>
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Business professional attire (see right →)</li>
+        </ul>
+      </div>
+
+      <div class="lsb-card reveal" data-delay="2">
+        <h3>Dress code</h3>
+        <div class="sub">— business / business formal.</div>
+        <ul class="checklist dress-list">
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Suits, blazers, dress shirts</li>
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Dress pants, skirts, blouses, dresses</li>
+          <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>Formal shoes (please, no sneakers)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lsb-note reveal">
+      <span class="lsb-note-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      </span>
+      <p>Can't make it? Email us early — <a href="/cdn-cgi/l/email-protection#5c2f3e342f242f2839313f30293e1c3b313d3530723f3331"><span class="__cf_email__" data-cfemail="ff8c9d978c878c8b9a929c938a9dbf98929e9693d19c9092">southbrunswickxstem@gmail.com</span></a>. Just remember LaunchSB is required for credit, so reach out before the day-of.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section contact">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow reveal"><span class="dot"></span>Reach us</span>
+      <h2 class="reveal" data-delay="1" style="margin-top:8px;">Say hi.</h2>
+    </div>
+
+    <div class="contact-card reveal">
+      <div>
+        <h3>Questions? Just want to know what to expect?</h3>
+        <p class="pitch">We're a small team — officers check email between classes. If it's about a meeting or LaunchSB, mention it in the subject line and we'll get back faster.</p>
+        <div class="socials">
+          <span class="lbl">Find us on</span>
+          <a href="https://www.instagram.com/sbhsxstem/" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" class="social-link placeholder" aria-label="LinkedIn — coming soon" title="Coming soon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://github.com/X-STEM" target="_blank" rel="noopener" class="social-link" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="email-block">
+        <a href="/cdn-cgi/l/email-protection#5c2f3e342f242f2839313f30293e1c3b313d3530723f3331" class="email-link">
+          <span class="email-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </span>
+          <span class="email-text">
+            <span class="lbl">Email</span>
+            <span class="addr"><span class="__cf_email__" data-cfemail="3a4958524942494e5f5759564f587a5d575b535614595557">southbrunswickxstem@gmail.com</span></span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#home" class="logo"><span class="logo-mark">X</span><span>XSTEM</span></a>
+        <p>South Brunswick High School's entrepreneurship club. We build companies on Tuesday afternoons.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <a href="#meetings">Meetings</a>
+        <a href="#about">About</a>
+        <a href="#competitions">Competitions</a>
+        <a href="#launchsb">LaunchSB</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Reach us</h4>
+        <a href="/cdn-cgi/l/email-protection#e093828893989394858d838c9582a0878d81898cce838f8d"><span class="__cf_email__" data-cfemail="0576676d767d7671606866697067456268646c692b666a68">southbrunswickxstem@gmail.com</span></a>
+        <a href="https://www.instagram.com/sbhsxstem/" target="_blank" rel="noopener">@sbhsxstem</a>
+        <a href="https://github.com/X-STEM" target="_blank" rel="noopener">github.com/X-STEM</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 SBHS XSTEM</span>
+      <span class="footer-signed">— made by students, for students</span>
+      <div class="footer-meta">
+        <span>DLC · 3rd Floor Annex</span>
+        <span>Tuesdays · 'til 4 PM</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<a href="#home" class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</a>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+(function(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
+
+  // -------- Reveal on scroll --------
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+  revealEls.forEach(el=> revealObs.observe(el));
+
+  // -------- Scroll progress + header + back to top --------
+  const progress = document.getElementById('scroll-progress');
+  const header = document.getElementById('header');
+  const backTop = document.getElementById('backToTop');
+
+  // -------- Hero parallax --------
+  const heroImg = document.getElementById('heroImg');
+
+  // -------- SCROLL REEL --------
+  // The section is sized at: (cards*180 + gaps + viewportWidth) / 1 to allow horizontal travel via scroll.
+  const reelSection = document.getElementById('meetings');
+  const reelStage = reelSection ? reelSection.querySelector('.reel-stage') : null;
+  const reelTrack = document.getElementById('reelTrack');
+  const reelVp = document.getElementById('reelViewport');
+  const reelHint = document.getElementById('reelHint');
+  const reelLineFill = document.getElementById('reelLineFill');
+  const reelCurrent = document.getElementById('reelCurrent');
+  const reelMonthLabel = document.getElementById('reelMonthLabel');
+  const monthBg = document.getElementById('monthBg');
+  const cards = reelTrack ? Array.from(reelTrack.querySelectorAll('.reel-card')) : [];
+
+  // Set section height so total scroll = travel distance + 1 viewport (so the sticky stage has room).
+  // travelDistance = trackWidth - viewportWidth + 0 (padding on track already centers first/last)
+  let trackTravel = 0;
+  function sizeReel(){
+    if(!reelTrack || !reelStage || isMobile()){
+      if(reelSection) reelSection.style.height = '';
+      return;
+    }
+    // measure inner width by summing card widths + gaps
+    const styles = getComputedStyle(reelTrack);
+    const gap = parseFloat(styles.gap) || 28;
+    const totalCardsWidth = cards.reduce((sum, c)=> sum + c.offsetWidth, 0) + (cards.length - 1) * gap;
+    // track has 50vw left + 50vw right padding so first/last card naturally centers.
+    // travel needed = totalCardsWidth (so the last card reaches center).
+    trackTravel = totalCardsWidth;
+    // Total scroll length: travel + 100vh (so sticky stage can do its 1vh of slack pre/post pin)
+    const sectionHeight = trackTravel + window.innerHeight;
+    reelSection.style.height = sectionHeight + 'px';
+  }
+
+  // Update reel translation and active card on scroll
+  function updateReel(){
+    if(!reelSection || !reelTrack || isMobile()) return;
+    const rect = reelSection.getBoundingClientRect();
+    const total = trackTravel;
+    if(total <= 0) return;
+    // scroll within the section: 0 when section top hits viewport top, 1 when we've scrolled `total` further
+    let scrolled = -rect.top;
+    if(scrolled < 0) scrolled = 0;
+    if(scrolled > total) scrolled = total;
+    const p = scrolled / total;
+
+    reelTrack.style.transform = `translate3d(${-scrolled}px, 0, 0)`;
+
+    // determine active card by which one is closest to the playhead (viewport center)
+    const vpCenter = window.innerWidth / 2;
+    let activeIdx = 0;
+    let bestDist = Infinity;
+
+    cards.forEach((card, i)=>{
+      const r = card.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const dist = Math.abs(cx - vpCenter);
+      // map distance to 0..1 (clamped) — closer = lower
+      const norm = Math.min(1, dist / (window.innerWidth * 0.45));
+      card.style.setProperty('--d', norm.toFixed(3));
+      if(dist < bestDist){ bestDist = dist; activeIdx = i; }
+    });
+
+    cards.forEach((c, i)=> c.classList.toggle('active', i === activeIdx));
+
+    if(reelCurrent) reelCurrent.textContent = String(activeIdx + 1).padStart(2, '0');
+
+    const activeCard = cards[activeIdx];
+    if(activeCard){
+      const month = activeCard.dataset.month;
+      const year = activeCard.querySelector('.m-year').textContent;
+      const monthNames = {Jan:'January',Feb:'February',Mar:'March',Apr:'April',May:'May',Jun:'June',Jul:'July',Aug:'August',Sep:'September',Oct:'October',Nov:'November',Dec:'December'};
+      if(reelMonthLabel) reelMonthLabel.textContent = `${monthNames[month] || month} ${year}`;
+
+      // background month
+      if(monthBg){
+        monthBg.querySelectorAll('.word').forEach(w=>{
+          if(w.dataset.month === month){
+            if(!w.classList.contains('active')){
+              monthBg.querySelectorAll('.word.active').forEach(p=>{ p.classList.remove('active'); p.classList.add('exit'); setTimeout(()=>p.classList.remove('exit'), 900); });
+              w.classList.add('active');
+            }
+          }
+        });
+      }
+    }
+
+    // line fill follows playhead
+    if(reelLineFill){
+      // distance from leftmost card center (in screen px) to playhead
+      const firstR = cards[0].getBoundingClientRect();
+      const fillW = Math.max(0, vpCenter - firstR.left + firstR.width/2);
+      reelLineFill.style.width = Math.min(fillW, window.innerWidth) + 'px';
+    }
+
+    // hide hint once user has progressed
+    if(reelHint) reelHint.style.opacity = p > 0.06 ? '0' : '1';
+  }
+
+  // throttle via rAF
+  let scheduled = false;
+  function onScroll(){
+    if(scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(()=>{
+      const y = window.scrollY;
+      const max = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+      if(progress) progress.style.transform = `scaleX(${y / max})`;
+      header.classList.toggle('scrolled', y > 12);
+      backTop.classList.toggle('visible', y > 600);
+      if(heroImg && y < window.innerHeight * 1.2){
+        heroImg.style.transform = `translateY(${y * 0.10}px) scale(1.04)`;
+      }
+      updateReel();
+      scheduled = false;
+    });
+  }
+
+  // -------- CUBE PRISM (competitions) --------
+  const compSection = document.getElementById('competitions');
+  const compCube = document.getElementById('compCube');
+  const compFaces = compCube ? Array.from(compCube.querySelectorAll('.cube-face')) : [];
+  const cubeCurrent = document.getElementById('cubeCurrent');
+  const cubeActiveTitle = document.getElementById('cubeActiveTitle');
+  const cubeDots = document.getElementById('cubeDots');
+  const cubeHint = document.getElementById('cubeHint');
+  const faceTitles = compFaces.map(f => {
+    const t = f.querySelector('.face-title');
+    return t ? t.innerHTML : '';
+  });
+  const faceLinks = compFaces.map(f => {
+    const a = f.querySelector('.face-title a');
+    return a ? a.href : '#';
+  });
+  // total rotation spans 5 faces (face 0 at start, face 5 at end). Each face = 60deg.
+  const CUBE_ROT_PER_FACE = 60;
+  const CUBE_FACES = compFaces.length || 6;
+  let lastCubeActive = -1;
+
+  function isCompMobile(){ return window.matchMedia('(max-width: 960px)').matches; }
+
+  function sizeCube(){
+    if(!compSection) return;
+    if(isCompMobile()){ compSection.style.height = ''; return; }
+    // Make total scroll length = 100vh per face + 1vh buffer at the end.
+    // We use (CUBE_FACES) * 100vh so that progress 0..1 maps to faces 0..5 (last face still has some sticky time).
+    const h = window.innerHeight * (CUBE_FACES + 0.4);
+    compSection.style.height = h + 'px';
+  }
+
+  function setCubeActive(idx){
+    if(idx === lastCubeActive) return;
+    lastCubeActive = idx;
+    compFaces.forEach((f, i)=> f.classList.toggle('active', i === idx));
+    // counter — animate the number flip
+    if(cubeCurrent){
+      const newVal = String(idx + 1).padStart(2, '0');
+      const existing = cubeCurrent.querySelectorAll('span:not(.out)');
+      const stillCurrent = existing.length === 1 && existing[0].textContent === newVal;
+      if(!stillCurrent){
+        // boot any in-flight spans
+        existing.forEach(s=>{
+          s.classList.add('out');
+          setTimeout(()=>{ if(s.parentNode) s.parentNode.removeChild(s); }, 600);
+        });
+        const next = document.createElement('span');
+        next.textContent = newVal;
+        next.classList.add('in-from-below');
+        cubeCurrent.appendChild(next);
+        requestAnimationFrame(()=>{ next.classList.remove('in-from-below'); });
+      }
+    }
+    if(cubeActiveTitle){
+      const link = faceLinks[idx];
+      const html = faceTitles[idx] || '';
+      // wrap in link
+      cubeActiveTitle.innerHTML = link && link !== '#'
+        ? `<a href="${link}" target="_blank" rel="noopener">${stripAnchor(html)}</a>`
+        : html;
+    }
+    if(cubeDots){
+      const dots = cubeDots.querySelectorAll('.cube-dot');
+      dots.forEach((d, i)=>{
+        d.classList.toggle('done', i < idx);
+        d.classList.toggle('current', i === idx);
+      });
+    }
+  }
+  function stripAnchor(html){
+    // pull plain title out of inner <a>… ←avoids nested anchors
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || '';
+  }
+
+  function updateCube(){
+    if(!compSection || !compCube || isCompMobile()) return;
+    const rect = compSection.getBoundingClientRect();
+    const total = compSection.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+    let scrolled = -rect.top;
+    if(scrolled < 0) scrolled = 0;
+    if(scrolled > total) scrolled = total;
+    const p = scrolled / total; // 0..1
+    // progress maps 0..1 → faceProgress 0..(CUBE_FACES-1)
+    const faceProgress = p * (CUBE_FACES - 1);
+    const rot = -CUBE_ROT_PER_FACE * faceProgress;
+    compCube.style.setProperty('--rot', rot + 'deg');
+
+    const activeIdx = Math.max(0, Math.min(CUBE_FACES - 1, Math.round(faceProgress)));
+    setCubeActive(activeIdx);
+
+    // partial fill on the current dot
+    if(cubeDots){
+      const fillRatio = (faceProgress - activeIdx + 0.5); // 0..1 within the slot
+      const current = cubeDots.querySelector('.cube-dot.current');
+      if(current) current.style.setProperty('--fill', (Math.max(0, Math.min(1, fillRatio)) * 100) + '%');
+    }
+
+    // hide hint after slight scroll
+    if(cubeHint) cubeHint.style.opacity = p > 0.06 ? '0' : '0.95';
+  }
+
+  // dot clicks jump to the right scroll position
+  if(cubeDots){
+    cubeDots.querySelectorAll('.cube-dot').forEach((dot)=>{
+      dot.addEventListener('click', ()=>{
+        const idx = parseInt(dot.dataset.idx, 10);
+        if(!compSection) return;
+        if(isCompMobile()){
+          // on mobile, scroll to section start
+          compSection.scrollIntoView({behavior:'smooth', block:'start'});
+          return;
+        }
+        const total = compSection.offsetHeight - window.innerHeight;
+        const targetP = idx / (CUBE_FACES - 1);
+        const targetY = compSection.offsetTop + total * targetP;
+        window.scrollTo({top: targetY, behavior:'smooth'});
+      });
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', ()=>{ sizeReel(); updateReel(); sizeCube(); updateCube(); });
+
+  // patch onScroll to also call updateCube
+  const _origOnScroll = onScroll;
+  // we already added the listener above; replace by adding a second listener that also runs cube
+  window.addEventListener('scroll', ()=>{
+    requestAnimationFrame(updateCube);
+  }, {passive:true});
+
+  // initial setup
+  if(document.readyState === 'complete'){
+    sizeReel(); updateReel(); sizeCube(); updateCube();
+  } else {
+    window.addEventListener('load', ()=>{ sizeReel(); updateReel(); sizeCube(); updateCube(); });
+    requestAnimationFrame(()=>{ sizeReel(); updateReel(); sizeCube(); updateCube(); });
+  }
+
+  // -------- Scroll-spy nav --------
+  const sections = ['meetings','about','competitions','launchsb','contact']
+    .map(id=>document.getElementById(id))
+    .filter(Boolean);
+  const navLinks = document.querySelectorAll('nav a.nav-link');
+  const linkFor = id => Array.from(navLinks).find(a => a.getAttribute('href')==='#'+id);
+
+  const spyObs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = linkFor(e.target.id);
+        if(active) active.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-40% 0px -55% 0px', threshold:0});
+  sections.forEach(s => spyObs.observe(s));
+})();
+</script>
+</body>
+</html>

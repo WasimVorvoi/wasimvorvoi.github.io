@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>COMPETITION ATLAS — The global registry for student competitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="enhance.css">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg2:#141414;
+    --ink:#f5f1e8;
+    --hi:#d4ff00;
+    --warn:#ff5722;
+    --cool:#3a8dff;
+    --line:#2a2a2a;
+    --dim:#7a7a7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Archivo',sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  ::selection{background:var(--hi);color:var(--bg)}
+
+  .topbar{border-bottom:1px solid var(--line);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em}
+  .topbar .lights{display:flex;gap:14px;align-items:center}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--hi);box-shadow:0 0 10px var(--hi);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  .nav-row{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:22px;letter-spacing:-.01em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+  .logo .mk{display:inline-block;width:18px;height:18px;background:var(--hi);transform:rotate(45deg)}
+  .nav{display:flex;gap:8px;flex-wrap:wrap}
+  .nav a{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:8px 14px;border:1px solid var(--line)}
+  .nav a:hover,.nav a.on{background:var(--hi);color:var(--bg);border-color:var(--hi)}
+
+  .hero{padding:60px 24px 40px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .hero-inner{max-width:1500px;margin:0 auto;position:relative;z-index:1}
+  .tagline{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--hi);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+  .tagline::before{content:"";width:40px;height:1px;background:var(--hi)}
+  .h1{font-family:'Archivo Black',sans-serif;font-size:clamp(64px,12vw,180px);line-height:.85;letter-spacing:-.04em;text-transform:uppercase;margin-bottom:8px}
+  .h1 .stk{-webkit-text-stroke:2px var(--ink);color:transparent}
+  .h1 .y{color:var(--hi)}
+  .h1 .o{color:var(--warn)}
+  .hero-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:50px;border-top:1px solid var(--line)}
+  .hero-meta > div{padding:24px 20px;border-right:1px solid var(--line)}
+  .hero-meta > div:last-child{border-right:none}
+  .hero-meta .l{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+  .hero-meta .v{font-family:'Archivo Black',sans-serif;font-size:38px;line-height:1}
+  .hero-meta .v.hi{color:var(--hi)}
+
+  .marquee{background:var(--hi);color:var(--bg);padding:12px 0;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--bg)}
+  .marquee-track{display:inline-block;animation:scroll 40s linear infinite;font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:.05em;text-transform:uppercase}
+  .marquee-track span{margin:0 28px;display:inline-block}
+  .marquee-track span::after{content:"▲";margin-left:28px;color:var(--bg)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  .sec{padding:60px 24px;border-bottom:1px solid var(--line);max-width:1500px;margin:0 auto}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:40px;flex-wrap:wrap}
+  .sec-num{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--dim)}
+  .sec-title{font-family:'Archivo Black',sans-serif;font-size:clamp(36px,6vw,72px);line-height:.9;text-transform:uppercase;letter-spacing:-.02em}
+  .sec-title .hi{color:var(--hi)}
+  .sec-title .stk{-webkit-text-stroke:1.5px var(--ink);color:transparent}
+
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .cat{background:var(--bg);padding:30px 24px;cursor:pointer;transition:all .2s;position:relative;min-height:230px;display:flex;flex-direction:column;justify-content:space-between}
+  .cat:hover{background:var(--hi);color:var(--bg)}
+  .cat:hover .cat-num,.cat:hover .cat-meta{color:var(--bg)}
+  .cat-num{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--dim)}
+  .cat-name{font-family:'Archivo Black',sans-serif;font-size:30px;line-height:1;text-transform:uppercase;letter-spacing:-.02em;margin:20px 0 12px}
+  .cat-list{font-family:'Space Mono',monospace;font-size:11px;line-height:1.7;color:var(--dim)}
+  .cat:hover .cat-list{color:var(--bg)}
+  .cat-meta{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--dim);display:flex;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .cat:hover .cat-meta{border-top-color:var(--bg)}
+
+  .vs-sec{margin-top:60px;padding:50px;background:var(--bg);border:1px solid var(--line);position:relative;overflow:hidden}
+  .vs-sec::before{content:"VS";position:absolute;font-family:'Archivo Black',sans-serif;font-size:480px;color:var(--bg2);right:-60px;top:-140px;line-height:.8;opacity:.4;pointer-events:none;-webkit-text-stroke:2px var(--line);color:transparent}
+  .vs-head{margin-bottom:30px;position:relative;z-index:1}
+  .vs-num{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.25em;color:var(--hi);text-transform:uppercase;margin-bottom:8px}
+  .vs-title{font-family:'Archivo Black',sans-serif;font-size:56px;text-transform:uppercase;line-height:.9;letter-spacing:-.02em}
+  .vs-title .y{color:var(--hi)}
+  .vs-sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-top:10px}
+  .vs-pickers{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:stretch;position:relative;z-index:1}
+  .vs-side{background:var(--bg2);border:1px solid var(--line);padding:24px}
+  .vs-picker-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+  .vs-picker-select{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-family:'Archivo Black',sans-serif;font-size:18px;text-transform:uppercase;letter-spacing:-.005em;cursor:pointer;outline:none}
+  .vs-stats{margin-top:24px;display:flex;flex-direction:column;gap:0}
+  .vs-stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+  .vs-stat-row:last-child{border-bottom:none}
+  .vs-stat-l{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.15em;text-transform:uppercase}
+  .vs-stat-v{font-family:'Archivo Black',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:-.005em}
+  .vs-stat-v.win{color:var(--hi)}
+  .vs-divider{display:flex;align-items:center;justify-content:center}
+  .vs-vs{font-family:'Archivo Black',sans-serif;font-size:64px;color:var(--warn);line-height:1;-webkit-text-stroke:2px var(--warn);background:var(--bg);padding:6px 16px}
+  .vs-result{margin-top:24px;padding:18px 22px;background:var(--bg2);border-left:4px solid var(--hi);font-family:'Space Mono',monospace;font-size:13px;line-height:1.6;color:var(--ink);position:relative;z-index:1}
+  .vs-result em{color:var(--hi);font-style:normal;font-family:'Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:-.005em}
+
+  .tier-list{border:1px solid var(--line);background:var(--bg2)}
+  .tier-row{display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--line);min-height:130px}
+  .tier-row:last-child{border-bottom:none}
+  .tier-label{display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid var(--line);text-align:center;padding:20px 12px}
+  .tier-letter{font-family:'Archivo Black',sans-serif;font-size:72px;line-height:.85;letter-spacing:-.04em}
+  .tier-desc{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--dim);margin-top:6px;text-transform:uppercase}
+  .tier-row.s .tier-label{background:linear-gradient(135deg,#ff5722,#c8412c);color:var(--bg)}
+  .tier-row.s .tier-letter{color:var(--bg)}
+  .tier-row.s .tier-desc{color:#3a0e00}
+  .tier-row.a .tier-label{background:var(--hi);color:var(--bg)}
+  .tier-row.a .tier-letter{color:var(--bg)}
+  .tier-row.a .tier-desc{color:#3a4400}
+  .tier-row.b .tier-label{background:#3a8dff;color:var(--bg)}
+  .tier-row.b .tier-letter{color:var(--bg)}
+  .tier-row.b .tier-desc{color:#001a3a}
+  .tier-row.c .tier-label{background:#c084fc;color:var(--bg)}
+  .tier-row.c .tier-letter{color:var(--bg)}
+  .tier-row.c .tier-desc{color:#2a0040}
+  .tier-row.d .tier-label{background:var(--bg2);color:var(--ink);border-right:1px solid var(--line)}
+  .tier-row.d .tier-letter{color:var(--dim)}
+  .tier-row.d .tier-desc{color:var(--dim)}
+  .tier-comps{padding:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+  .tier-block{background:var(--bg);border:1px solid var(--line);padding:12px 14px;cursor:pointer;transition:all .15s;min-width:200px;position:relative}
+  .tier-block:hover{border-color:var(--hi);transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--hi)}
+  .tier-block .tb-acro{font-family:'Archivo Black',sans-serif;font-size:22px;line-height:.95;text-transform:uppercase;letter-spacing:-.01em;color:var(--hi)}
+  .tier-block .tb-name{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink);margin-top:4px;letter-spacing:.05em;line-height:1.3}
+  .tier-block .tb-meta{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);margin-top:6px;letter-spacing:.1em;text-transform:uppercase}
+
+  .planner{margin-top:60px;padding:40px;background:var(--bg2);border:1px solid var(--line)}
+  .planner-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:24px;gap:14px;flex-wrap:wrap}
+  .planner-title{font-family:'Archivo Black',sans-serif;font-size:36px;text-transform:uppercase;line-height:.9;letter-spacing:-.02em}
+  .planner-title .hi{color:var(--hi)}
+  .planner-hint{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+  .planner-bar{height:60px;background:var(--bg);border:1px solid var(--line);position:relative;display:grid;grid-template-columns:repeat(12,1fr);margin-bottom:14px}
+  .planner-bar .mo-cell{border-right:1px solid var(--line);position:relative}
+  .planner-bar .mo-cell:last-child{border-right:none}
+  .planner-bar .mo-label{position:absolute;top:6px;left:6px;font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+  .planner-pin{position:absolute;bottom:6px;left:6px;right:6px;background:var(--hi);color:var(--bg);font-family:'Space Mono',monospace;font-size:9px;padding:3px 5px;letter-spacing:.05em;text-transform:uppercase;line-height:1.1;border-radius:1px}
+  .planner-pin.elite{background:var(--warn);color:var(--ink)}
+  .planner-empty{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);text-align:center;padding:18px}
+  .planner-counter{font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--hi);text-transform:uppercase;letter-spacing:.05em}
+
+  .cal{display:grid;grid-template-columns:repeat(12,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .cal-mo{background:var(--bg);padding:18px 14px;text-align:center;cursor:pointer;transition:background .15s}
+  .cal-mo:hover{background:var(--bg2)}
+  .cal-mo .nm{font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px}
+  .cal-mo .ct{font-family:'Space Mono',monospace;font-size:24px;color:var(--hi);line-height:1}
+  .cal-mo .l{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--dim);text-transform:uppercase;margin-top:4px}
+
+  .feat{display:grid;grid-template-columns:1.4fr 1fr;gap:0;border:1px solid var(--line);background:var(--bg2)}
+  .feat-left{padding:50px;border-right:1px solid var(--line)}
+  .feat-right{padding:50px;display:flex;flex-direction:column;justify-content:space-between}
+  .feat-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--hi);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .feat-tag::before{content:"●";color:var(--hi)}
+  .feat-name{font-family:'Archivo Black',sans-serif;font-size:64px;line-height:.9;text-transform:uppercase;letter-spacing:-.03em;margin-bottom:20px}
+  .feat-name .stk{-webkit-text-stroke:2px var(--ink);color:transparent}
+  .feat-desc{font-size:17px;line-height:1.5;color:#c4c0b6;max-width:520px}
+  .feat-stats{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .feat-stats .l{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:var(--dim);margin-bottom:6px}
+  .feat-stats .v{font-family:'Archivo Black',sans-serif;font-size:24px;line-height:1}
+  .feat-cta{margin-top:30px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;padding:16px 22px;background:var(--hi);color:var(--bg);display:inline-block;align-self:flex-start;border:none}
+  .feat-cta:hover{background:var(--ink)}
+
+  .countries{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .cc{background:var(--bg);padding:18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s}
+  .cc:hover{background:var(--bg2)}
+  .cc .nm{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:8px}
+  .cc .ct{font-family:'Archivo Black',sans-serif;font-size:16px;color:var(--hi)}
+
+  .foot{padding:60px 24px 30px;border-top:1px solid var(--line);max-width:1500px;margin:0 auto}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px}
+  .foot h4{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .foot ul a{font-family:'Archivo',sans-serif;font-size:14px;color:var(--ink)}
+  .foot ul a:hover{color:var(--hi)}
+  .foot-logo{font-family:'Archivo Black',sans-serif;font-size:42px;line-height:.9;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:14px}
+  .foot-logo .stk{-webkit-text-stroke:2px var(--ink);color:transparent}
+  .foot p{font-family:'Archivo',sans-serif;font-size:14px;color:var(--dim);line-height:1.5;max-width:380px}
+  .colo{border-top:1px solid var(--line);padding-top:20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:100;padding:30px}
+  .modal-bg.on{display:flex}
+  .modal{background:var(--bg);border:1px solid var(--hi);max-width:760px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+  .modal-inner{padding:40px}
+  .close{position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.15em;padding:8px 12px;border:1px solid var(--line);background:var(--bg);z-index:2}
+  .close:hover{background:var(--hi);color:var(--bg);border-color:var(--hi)}
+  .modal h2{font-family:'Archivo Black',sans-serif;font-size:42px;line-height:.95;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:8px}
+  .modal .acro{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.15em;color:var(--hi);margin-bottom:24px}
+  .modal-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:26px}
+  .modal-stats > div{padding:14px;border-right:1px solid var(--line)}
+  .modal-stats > div:last-child{border-right:none}
+  .modal-stats .l{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+  .modal-stats .v{font-family:'Archivo Black',sans-serif;font-size:16px;line-height:1}
+  .modal h3{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--hi);margin:22px 0 10px}
+  .modal p,.modal li{font-size:15px;line-height:1.6}
+  .modal ul{padding-left:18px;display:flex;flex-direction:column;gap:5px;color:#c4c0b6}
+
+  @media (max-width:980px){
+    .cats{grid-template-columns:repeat(2,1fr)}
+    .countries{grid-template-columns:repeat(3,1fr)}
+    .hero-meta{grid-template-columns:repeat(2,1fr)}
+    .feat{grid-template-columns:1fr}
+    .feat-left{border-right:none;border-bottom:1px solid var(--line)}
+    .cal{grid-template-columns:repeat(6,1fr)}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    .vs-pickers{grid-template-columns:1fr;gap:14px}
+    .vs-divider{transform:rotate(90deg);padding:8px 0}
+    .tier-row{grid-template-columns:80px 1fr}
+    .tier-letter{font-size:48px}
+    .tier-block{min-width:140px}
+    .planner-bar{grid-template-columns:repeat(6,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="lights"><span class="dot"></span><span>LIVE INDEX · 412 ACTIVE COMPETITIONS · 94 COUNTRIES</span></div>
+  <div id="utc"></div>
+</div>
+
+<div class="nav-row">
+  <div class="logo"><span class="mk"></span> Competition Atlas</div>
+  <nav class="nav">
+    <a class="on">Browse</a><a>Categories</a><a>Calendar</a><a>By Country</a><a>Prep Vault</a><a>Submit</a>
+  </nav>
+</div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="tagline">Volume 04 / The Global Registry</div>
+    <h1 class="h1">Every<br/><span class="y">competition</span><br/><span class="stk">worth</span> <span class="o">entering.</span></h1>
+    <div class="hero-meta">
+      <div><div class="l">Listed</div><div class="v">412</div></div>
+      <div><div class="l">Categories</div><div class="v hi">23</div></div>
+      <div><div class="l">Countries</div><div class="v">94</div></div>
+      <div><div class="l">Prize pool</div><div class="v hi">$48M</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>IMO opens December</span><span>ISEF deadline March 14</span><span>Hack the North registration live</span><span>ACM-ICPC regionals October</span><span>F1 in Schools National qualifiers</span><span>DECA ICDC submissions due</span><span>USAMO selection underway</span><span>IMO opens December</span><span>ISEF deadline March 14</span><span>Hack the North registration live</span><span>ACM-ICPC regionals October</span><span>F1 in Schools National qualifiers</span><span>DECA ICDC submissions due</span><span>USAMO selection underway</span>
+  </div>
+</div>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 01 — CATEGORIES</div>
+      <h2 class="sec-title">Pick your <span class="hi">arena.</span></h2>
+    </div>
+    <div class="sec-num">23 total · sorted by entrants</div>
+  </div>
+  <div class="cats">
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 01</div>
+        <div class="cat-name">Math Olympiads</div>
+        <div class="cat-list">IMO · USAMO · Putnam<br/>AMC · BMO · IberoMath</div>
+      </div>
+      <div class="cat-meta"><span>32 events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 02</div>
+        <div class="cat-name">Programming</div>
+        <div class="cat-list">IOI · ACM ICPC · Kaggle<br/>Code Jam · HackerCup</div>
+      </div>
+      <div class="cat-meta"><span>28 events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 03</div>
+        <div class="cat-name">Science Fairs</div>
+        <div class="cat-list">ISEF · Regeneron STS<br/>EUCYS · BTYSTE</div>
+      </div>
+      <div class="cat-meta"><span>19 events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 04</div>
+        <div class="cat-name">Hackathons</div>
+        <div class="cat-list">MLH circuit · Hack MIT<br/>PennApps · TreeHacks</div>
+      </div>
+      <div class="cat-meta"><span>340+ events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 05</div>
+        <div class="cat-name">Business</div>
+        <div class="cat-list">DECA · FBLA · BPA<br/>JA Worldwide · NIBC</div>
+      </div>
+      <div class="cat-meta"><span>14 events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 06</div>
+        <div class="cat-name">Debate</div>
+        <div class="cat-list">WSDC · NSDA · MUN<br/>Oxford Union · WUDC</div>
+      </div>
+      <div class="cat-meta"><span>22 events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 07</div>
+        <div class="cat-name">Robotics</div>
+        <div class="cat-list">FIRST · VEX · WRO<br/>RoboCup · F1 in Schools</div>
+      </div>
+      <div class="cat-meta"><span>16 events</span><span>→</span></div>
+    </div>
+    <div class="cat">
+      <div>
+        <div class="cat-num">№ 08</div>
+        <div class="cat-name">Writing & Arts</div>
+        <div class="cat-list">Scholastic · YoungArts<br/>Poetry Out Loud · NYTLN</div>
+      </div>
+      <div class="cat-meta"><span>26 events</span><span>→</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 02 — FEATURED</div>
+      <h2 class="sec-title">The <span class="hi">crown</span> jewels.</h2>
+    </div>
+  </div>
+  <div class="feat">
+    <div class="feat-left">
+      <div class="feat-tag">Olympiad / Tier S</div>
+      <div class="feat-name">Inter-<br/>national<br/><span class="stk">Math</span><br/>Olympiad</div>
+      <p class="feat-desc">The world's most prestigious mathematics competition for pre-university students. Each country sends a team of six. Two days, six problems, nine hours of pure math.</p>
+    </div>
+    <div class="feat-right">
+      <div class="feat-stats">
+        <div><div class="l">Founded</div><div class="v">1959</div></div>
+        <div><div class="l">Countries</div><div class="v">112</div></div>
+        <div><div class="l">Contestants</div><div class="v">600+</div></div>
+        <div><div class="l">Difficulty</div><div class="v" style="color:var(--warn)">ELITE</div></div>
+        <div><div class="l">Next host</div><div class="v">Brazil · 2026</div></div>
+        <div><div class="l">Age limit</div><div class="v">Under 20</div></div>
+      </div>
+      <button class="feat-cta">Full dossier →</button>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 03 — TIER LIST</div>
+      <h2 class="sec-title">Ranked by <span class="hi">prestige.</span></h2>
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);margin-top:14px;letter-spacing:.1em;text-transform:uppercase">Click to expand · Right-click or Shift+click to pin to your season ↓</div>
+    </div>
+  </div>
+  <div class="tier-list" id="tier-list"></div>
+
+  <div class="vs-sec">
+    <div class="vs-head">
+      <div class="vs-num">§ Interactive tool</div>
+      <div class="vs-title">Head <span class="y">to</span> head.</div>
+      <div class="vs-sub">Two competitions enter. One blueprint emerges. Pick any two to compare them spec-for-spec.</div>
+    </div>
+    <div class="vs-pickers">
+      <div class="vs-side" id="vs-A">
+        <div class="vs-picker-label">Fighter A</div>
+        <select class="vs-picker-select" id="vs-a-sel"></select>
+        <div class="vs-stats" id="vs-a-stats"></div>
+      </div>
+      <div class="vs-divider"><div class="vs-vs">VS</div></div>
+      <div class="vs-side" id="vs-B">
+        <div class="vs-picker-label">Fighter B</div>
+        <select class="vs-picker-select" id="vs-b-sel"></select>
+        <div class="vs-stats" id="vs-b-stats"></div>
+      </div>
+    </div>
+    <div class="vs-result" id="vs-result"></div>
+  </div>
+
+  <div class="planner">
+    <div class="planner-head">
+      <div>
+        <div class="planner-title">Your <span class="hi">season.</span></div>
+        <div class="planner-hint">Click competitions above to pin them to your year · <span class="planner-counter" id="planner-counter">0 pinned</span></div>
+      </div>
+      <button class="chip" id="clear-planner" style="background:transparent;border:1px solid var(--line);padding:8px 14px;color:var(--ink);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">CLEAR ALL</button>
+    </div>
+    <div class="planner-bar" id="planner-bar"></div>
+    <div class="planner-empty" id="planner-empty">▲ Pin any competition above to map your season ▲</div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 04 — CALENDAR</div>
+      <h2 class="sec-title">Season at a <span class="hi">glance.</span></h2>
+    </div>
+  </div>
+  <div class="cal">
+    <div class="cal-mo"><div class="nm">Jan</div><div class="ct">14</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Feb</div><div class="ct">22</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Mar</div><div class="ct">38</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Apr</div><div class="ct">41</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">May</div><div class="ct">29</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Jun</div><div class="ct">18</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Jul</div><div class="ct">24</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Aug</div><div class="ct">12</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Sep</div><div class="ct">31</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Oct</div><div class="ct">47</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Nov</div><div class="ct">52</div><div class="l">events</div></div>
+    <div class="cal-mo"><div class="nm">Dec</div><div class="ct">36</div><div class="l">events</div></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ 05 — BY NATION</div>
+      <h2 class="sec-title">Find your <span class="hi">qualifier.</span></h2>
+    </div>
+  </div>
+  <div class="countries">
+    <div class="cc"><span class="nm">🇺🇸 United States</span><span class="ct">98</span></div>
+    <div class="cc"><span class="nm">🇨🇳 China</span><span class="ct">64</span></div>
+    <div class="cc"><span class="nm">🇮🇳 India</span><span class="ct">52</span></div>
+    <div class="cc"><span class="nm">🇬🇧 United Kingdom</span><span class="ct">47</span></div>
+    <div class="cc"><span class="nm">🇩🇪 Germany</span><span class="ct">38</span></div>
+    <div class="cc"><span class="nm">🇯🇵 Japan</span><span class="ct">34</span></div>
+    <div class="cc"><span class="nm">🇰🇷 South Korea</span><span class="ct">29</span></div>
+    <div class="cc"><span class="nm">🇨🇦 Canada</span><span class="ct">31</span></div>
+    <div class="cc"><span class="nm">🇸🇬 Singapore</span><span class="ct">22</span></div>
+    <div class="cc"><span class="nm">🇦🇺 Australia</span><span class="ct">25</span></div>
+    <div class="cc"><span class="nm">🇫🇷 France</span><span class="ct">28</span></div>
+    <div class="cc"><span class="nm">🇧🇷 Brazil</span><span class="ct">19</span></div>
+    <div class="cc"><span class="nm">🇷🇺 Russia</span><span class="ct">26</span></div>
+    <div class="cc"><span class="nm">🇲🇽 Mexico</span><span class="ct">15</span></div>
+    <div class="cc"><span class="nm">🇮🇹 Italy</span><span class="ct">21</span></div>
+    <div class="cc"><span class="nm">🇪🇸 Spain</span><span class="ct">17</span></div>
+    <div class="cc"><span class="nm">🇳🇱 Netherlands</span><span class="ct">14</span></div>
+    <div class="cc"><span class="nm">🇸🇪 Sweden</span><span class="ct">12</span></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo">Competition<br/><span class="stk">Atlas</span></div>
+      <p>The most comprehensive open registry of academic and creative competitions for students worldwide. No memberships. No paywalls.</p>
+    </div>
+    <div><h4>Directory</h4><ul><a>All competitions</a><a>By category</a><a>By country</a><a>By month</a></ul></div>
+    <div><h4>Prep Vault</h4><ul><a>Past problems</a><a>Study guides</a><a>Mentor finder</a><a>Practice rooms</a></ul></div>
+    <div><h4>About</h4><ul><a>Editorial</a><a>Submit an event</a><a>Corrections</a><a>Contact</a></ul></div>
+  </div>
+  <div class="colo">
+    <span>Set in Archivo Black · Space Mono</span>
+    <span>© Competition Atlas — Compiled openly, updated daily</span>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">CLOSE ×</button>
+    <div class="modal-inner" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const comps = [
+  {name:"International Math Olympiad",acro:"IMO",cat:"math",catName:"Mathematics",region:"Global",window:"Jul 2026",tier:"elite",tierLabel:"Tier S · Elite",founded:1959,age:"<20",format:"Team of 6 per country · 2 days · 6 problems · 9hrs total",desc:"The world's most prestigious mathematics competition for pre-university students. Held annually since 1959, hosted by a different country each year.",elig:["Under 20 years of age","Not enrolled in university","Selected via national team trials"],prizes:["Gold (top 1/12)","Silver (next 1/12)","Bronze (next 1/12)","Honourable Mention"]},
+  {name:"International Olympiad in Informatics",acro:"IOI",cat:"cs",catName:"Computer Science",region:"Global",window:"Aug 2026",tier:"elite",tierLabel:"Tier S · Elite",founded:1989,age:"<20",format:"Team of 4 per country · 2 contest days · 5 hrs each",desc:"The premier algorithmic programming competition for secondary school students worldwide. Solve algorithmic problems in C++.",elig:["Secondary school student","Under 20 years old","Selected via national olympiad"],prizes:["Gold · Silver · Bronze medals","Top 50% awarded"]},
+  {name:"ACM-ICPC World Finals",acro:"ICPC",cat:"cs",catName:"Computer Science",region:"Global",window:"Apr–May 2026",tier:"elite",tierLabel:"Tier S · Elite",founded:1977,age:"University",format:"Teams of 3 · 5 hours · 12+ problems · one machine",desc:"The oldest, largest, and most prestigious programming contest in the world. Teams of three university students compete to solve algorithmic problems with shared computer.",elig:["University students","Not previously won","Up to 5 years post-enrollment"],prizes:["World Champion title","Scholarships","Sponsor opportunities"]},
+  {name:"Regeneron International Science & Engineering Fair",acro:"ISEF",cat:"science",catName:"Science",region:"Global",window:"May 2026",tier:"elite",tierLabel:"Tier S · Elite",founded:1950,age:"14–18",format:"Project-based · Affiliated fair qualification · Final week of judging",desc:"The world's largest pre-college science competition. Nearly 2,000 finalists from 80+ countries compete for over $9 million in prizes.",elig:["Grades 9–12","Win an affiliated regional fair","Original research project"],prizes:["Top Award: $75,000","Best of Category: $5,000","Special awards from 50+ sponsors"]},
+  {name:"DECA International Career Development Conference",acro:"ICDC",cat:"business",catName:"Business",region:"Americas",window:"Apr 2026",tier:"advanced",tierLabel:"Tier A · Advanced",founded:1947,age:"HS / College",format:"Role-plays + written exams · Qualify via state/provincial competition",desc:"International competition in marketing, finance, hospitality, and management. Over 20,000 students compete annually after qualifying through state competitions.",elig:["DECA chapter member","Qualify at state conference","High school or collegiate"],prizes:["Trophies in 60+ event categories","Scholarship opportunities","Sponsor recruitment"]},
+  {name:"World Schools Debating Championship",acro:"WSDC",cat:"debate",catName:"Debate",region:"Global",window:"Jul 2026",tier:"elite",tierLabel:"Tier S · Elite",founded:1988,age:"<20",format:"World Schools format · 8 prepared + impromptu rounds · 5-day tournament",desc:"Annual international English-language debating tournament. National teams of 5 debate in World Schools format on global affairs and ethics.",elig:["Under 20 years old","Selected by national debate body","Native or proficient English"],prizes:["Team trophy","Best speaker rankings","Plate competition for non-breaking teams"]},
+  {name:"FIRST Robotics Competition",acro:"FRC",cat:"robotics",catName:"Robotics",region:"Global",window:"Mar–Apr 2026",tier:"advanced",tierLabel:"Tier A · Advanced",founded:1992,age:"HS",format:"Build robot in 6 weeks · Regional events · World Championship",desc:"International high school robotics competition. Teams design, build, and program 120-pound robots to compete in a new annual game.",elig:["Grades 9–12","Form or join a registered FIRST team","Adult mentors required"],prizes:["Chairman's Award","Engineering Inspiration","Scholarships ($80M+ annually)"]},
+  {name:"Hack the North",acro:"HTN",cat:"cs",catName:"Hackathons",region:"Americas",window:"Sep 2026",tier:"intermediate",tierLabel:"Tier B · Open",founded:2014,age:"Student",format:"36 hours · in-person · University of Waterloo",desc:"Canada's biggest hackathon, hosted by University of Waterloo. 1,000+ student hackers from around the world build software/hardware projects.",elig:["Currently enrolled student","Or graduated within 12 months","Application-based admission"],prizes:["Sponsor prizes ($10k+)","Hardware kits","Internship interviews"]},
+  {name:"Putnam Mathematical Competition",acro:"Putnam",cat:"math",catName:"Mathematics",region:"Americas",window:"Dec 2025",tier:"elite",tierLabel:"Tier S · Elite",founded:1938,age:"Undergrad",format:"6-hour exam · 12 problems · Individual + team scoring",desc:"The preeminent mathematics competition for undergraduates in the U.S. and Canada. Famously difficult — median score is often 0 or 1 out of 120.",elig:["Undergraduate at U.S./Canadian institution","No more than 4 prior attempts","Registered via institution"],prizes:["Putnam Fellow ($2,500)","Top 25 (cash prizes)","Elizabeth Lowell Putnam Prize"]},
+  {name:"Scholastic Art & Writing Awards",acro:"S.A.W.",cat:"arts",catName:"Arts & Writing",region:"Americas",window:"Sep–Jan 2026",tier:"intermediate",tierLabel:"Tier B · Open",founded:1923,age:"Grades 7–12",format:"Portfolio submission · Regional → National judging",desc:"Longest-running recognition program for creative teens in the U.S. Categories span 28 visual art and writing disciplines.",elig:["Grades 7–12 in U.S./Canada","Original work","Submit via regional affiliate"],prizes:["Gold/Silver Medal","Portfolio Awards ($10k)","National exhibition"]},
+  {name:"International Physics Olympiad",acro:"IPhO",cat:"science",catName:"Physics",region:"Global",window:"Jul 2026",tier:"elite",tierLabel:"Tier S · Elite",founded:1967,age:"<20",format:"Theoretical (5hr) + experimental (5hr) exams · Team of 5",desc:"Annual physics competition for high school students. Each country sends 5 students selected through national olympiads.",elig:["Secondary school","Under 20","National team selection"],prizes:["Gold/Silver/Bronze medals","Honourable Mention","Special awards"]},
+  {name:"FBLA National Leadership Conference",acro:"NLC",cat:"business",catName:"Business",region:"Americas",window:"Jun–Jul 2026",tier:"advanced",tierLabel:"Tier A · Advanced",founded:1937,age:"HS",format:"Competitive events in 70+ categories · State qualification",desc:"Future Business Leaders of America national finals. Compete in business, technology, leadership, and communication events.",elig:["FBLA chapter member","Place top at state","Grades 9–12"],prizes:["Trophies in all events","Scholarships ($150k+)","Networking with corporate sponsors"]}
+];
+
+const tierMap = {
+  'IMO':'s','IOI':'s','ICPC':'s','ISEF':'s','WSDC':'s','IPhO':'s','Putnam':'s',
+  'ICDC':'a','FRC':'a','NLC':'a',
+  'HTN':'b','S.A.W.':'b'
+};
+const tierData = {
+  s:{letter:'S',desc:'Tier · Elite · Global apex'},
+  a:{letter:'A',desc:'Tier · Advanced · International'},
+  b:{letter:'B',desc:'Tier · Open · Application-based'},
+  c:{letter:'C',desc:'Tier · Regional · Local qualifier'},
+  d:{letter:'D',desc:'Tier · Entry · Beginner-friendly'}
+};
+
+const planner = new Set();
+
+function renderTiers(){
+  const list = document.getElementById('tier-list');
+  list.innerHTML='';
+  ['s','a','b','c','d'].forEach(t=>{
+    const entries = comps.filter(c => (tierMap[c.acro]||'c')===t);
+    const row = document.createElement('div');
+    row.className = `tier-row ${t}`;
+    let cells = entries.length===0
+      ? `<div style="padding:14px;font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase">— nothing here yet —</div>`
+      : entries.map(c=>`
+          <div class="tier-block" data-acro="${c.acro}">
+            <div class="tb-acro">${c.acro}</div>
+            <div class="tb-name">${c.name}</div>
+            <div class="tb-meta">${c.catName} · ${c.window}</div>
+          </div>
+        `).join('');
+    row.innerHTML = `
+      <div class="tier-label">
+        <div class="tier-letter">${tierData[t].letter}</div>
+        <div class="tier-desc">${tierData[t].desc}</div>
+      </div>
+      <div class="tier-comps">${cells}</div>
+    `;
+    list.appendChild(row);
+  });
+  document.querySelectorAll('.tier-block').forEach(b=>{
+    b.onclick = (e)=>{
+      const c = comps.find(x=>x.acro===b.dataset.acro);
+      if(e.shiftKey){
+        togglePlanner(c.acro);
+      } else {
+        openModal(c);
+      }
+    };
+    b.oncontextmenu = (e)=>{
+      e.preventDefault();
+      togglePlanner(b.dataset.acro);
+    };
+  });
+}
+
+function togglePlanner(acro){
+  if(planner.has(acro)) planner.delete(acro);
+  else planner.add(acro);
+  renderPlanner();
+}
+document.getElementById('clear-planner').onclick = ()=>{planner.clear();renderPlanner()};
+
+function renderPlanner(){
+  const bar = document.getElementById('planner-bar');
+  const monthsArr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  bar.innerHTML = '';
+  monthsArr.forEach((m,i)=>{
+    const cell = document.createElement('div');
+    cell.className='mo-cell';
+    const inMonth = [...planner].map(a=>comps.find(c=>c.acro===a)).filter(c=>{
+      const w = c.window.toLowerCase();
+      return w.includes(m.toLowerCase());
+    });
+    let pins = inMonth.map(c=>{
+      const tier = tierMap[c.acro]||'c';
+      return `<div class="planner-pin ${tier==='s'?'elite':''}" title="${c.name}">${c.acro}</div>`;
+    }).join('');
+    cell.innerHTML = `<div class="mo-label">${m}</div>${pins}`;
+    bar.appendChild(cell);
+  });
+  document.getElementById('planner-counter').textContent = `${planner.size} pinned`;
+  document.getElementById('planner-empty').style.display = planner.size===0?'block':'none';
+}
+
+function openModal(c){
+  document.getElementById('modal-body').innerHTML = `
+    <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--dim);margin-bottom:14px;text-transform:uppercase">${c.catName} / ${c.region}</div>
+    <h2>${c.name}</h2>
+    <div class="acro">${c.acro} · Est. ${c.founded}</div>
+    <div class="modal-stats">
+      <div><div class="l">Tier</div><div class="v" style="color:var(--warn)">${c.tier.toUpperCase()}</div></div>
+      <div><div class="l">Age</div><div class="v">${c.age}</div></div>
+      <div><div class="l">Window</div><div class="v">${c.window}</div></div>
+      <div><div class="l">Region</div><div class="v">${c.region}</div></div>
+    </div>
+    <p>${c.desc}</p>
+    <h3>Format</h3><p>${c.format}</p>
+    <h3>Eligibility</h3><ul>${c.elig.map(e=>`<li>${e}</li>`).join('')}</ul>
+    <h3>Awards</h3><ul>${c.prizes.map(e=>`<li>${e}</li>`).join('')}</ul>
+  `;
+  document.getElementById('modal-bg').classList.add('on');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+function tick(){
+  const d=new Date();
+  const utc = d.toISOString().slice(11,19);
+  document.getElementById('utc').textContent = `UTC ${utc}`;
+}
+tick();setInterval(tick,1000);
+renderTiers();
+renderPlanner();
+
+const tierRank = {s:5,a:4,b:3,c:2,d:1};
+function vsRender(){
+  const aSel = document.getElementById('vs-a-sel');
+  const bSel = document.getElementById('vs-b-sel');
+  if(!aSel.options.length){
+    const opts = comps.map(c=>`<option value="${c.acro}">${c.acro} · ${c.name}</option>`).join('');
+    aSel.innerHTML = opts;
+    bSel.innerHTML = opts;
+    aSel.value = 'IMO';
+    bSel.value = 'ICPC';
+    aSel.onchange = bSel.onchange = vsRender;
+  }
+  const a = comps.find(c=>c.acro===aSel.value);
+  const b = comps.find(c=>c.acro===bSel.value);
+  const rows = [
+    {l:'Founded',a:a.founded,b:b.founded,cmp:'newer'},
+    {l:'Category',a:a.catName,b:b.catName,cmp:'eq'},
+    {l:'Region',a:a.region,b:b.region,cmp:'eq'},
+    {l:'Tier',a:a.tierLabel,b:b.tierLabel,cmp:'tier',aT:tierMap[a.acro]||'c',bT:tierMap[b.acro]||'c'},
+    {l:'Age',a:a.age,b:b.age,cmp:'eq'},
+    {l:'Window',a:a.window,b:b.window,cmp:'eq'}
+  ];
+  function fmt(row,side){
+    let cls='';
+    if(row.cmp==='newer'){
+      if(side==='a' && row.a>row.b) cls='win';
+      if(side==='b' && row.b>row.a) cls='win';
+    } else if(row.cmp==='tier'){
+      const av = tierRank[row.aT], bv = tierRank[row.bT];
+      if(side==='a' && av>bv) cls='win';
+      if(side==='b' && bv>av) cls='win';
+    }
+    return `<div class="vs-stat-row"><span class="vs-stat-l">${row.l}</span><span class="vs-stat-v ${cls}">${row[side]}</span></div>`;
+  }
+  document.getElementById('vs-a-stats').innerHTML = rows.map(r=>fmt(r,'a')).join('');
+  document.getElementById('vs-b-stats').innerHTML = rows.map(r=>fmt(r,'b')).join('');
+
+  let verdict = '';
+  if(a.acro===b.acro) verdict = `These are the same competition. Try picking two different ones.`;
+  else {
+    const aT = tierRank[tierMap[a.acro]||'c'];
+    const bT = tierRank[tierMap[b.acro]||'c'];
+    const elder = a.founded<b.founded?a.acro:b.acro;
+    const heavier = aT>bT?a.acro:bT>aT?b.acro:null;
+    const verdictMap = heavier
+      ? `Verdict: <em>${heavier}</em> carries more prestige on the global stage. <em>${elder}</em> is the older institution, founded in ${Math.min(a.founded,b.founded)}.`
+      : `Verdict: a tier-equal matchup. Different categories — <em>${a.catName.toUpperCase()}</em> vs <em>${b.catName.toUpperCase()}</em>. Pick by interest, not prestige.`;
+    verdict = verdictMap;
+  }
+  document.getElementById('vs-result').innerHTML = verdict;
+}
+vsRender();
+</script>
+<script src="enhance.js"></script>
+</body>
+</html>

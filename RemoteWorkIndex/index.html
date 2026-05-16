@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Surround — A 360° live scanner of the world's nomad-friendly cities</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08111c;
+    --bg-2:#0d1721;
+    --bg-3:#152436;
+    --paper:#f4eee4;
+    --paper-d:#cfc6b5;
+    --paper-dd:#7d7869;
+    --teal:#7dd3c0;
+    --hot:#ff6b3d;
+    --gold:#d4a574;
+    --line:rgba(244,238,228,.1);
+    --line-2:rgba(244,238,228,.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--paper);font-family:'Geist',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
+  body{cursor:none}
+  @media (hover:none){body{cursor:auto}}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:none;border:none;background:none;color:inherit}
+  ::selection{background:var(--hot);color:var(--bg)}
+
+  body::before{content:"";position:fixed;inset:0;background:
+    radial-gradient(ellipse 60% 50% at 20% 20%,rgba(125,211,192,.10),transparent 50%),
+    radial-gradient(ellipse 50% 50% at 80% 80%,rgba(255,107,61,.08),transparent 50%),
+    radial-gradient(ellipse 80% 100% at 50% 100%,rgba(8,17,28,1),transparent 80%);
+    pointer-events:none;z-index:0}
+
+  .cur{position:fixed;left:0;top:0;width:40px;height:40px;border-radius:50%;border:1px solid var(--teal);pointer-events:none;z-index:200;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .25s,height .25s,border-color .25s}
+  .cur::before{content:"";position:absolute;inset:46%;background:var(--teal);border-radius:50%;transition:inset .25s,background .25s}
+  .cur::after{content:"";position:absolute;inset:-8px;border:1px dashed var(--teal);border-radius:50%;opacity:.3;animation:cur-spin 6s linear infinite}
+  @keyframes cur-spin{to{transform:rotate(360deg)}}
+  .cur.hot{width:64px;height:64px;border-color:var(--hot)}
+  .cur.hot::before{inset:42%;background:var(--hot)}
+  .cur.hot::after{border-color:var(--hot)}
+
+  .glow{position:fixed;left:0;top:0;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(125,211,192,.18),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:opacity .3s;mix-blend-mode:screen;will-change:transform,opacity}
+
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);transition:background .4s,backdrop-filter .4s}
+  .nav.solid{background:rgba(8,17,28,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+  .nav .logo{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:24px;letter-spacing:-.005em;text-transform:none;font-weight:500;font-style:italic}
+  .nav .logo .mk{width:10px;height:10px;background:var(--teal);border-radius:50%;box-shadow:0 0 14px var(--teal);animation:mk-pulse 2s ease-in-out infinite;font-style:normal}
+  @keyframes mk-pulse{0%,100%{box-shadow:0 0 14px var(--teal);transform:scale(1)}50%{box-shadow:0 0 24px var(--teal);transform:scale(1.2)}}
+  .nav .links{display:flex;gap:30px}
+  .nav .links a{position:relative}
+  .nav .links a::after{content:"";position:absolute;left:0;right:100%;bottom:-4px;height:1px;background:var(--teal);transition:right .25s cubic-bezier(.4,.7,.3,1)}
+  .nav .links a:hover::after{right:0}
+  .nav .cta{padding:10px 18px;border:1px solid var(--paper);border-radius:100px;letter-spacing:.15em;transition:all .25s}
+  .nav .cta:hover{background:var(--teal);color:var(--bg);border-color:var(--teal)}
+
+  .hero{height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .hero-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(125,211,192,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(125,211,192,.05) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,#000 0%,transparent 70%);will-change:transform,opacity}
+
+  .radar{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:min(96vw,900px);aspect-ratio:1;will-change:transform,opacity;pointer-events:none}
+  .radar svg{width:100%;height:100%}
+  .radar .ring{fill:none;stroke:rgba(125,211,192,.18);stroke-width:.4}
+  .radar .ring-2{stroke:rgba(125,211,192,.3);stroke-width:.6}
+  .radar .axis{stroke:rgba(125,211,192,.12);stroke-width:.3}
+  .radar .sweep{transform-origin:center;animation:sweep 4s linear infinite}
+  @keyframes sweep{to{transform:rotate(360deg)}}
+  .radar .blip{fill:var(--teal);filter:drop-shadow(0 0 6px var(--teal))}
+  .radar .blip.hot{fill:var(--hot);filter:drop-shadow(0 0 6px var(--hot))}
+  .radar .blip-pulse{fill:none;stroke:var(--teal);stroke-width:.5;opacity:0;animation:blip-ping 3s ease-out infinite}
+  .radar .blip-pulse.b2{animation-delay:.5s}
+  .radar .blip-pulse.b3{animation-delay:1.2s}
+  .radar .blip-pulse.b4{animation-delay:2s}
+  .radar .blip-pulse.b5{animation-delay:2.6s}
+  .radar .blip-pulse.b6{animation-delay:3.4s}
+  @keyframes blip-ping{0%{r:1;opacity:0}10%{opacity:1}80%{r:60;opacity:0}100%{r:60;opacity:0}}
+  .radar .crosshair{stroke:rgba(125,211,192,.5);stroke-width:.4}
+  .radar .city-label{font-family:'Geist Mono',monospace;font-size:6px;fill:var(--paper-d);letter-spacing:.1em;text-transform:uppercase}
+
+  .hero-overlay{position:relative;z-index:2;text-align:center;padding:32px;max-width:1200px}
+  .hero-eyebrow{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);display:inline-flex;align-items:center;gap:14px;margin-bottom:36px;will-change:opacity,transform}
+  .hero-eyebrow::before,.hero-eyebrow::after{content:"";width:34px;height:1px;background:var(--teal)}
+  .hero-eyebrow .dot{width:8px;height:8px;background:var(--teal);border-radius:50%;box-shadow:0 0 12px var(--teal);animation:mk-pulse 1.8s ease-in-out infinite}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(80px,13vw,220px);line-height:.9;letter-spacing:-.03em;will-change:transform,opacity}
+  .hero-title em{font-style:italic;color:var(--hot)}
+  .hero-title .word{display:inline-block;will-change:transform,opacity}
+  .hero-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,2.2vw,26px);color:var(--paper-d);margin-top:30px;max-width:680px;margin-left:auto;margin-right:auto;line-height:1.5;will-change:opacity,transform}
+  .hero-meta{position:absolute;left:32px;bottom:40px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-d);display:flex;flex-direction:column;gap:6px;line-height:1.6}
+  .hero-meta b{color:var(--teal);font-weight:400}
+  .hero-meta-right{position:absolute;right:32px;bottom:40px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-d);display:flex;flex-direction:column;gap:6px;line-height:1.6;text-align:right}
+  .hero-meta-right b{color:var(--teal);font-weight:400}
+
+  .scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--paper-dd);display:flex;flex-direction:column;align-items:center;gap:10px;will-change:opacity}
+  .scroll-cue .ln{width:1px;height:30px;background:linear-gradient(180deg,var(--paper-dd),transparent);animation:ln-pulse 2s ease-in-out infinite}
+  @keyframes ln-pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+  .scan{position:relative;height:300vh;background:var(--bg)}
+  .scan-stage{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+  .scan-radar{position:relative;width:min(90vw,800px);aspect-ratio:1;will-change:transform}
+  .scan-radar svg{width:100%;height:100%}
+  .scan-radar .ring{fill:none;stroke:rgba(125,211,192,.18);stroke-width:.4;transition:stroke .35s}
+  .scan-radar .ring.active{stroke:var(--teal);stroke-width:1}
+  .scan-radar .axis{stroke:rgba(125,211,192,.1)}
+  .scan-radar .core{fill:var(--teal);filter:drop-shadow(0 0 12px var(--teal))}
+  .scan-radar .sweep-line{stroke:var(--teal);stroke-width:.6;opacity:.7;transform-origin:center;animation:sweep 4s linear infinite}
+  .scan-radar .city-dot{fill:var(--paper-dd);transition:fill .35s,r .35s}
+  .scan-radar .city-dot.active{fill:var(--hot);filter:drop-shadow(0 0 8px var(--hot))}
+  .scan-radar .city-label{font-family:'Geist Mono',monospace;font-size:5px;fill:var(--paper-dd);letter-spacing:.1em;text-transform:uppercase;transition:fill .35s,opacity .35s}
+  .scan-radar .city-label.active{fill:var(--hot);opacity:1;font-size:5.8px}
+
+  .scan-copy{position:absolute;left:6vw;top:50%;transform:translateY(-50%);max-width:420px;will-change:opacity,transform}
+  .scan-copy.right{left:auto;right:6vw;text-align:left}
+  .scan-copy .step{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .scan-copy .step::before{content:"";width:24px;height:1px;background:var(--teal)}
+  .scan-copy h2{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(40px,5vw,72px);line-height:.95;letter-spacing:-.02em;margin-bottom:20px}
+  .scan-copy h2 em{font-style:italic;color:var(--hot)}
+  .scan-copy p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;line-height:1.55;color:var(--paper-d)}
+  .scan-frame{position:absolute;opacity:0;transition:opacity .5s ease,transform .8s cubic-bezier(.4,.7,.3,1);pointer-events:none}
+  .scan-frame.on{opacity:1;pointer-events:auto;transform:translateY(-50%) translateX(0)}
+  .scan-frame{transform:translateY(-50%) translateX(-30px)}
+  .scan-frame.right{transform:translateY(-50%) translateX(30px)}
+  .scan-frame.right.on{transform:translateY(-50%) translateX(0)}
+
+  .scan-data{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:14px;font-family:'Geist Mono',monospace}
+  .scan-data > div{padding:14px;border:1px solid var(--line);background:rgba(244,238,228,.02);border-radius:8px}
+  .scan-data .l{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-dd);margin-bottom:8px}
+  .scan-data .v{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;color:var(--teal);line-height:1;font-weight:500;font-style:italic}
+  .scan-data .v em{font-style:normal;color:var(--hot)}
+
+  .scan-counter{position:absolute;top:60px;left:50%;transform:translateX(-50%);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--paper-dd);display:flex;align-items:center;gap:18px;z-index:5}
+  .scan-counter .dots{display:flex;gap:6px}
+  .scan-counter .dots i{display:inline-block;width:22px;height:1px;background:var(--paper-dd);opacity:.4;transition:opacity .3s,background .3s}
+  .scan-counter .dots i.on{opacity:1;background:var(--hot)}
+
+  .ticker{padding:60px 32px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(13,23,33,.5);backdrop-filter:blur(10px);overflow:hidden;white-space:nowrap;font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.1em}
+  .ticker-track{display:inline-block;animation:scroll 80s linear infinite}
+  .ticker-track span{margin:0 36px;display:inline-block}
+  .ticker-track .city{color:var(--teal)}
+  .ticker-track .pos{color:var(--teal)}
+  .ticker-track .neg{color:var(--hot)}
+  .ticker-track .pulse{color:var(--gold)}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+
+  .cities-sec{padding:160px 32px;max-width:1500px;margin:0 auto;position:relative;z-index:2}
+  .sec-eyebrow{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:28px;display:flex;align-items:center;gap:14px}
+  .sec-eyebrow::before{content:"";width:42px;height:1px;background:var(--teal)}
+  .cities-sec h2{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,8vw,128px);font-weight:400;line-height:.9;letter-spacing:-.03em;max-width:1180px;margin-bottom:80px}
+  .cities-sec h2 em{font-style:italic;color:var(--hot)}
+  .cities-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+  .city{background:rgba(244,238,228,.025);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:24px;overflow:hidden;cursor:pointer;transition:transform .4s cubic-bezier(.3,.9,.3,1),border-color .25s,background .25s;position:relative;will-change:transform}
+  .city:hover{transform:translateY(-6px);border-color:var(--teal);background:rgba(244,238,228,.04)}
+  .city-img{height:240px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg-2),var(--bg-3))}
+  .city-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:160px;opacity:.15;line-height:1;filter:saturate(.6)}
+  .city-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(8,17,28,.85))}
+  .city-img .meta{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;z-index:2}
+  .city-rank{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;background:rgba(8,17,28,.6);padding:6px 12px;border-radius:100px;border:1px solid var(--line);color:var(--paper);backdrop-filter:blur(8px)}
+  .city-flag{font-size:32px;text-shadow:0 4px 12px rgba(0,0,0,.5)}
+  .city-img .title{position:absolute;left:24px;right:24px;bottom:18px;z-index:2}
+  .city-img h3{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:500;line-height:.95;letter-spacing:-.015em}
+  .city-img h3 em{font-style:italic;color:var(--hot)}
+  .city-img .ctry{font-family:'Geist Mono',monospace;font-size:11px;color:var(--paper-d);letter-spacing:.15em;text-transform:uppercase;margin-top:6px}
+  .city-body{padding:24px;display:flex;flex-direction:column;gap:18px}
+  .city-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .city-stat .l{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--paper-dd);text-transform:uppercase;margin-bottom:5px}
+  .city-stat .v{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;line-height:1}
+  .city-stat .v em{font-style:italic;color:var(--teal);font-weight:400}
+  .city-bar{height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+  .city-bar .fill{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--hot));border-radius:2px;transform-origin:left;transform:scaleX(0);transition:transform 1.2s cubic-bezier(.4,.7,.3,1)}
+  .city.in .city-bar .fill{transform:scaleX(var(--w,.7))}
+  .city-bar-label{display:flex;justify-content:space-between;font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--paper-dd);text-transform:uppercase;margin-bottom:5px}
+
+  .tz-section{padding:200px 0;background:var(--bg);overflow:hidden;position:relative;z-index:2}
+  .tz-head{padding:0 32px;max-width:1500px;margin:0 auto;margin-bottom:80px}
+  .tz-head h2{font-family:'Cormorant Garamond',serif;font-size:clamp(50px,7vw,108px);font-weight:400;line-height:.92;letter-spacing:-.03em;max-width:1100px}
+  .tz-head h2 em{font-style:italic;color:var(--hot)}
+  .tz-bar{margin:60px auto 0;max-width:1500px;padding:0 32px}
+  .tz-bar-inner{position:relative;height:120px;border:1px solid var(--line);border-radius:14px;background:rgba(13,23,33,.5);overflow:hidden;backdrop-filter:blur(10px)}
+  .tz-hours{position:absolute;inset:0;display:grid;grid-template-columns:repeat(24,1fr)}
+  .tz-hour{border-right:1px solid var(--line);position:relative}
+  .tz-hour:last-child{border-right:none}
+  .tz-hour-label{position:absolute;top:8px;left:6px;font-family:'Geist Mono',monospace;font-size:9px;color:var(--paper-dd);letter-spacing:.1em}
+  .tz-hour.work{background:rgba(125,211,192,.04)}
+  .tz-row{position:absolute;left:0;right:0;height:28px;display:flex;align-items:center;padding-left:14px}
+  .tz-r-label{font-family:'Geist Mono',monospace;font-size:10px;color:var(--paper);letter-spacing:.12em;background:rgba(8,17,28,.8);padding:4px 10px;border-radius:4px;border:1px solid var(--line);text-transform:uppercase;z-index:2}
+  .tz-block{position:absolute;height:24px;background:rgba(125,211,192,.25);border:1px solid var(--teal);border-radius:4px;backdrop-filter:blur(6px)}
+  .tz-overlap{position:absolute;top:0;bottom:0;background:linear-gradient(180deg,rgba(255,107,61,.2),rgba(255,107,61,.06));border-left:1px solid var(--hot);border-right:1px solid var(--hot);pointer-events:none}
+  .tz-overlap-label{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--hot);text-transform:uppercase;white-space:nowrap;background:rgba(8,17,28,.8);padding:3px 8px;border-radius:4px;font-weight:500}
+
+  .split{padding:160px 32px;max-width:1500px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;position:relative;z-index:2}
+  .split h3{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,5vw,80px);font-weight:400;line-height:.95;letter-spacing:-.025em;margin-bottom:24px}
+  .split h3 em{font-style:italic;color:var(--hot)}
+  .split p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:21px;line-height:1.55;color:var(--paper-d);margin-bottom:30px;max-width:480px}
+  .split-cta{display:inline-flex;align-items:center;gap:10px;font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.2em;padding:18px 32px;background:var(--teal);color:var(--bg);border-radius:100px;text-transform:uppercase;transition:all .25s;cursor:none}
+  .split-cta:hover{background:var(--hot);color:var(--paper);transform:translateY(-2px)}
+  .split-cta .ar{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;transition:transform .25s}
+  .split-cta:hover .ar{transform:translateX(6px)}
+  .split-viz{position:relative;width:100%;aspect-ratio:1;background:rgba(244,238,228,.03);border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(12px);overflow:hidden;padding:30px}
+  .split-viz .sv-label{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-dd);margin-bottom:8px}
+  .split-viz .sv-val{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:42px;color:var(--teal);line-height:1;font-weight:500;margin-bottom:24px}
+  .split-viz .sv-val em{color:var(--hot)}
+  .split-viz .sv-globe{position:absolute;inset:30px;display:flex;align-items:center;justify-content:flex-end;flex-direction:column;justify-content:flex-end;pointer-events:none}
+  .split-viz svg{width:100%;height:100%}
+
+  .sensor-wave{position:absolute;left:0;right:0;bottom:30px;height:80px;display:flex;align-items:flex-end;gap:3px;padding:0 30px;pointer-events:none}
+  .sensor-wave i{flex:1;background:var(--teal);min-height:6%;border-radius:1px;animation:wave 2s ease-in-out infinite;opacity:.7}
+  .sensor-wave i:nth-child(odd){background:var(--hot)}
+  @keyframes wave{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+
+  .clocks-sec{padding:160px 32px;max-width:1500px;margin:0 auto;position:relative;z-index:2}
+  .clocks{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:24px;overflow:hidden;backdrop-filter:blur(12px);background:rgba(244,238,228,.02)}
+  .clk{padding:36px 28px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .3s;cursor:pointer;position:relative}
+  .clk:nth-child(4n){border-right:none}
+  .clk:nth-last-child(-n+4){border-bottom:none}
+  .clk:hover{background:rgba(125,211,192,.04)}
+  .clk-flag{font-size:28px;line-height:1;margin-bottom:14px}
+  .clk-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;line-height:1;letter-spacing:-.01em}
+  .clk-name em{font-style:italic;color:var(--hot)}
+  .clk-ctry{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--paper-dd);text-transform:uppercase;margin-top:5px;margin-bottom:24px}
+  .clk-time{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:52px;line-height:.9;color:var(--teal);font-variant-numeric:tabular-nums;letter-spacing:-.02em;font-weight:500}
+  .clk-diff{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--paper-d);text-transform:uppercase;margin-top:10px}
+  .clk-diff.pos{color:var(--teal)}
+  .clk-diff.neg{color:var(--hot)}
+
+  .story{padding:200px 32px;background:var(--bg);position:relative;overflow:hidden;text-align:center;z-index:2}
+  .story::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120vw;height:120vw;max-width:1400px;max-height:1400px;border:1px solid var(--line);border-radius:50%;animation:spin 60s linear infinite;pointer-events:none}
+  .story::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80vw;height:80vw;max-width:900px;max-height:900px;border:1px dashed var(--line);border-radius:50%;animation:spin 90s linear infinite reverse;pointer-events:none}
+  .story-inner{max-width:1100px;margin:0 auto;position:relative;z-index:2}
+  .story-quote{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--paper-dd);display:inline-flex;align-items:center;gap:14px;margin-bottom:50px}
+  .story-quote::before,.story-quote::after{content:"";width:42px;height:1px;background:var(--paper-dd)}
+  .story h2{font-family:'Cormorant Garamond',serif;font-size:clamp(50px,7vw,108px);font-weight:400;line-height:1.05;letter-spacing:-.025em}
+  .story h2 em{font-style:italic;color:var(--hot)}
+  .story h2 .ol{-webkit-text-stroke:1px var(--paper);color:transparent;font-style:italic}
+  .story-credit{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--paper-dd);margin-top:60px}
+
+  .cta-section{padding:200px 32px 0;background:var(--bg);text-align:center;position:relative;z-index:2}
+  .cta-section h2{font-family:'Cormorant Garamond',serif;font-size:clamp(72px,12vw,200px);font-weight:400;line-height:.88;letter-spacing:-.04em}
+  .cta-section h2 em{font-style:italic;color:var(--hot)}
+  .cta-section h2 .ol{-webkit-text-stroke:1px var(--paper);color:transparent;font-style:italic}
+  .cta-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:21px;color:var(--paper-d);margin-top:30px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.5}
+  .cta-buttons{display:flex;gap:14px;justify-content:center;margin-top:60px;flex-wrap:wrap}
+  .btn{font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.2em;padding:20px 40px;border-radius:100px;text-transform:uppercase;display:inline-flex;align-items:center;gap:12px;transition:all .25s;border:1px solid var(--paper);background:var(--paper);color:var(--bg);cursor:none}
+  .btn:hover{background:var(--hot);border-color:var(--hot);color:var(--paper);transform:translateY(-2px)}
+  .btn.ghost{background:transparent;color:var(--paper)}
+  .btn.ghost:hover{background:var(--teal);color:var(--bg);border-color:var(--teal)}
+  .btn .ar{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;transition:transform .25s}
+  .btn:hover .ar{transform:translateX(6px)}
+
+  .foot{padding:120px 32px 40px;background:var(--bg);position:relative;z-index:2}
+  .foot-inner{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;padding-top:60px;border-top:1px solid var(--line)}
+  .foot-logo{font-family:'Cormorant Garamond',serif;font-size:48px;letter-spacing:-.015em;line-height:1;display:flex;align-items:baseline;gap:10px}
+  .foot-logo em{font-style:italic;color:var(--hot)}
+  .foot-mk{width:12px;height:12px;background:var(--teal);border-radius:50%;display:inline-block;box-shadow:0 0 14px var(--teal)}
+  .foot p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--paper-d);margin-top:18px;line-height:1.55;max-width:380px}
+  .foot h4{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--paper-dd);margin-bottom:18px}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot ul a{font-family:'Cormorant Garamond',serif;font-size:18px;transition:color .2s}
+  .foot ul a:hover{color:var(--hot);font-style:italic}
+  .colo{max-width:1500px;margin:80px auto 0;padding-top:24px;border-top:1px solid var(--line);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--paper-dd);text-transform:uppercase;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  .rv{opacity:0;transform:translateY(40px);transition:opacity 1.1s cubic-bezier(.2,.8,.2,1),transform 1.1s cubic-bezier(.2,.8,.2,1)}
+  .rv.in{opacity:1;transform:none}
+  .rv-2{transition-delay:.1s}
+  .rv-3{transition-delay:.2s}
+  .rv-4{transition-delay:.3s}
+
+  .loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:30px;transition:opacity .8s,transform .8s}
+  .loader.gone{opacity:0;pointer-events:none;transform:scale(1.02)}
+  .loader-radar{width:120px;height:120px;border-radius:50%;border:1px solid var(--line);position:relative;overflow:hidden}
+  .loader-radar::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid rgba(125,211,192,.3);transform:scale(.6)}
+  .loader-radar::after{content:"";position:absolute;inset:50% 50% 0 50%;width:50%;height:50%;background:linear-gradient(135deg,rgba(125,211,192,.3),transparent);transform-origin:0 0;animation:sweep 1.6s linear infinite}
+  .loader .core{position:absolute;left:50%;top:50%;width:10px;height:10px;background:var(--teal);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 14px var(--teal);animation:mk-pulse 1s ease-in-out infinite}
+  .loader .lab{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--paper-dd)}
+
+  @media (max-width:980px){
+    body{cursor:auto}
+    .cur,.glow{display:none}
+    .nav .links{display:none}
+    .scan{height:auto}
+    .scan-stage{position:relative;height:auto;padding:80px 24px;flex-direction:column}
+    .scan-copy{position:relative;left:0;top:0;transform:none !important;margin:30px auto;text-align:left}
+    .scan-copy.right{right:0}
+    .scan-radar{margin:30px auto;max-width:340px}
+    .scan-counter{position:relative;top:0;transform:none;margin-bottom:20px}
+    .cities-grid{grid-template-columns:1fr}
+    .clocks{grid-template-columns:repeat(2,1fr)}
+    .clk:nth-child(4n){border-right:1px solid var(--line)}
+    .clk:nth-child(2n){border-right:none}
+    .clk:nth-last-child(-n+2){border-bottom:none}
+    .split{grid-template-columns:1fr;gap:40px}
+    .foot-inner{grid-template-columns:1fr 1fr}
+    .hero-meta,.hero-meta-right{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="loader-radar"><div class="core"></div></div>
+  <div class="lab">Surround · Calibrating sensors…</div>
+</div>
+
+<nav class="nav" id="nav">
+  <div class="logo"><span class="mk"></span>Surround</div>
+  <div class="links">
+    <a>Overview</a><a>Sensors</a><a>Cities</a><a>Pricing</a><a>Docs</a>
+  </div>
+  <a class="cta">Get early access →</a>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="radar" id="radar">
+    <svg viewBox="0 0 600 600">
+      <defs>
+        <radialGradient id="rg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#7dd3c0" stop-opacity=".15"/>
+          <stop offset="100%" stop-color="#7dd3c0" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="sweepG" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7dd3c0" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#7dd3c0" stop-opacity=".8"/>
+        </linearGradient>
+      </defs>
+      <circle cx="300" cy="300" r="280" fill="url(#rg)"/>
+      <circle cx="300" cy="300" r="280" class="ring ring-2"/>
+      <circle cx="300" cy="300" r="220" class="ring"/>
+      <circle cx="300" cy="300" r="160" class="ring"/>
+      <circle cx="300" cy="300" r="100" class="ring"/>
+      <line x1="20" y1="300" x2="580" y2="300" class="axis"/>
+      <line x1="300" y1="20" x2="300" y2="580" class="axis"/>
+      <line x1="80" y1="80" x2="520" y2="520" class="axis"/>
+      <line x1="520" y1="80" x2="80" y2="520" class="axis"/>
+      <g class="sweep">
+        <path d="M 300 300 L 580 300 A 280 280 0 0 0 538 142 Z" fill="url(#sweepG)" opacity=".4"/>
+        <line x1="300" y1="300" x2="580" y2="300" stroke="#7dd3c0" stroke-width="1"/>
+      </g>
+
+      <circle cx="380" cy="220" r="3" class="blip"/>
+      <circle cx="380" cy="220" r="3" class="blip-pulse"/>
+      <text x="395" y="218" class="city-label">Lisbon</text>
+
+      <circle cx="500" cy="350" r="3" class="blip"/>
+      <circle cx="500" cy="350" r="3" class="blip-pulse b2"/>
+      <text x="515" y="348" class="city-label">Tokyo</text>
+
+      <circle cx="180" cy="270" r="3" class="blip"/>
+      <circle cx="180" cy="270" r="3" class="blip-pulse b3"/>
+      <text x="100" y="268" class="city-label">Medellín</text>
+
+      <circle cx="430" cy="430" r="3" class="blip hot"/>
+      <circle cx="430" cy="430" r="3" class="blip-pulse b4" stroke="#ff6b3d"/>
+      <text x="445" y="428" class="city-label">Bali</text>
+
+      <circle cx="220" cy="420" r="3" class="blip"/>
+      <circle cx="220" cy="420" r="3" class="blip-pulse b5"/>
+      <text x="140" y="418" class="city-label">Mexico City</text>
+
+      <circle cx="320" cy="160" r="3" class="blip"/>
+      <circle cx="320" cy="160" r="3" class="blip-pulse b6"/>
+      <text x="335" y="158" class="city-label">Berlin</text>
+
+      <circle cx="300" cy="300" r="4" fill="#7dd3c0"/>
+      <line x1="290" y1="300" x2="310" y2="300" class="crosshair"/>
+      <line x1="300" y1="290" x2="300" y2="310" class="crosshair"/>
+    </svg>
+  </div>
+
+  <div class="hero-overlay">
+    <div class="hero-eyebrow" id="heEye"><span class="dot"></span>LIVE · 142 CITIES · 38 TIME ZONES</div>
+    <h1 class="hero-title" id="heTitle"><span class="word">A</span> <span class="word"><em>360°</em></span> <span class="word">scanner</span><br/><span class="word">for</span> <span class="word">the</span> <span class="word">world's</span> <span class="word"><em>cities.</em></span></h1>
+    <div class="hero-sub" id="heSub">Surround listens to 94 metrics — cost, internet, climate, visa, safety, food, community — and surfaces the city that fits you, this month.</div>
+  </div>
+
+  <div class="hero-meta">
+    <div>SURROUND <b>v04</b> · 2026</div>
+    <div>SENSORS <b>94</b></div>
+    <div>UPDATED <b>HOURLY</b></div>
+  </div>
+  <div class="hero-meta-right">
+    <div><b>SESSION</b> · LIVE</div>
+    <div><b>NEAREST</b> · <span id="nearest">LISBON</span></div>
+    <div><b>UTC</b> · <span id="utc">—</span></div>
+  </div>
+
+  <div class="scroll-cue" id="cue">
+    <span>Scan begins</span><span class="ln"></span>
+  </div>
+</section>
+
+<section class="scan" id="scan">
+  <div class="scan-stage">
+
+    <div class="scan-counter">
+      <span>SCANNING</span>
+      <span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span>
+      <span id="scanLab">01 / 05 · COST</span>
+    </div>
+
+    <div class="scan-radar" id="scanRadar">
+      <svg viewBox="0 0 600 600">
+        <defs>
+          <linearGradient id="sweepG2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#7dd3c0" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#7dd3c0" stop-opacity=".7"/>
+          </linearGradient>
+        </defs>
+        <circle cx="300" cy="300" r="280" class="ring r1"/>
+        <circle cx="300" cy="300" r="220" class="ring r2"/>
+        <circle cx="300" cy="300" r="160" class="ring r3"/>
+        <circle cx="300" cy="300" r="100" class="ring r4"/>
+        <circle cx="300" cy="300" r="50" class="ring r5"/>
+        <line x1="20" y1="300" x2="580" y2="300" class="axis"/>
+        <line x1="300" y1="20" x2="300" y2="580" class="axis"/>
+        <line x1="80" y1="80" x2="520" y2="520" class="axis"/>
+        <line x1="520" y1="80" x2="80" y2="520" class="axis"/>
+        <line class="sweep-line" x1="300" y1="300" x2="580" y2="300"/>
+
+        <g id="cityDots">
+          <circle cx="430" cy="240" r="3" class="city-dot" data-city="Lisbon"/>
+          <text x="446" y="238" class="city-label" data-city="Lisbon">LIS</text>
+          <circle cx="510" cy="350" r="3" class="city-dot" data-city="Tokyo"/>
+          <text x="525" y="348" class="city-label" data-city="Tokyo">TYO</text>
+          <circle cx="180" cy="270" r="3" class="city-dot" data-city="Medellín"/>
+          <text x="120" y="268" class="city-label" data-city="Medellín">MDE</text>
+          <circle cx="420" cy="450" r="3" class="city-dot" data-city="Bali"/>
+          <text x="436" y="448" class="city-label" data-city="Bali">DPS</text>
+          <circle cx="220" cy="420" r="3" class="city-dot" data-city="Mexico City"/>
+          <text x="140" y="418" class="city-label" data-city="Mexico City">MEX</text>
+          <circle cx="320" cy="160" r="3" class="city-dot" data-city="Berlin"/>
+          <text x="335" y="158" class="city-label" data-city="Berlin">BER</text>
+          <circle cx="380" cy="380" r="3" class="city-dot" data-city="Chiang Mai"/>
+          <text x="395" y="378" class="city-label" data-city="Chiang Mai">CNX</text>
+          <circle cx="120" cy="380" r="3" class="city-dot" data-city="Buenos Aires"/>
+          <text x="60" y="378" class="city-label" data-city="Buenos Aires">BUE</text>
+          <circle cx="270" cy="100" r="3" class="city-dot" data-city="Tallinn"/>
+          <text x="285" y="98" class="city-label" data-city="Tallinn">TLL</text>
+          <circle cx="470" cy="180" r="3" class="city-dot" data-city="Tbilisi"/>
+          <text x="485" y="178" class="city-label" data-city="Tbilisi">TBS</text>
+          <circle cx="100" cy="320" r="3" class="city-dot" data-city="Cape Town"/>
+          <text x="40" y="318" class="city-label" data-city="Cape Town">CPT</text>
+          <circle cx="350" cy="500" r="3" class="city-dot" data-city="Taipei"/>
+          <text x="365" y="498" class="city-label" data-city="Taipei">TPE</text>
+        </g>
+
+        <circle cx="300" cy="300" r="4" class="core"/>
+      </svg>
+    </div>
+
+    <div class="scan-copy scan-frame on" id="sf1">
+      <div class="step">SENSOR 01 · COST OF LIVING</div>
+      <h2>The <em>price</em> of where you sleep.</h2>
+      <p>Rent, groceries, transit, a coffee. We re-index 142 cities every month from real receipts — not government averages. The cheapest fit, surfaced first.</p>
+      <div class="scan-data">
+        <div><div class="l">Cheapest fit</div><div class="v"><em>Chiang Mai</em></div></div>
+        <div><div class="l">vs Lisbon</div><div class="v">−62<em>%</em></div></div>
+      </div>
+    </div>
+
+    <div class="scan-copy right scan-frame" id="sf2">
+      <div class="step">SENSOR 02 · INTERNET</div>
+      <h2>The <em>pipe</em> matters.</h2>
+      <p>Median download. Fiber availability. Coworking-grade upload. Hotel-room reliability. Surround pings the network from every city, every day. No more lying ISP marketing.</p>
+      <div class="scan-data">
+        <div><div class="l">Fastest</div><div class="v"><em>Taipei</em></div></div>
+        <div><div class="l">Median Mbps</div><div class="v">312</div></div>
+      </div>
+    </div>
+
+    <div class="scan-copy scan-frame" id="sf3">
+      <div class="step">SENSOR 03 · CLIMATE</div>
+      <h2>Tell us your <em>weather.</em></h2>
+      <p>22°C and dry? 18°C and rainy? Surround reads 12 months of microclimate per city — humidity, rainfall, sun, wind — and matches what you actually want to live in.</p>
+      <div class="scan-data">
+        <div><div class="l">Best fit (Sept)</div><div class="v"><em>Lisbon</em></div></div>
+        <div><div class="l">Days clear</div><div class="v">26<em>/30</em></div></div>
+      </div>
+    </div>
+
+    <div class="scan-copy right scan-frame" id="sf4">
+      <div class="step">SENSOR 04 · VISA</div>
+      <h2>The <em>paperwork</em> reality.</h2>
+      <p>Income threshold, application cost, processing time, renewal terms, tax exposure. Surround tracks every digital-nomad visa worldwide and tells you which one would actually take you.</p>
+      <div class="scan-data">
+        <div><div class="l">Easiest</div><div class="v"><em>Estonia</em></div></div>
+        <div><div class="l">Fee</div><div class="v">€100</div></div>
+      </div>
+    </div>
+
+    <div class="scan-copy scan-frame" id="sf5">
+      <div class="step">SENSOR 05 · OVERLAP</div>
+      <h2>Where the <em>team</em> aligns.</h2>
+      <p>If your team works in San Francisco and Berlin, Surround returns the cities that share at least 4 working hours with both — sorted by everything else you care about.</p>
+      <div class="scan-data">
+        <div><div class="l">Best overlap</div><div class="v"><em>Lisbon</em></div></div>
+        <div><div class="l">Shared hours</div><div class="v">5<em>h</em></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span><span class="city">LISBON</span> +18% rent <span class="neg">▲</span></span>
+    <span><span class="city">TOKYO</span> internet 412Mbps <span class="pos">▲</span></span>
+    <span><span class="city">MEDELLÍN</span> safety index 68 <span class="pulse">●</span></span>
+    <span><span class="city">BALI</span> KITAS renewed 6mo <span class="pos">▲</span></span>
+    <span><span class="city">BERLIN</span> rent stable <span class="pulse">●</span></span>
+    <span><span class="city">CHIANG MAI</span> $32/night <span class="pos">▼</span></span>
+    <span><span class="city">CAPE TOWN</span> loadshedding stage 2 <span class="neg">▲</span></span>
+    <span><span class="city">TAIPEI</span> visa thaw <span class="pos">▲</span></span>
+    <span><span class="city">TBILISI</span> 1yr visa-free <span class="pos">▲</span></span>
+    <span><span class="city">BUENOS AIRES</span> peso −12% <span class="neg">▼</span></span>
+    <span><span class="city">TALLINN</span> e-residency open <span class="pulse">●</span></span>
+    <span><span class="city">LISBON</span> +18% rent <span class="neg">▲</span></span>
+    <span><span class="city">TOKYO</span> internet 412Mbps <span class="pos">▲</span></span>
+    <span><span class="city">MEDELLÍN</span> safety index 68 <span class="pulse">●</span></span>
+    <span><span class="city">BALI</span> KITAS renewed 6mo <span class="pos">▲</span></span>
+    <span><span class="city">BERLIN</span> rent stable <span class="pulse">●</span></span>
+    <span><span class="city">CHIANG MAI</span> $32/night <span class="pos">▼</span></span>
+    <span><span class="city">CAPE TOWN</span> loadshedding stage 2 <span class="neg">▲</span></span>
+  </div>
+</div>
+
+<section class="cities-sec">
+  <div class="sec-eyebrow rv">§ 02 — Top picks · this month</div>
+  <h2 class="rv rv-2">Six cities that <em>pinged</em> hardest in September.</h2>
+  <div class="cities-grid">
+    <div class="city rv">
+      <div class="city-img">
+        <div class="city-emoji">🌅</div>
+        <div class="meta">
+          <span class="city-rank">№ 01 · TOP PICK</span>
+          <span class="city-flag">🇵🇹</span>
+        </div>
+        <div class="title">
+          <h3><em>Lisbon</em></h3>
+          <div class="ctry">Portugal · GMT+0</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v"><em>$2.4k</em></div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>286</em><span style="font-size:11px;color:var(--paper-dd)">Mbps</span></div></div>
+          <div class="city-stat"><div class="l">Climate</div><div class="v"><em>22°</em></div></div>
+        </div>
+        <div>
+          <div class="city-bar-label"><span>Surround fit</span><span>94 / 100</span></div>
+          <div class="city-bar"><span class="fill" style="--w:.94"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="city rv rv-2">
+      <div class="city-img">
+        <div class="city-emoji">🗼</div>
+        <div class="meta">
+          <span class="city-rank">№ 02</span>
+          <span class="city-flag">🇯🇵</span>
+        </div>
+        <div class="title">
+          <h3><em>Tokyo</em></h3>
+          <div class="ctry">Japan · GMT+9</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v"><em>$3.1k</em></div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>412</em><span style="font-size:11px;color:var(--paper-dd)">Mbps</span></div></div>
+          <div class="city-stat"><div class="l">Climate</div><div class="v"><em>19°</em></div></div>
+        </div>
+        <div>
+          <div class="city-bar-label"><span>Surround fit</span><span>89 / 100</span></div>
+          <div class="city-bar"><span class="fill" style="--w:.89"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="city rv rv-3">
+      <div class="city-img">
+        <div class="city-emoji">🌴</div>
+        <div class="meta">
+          <span class="city-rank">№ 03 · BUDGET</span>
+          <span class="city-flag">🇮🇩</span>
+        </div>
+        <div class="title">
+          <h3><em>Bali</em></h3>
+          <div class="ctry">Canggu, Indonesia · GMT+8</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v"><em>$1.4k</em></div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>148</em><span style="font-size:11px;color:var(--paper-dd)">Mbps</span></div></div>
+          <div class="city-stat"><div class="l">Climate</div><div class="v"><em>28°</em></div></div>
+        </div>
+        <div>
+          <div class="city-bar-label"><span>Surround fit</span><span>86 / 100</span></div>
+          <div class="city-bar"><span class="fill" style="--w:.86"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="city rv">
+      <div class="city-img">
+        <div class="city-emoji">🏔</div>
+        <div class="meta">
+          <span class="city-rank">№ 04</span>
+          <span class="city-flag">🇨🇴</span>
+        </div>
+        <div class="title">
+          <h3><em>Medellín</em></h3>
+          <div class="ctry">Colombia · GMT−5</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v"><em>$1.6k</em></div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>178</em><span style="font-size:11px;color:var(--paper-dd)">Mbps</span></div></div>
+          <div class="city-stat"><div class="l">Climate</div><div class="v"><em>22°</em></div></div>
+        </div>
+        <div>
+          <div class="city-bar-label"><span>Surround fit</span><span>81 / 100</span></div>
+          <div class="city-bar"><span class="fill" style="--w:.81"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="city rv rv-2">
+      <div class="city-img">
+        <div class="city-emoji">🥨</div>
+        <div class="meta">
+          <span class="city-rank">№ 05</span>
+          <span class="city-flag">🇩🇪</span>
+        </div>
+        <div class="title">
+          <h3><em>Berlin</em></h3>
+          <div class="ctry">Germany · GMT+1</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v"><em>$2.6k</em></div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>198</em><span style="font-size:11px;color:var(--paper-dd)">Mbps</span></div></div>
+          <div class="city-stat"><div class="l">Climate</div><div class="v"><em>11°</em></div></div>
+        </div>
+        <div>
+          <div class="city-bar-label"><span>Surround fit</span><span>78 / 100</span></div>
+          <div class="city-bar"><span class="fill" style="--w:.78"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="city rv rv-3">
+      <div class="city-img">
+        <div class="city-emoji">🌶</div>
+        <div class="meta">
+          <span class="city-rank">№ 06</span>
+          <span class="city-flag">🇲🇽</span>
+        </div>
+        <div class="title">
+          <h3>Mexico <em>City</em></h3>
+          <div class="ctry">Mexico · GMT−6</div>
+        </div>
+      </div>
+      <div class="city-body">
+        <div class="city-stats">
+          <div class="city-stat"><div class="l">Cost / mo</div><div class="v"><em>$1.9k</em></div></div>
+          <div class="city-stat"><div class="l">Internet</div><div class="v"><em>164</em><span style="font-size:11px;color:var(--paper-dd)">Mbps</span></div></div>
+          <div class="city-stat"><div class="l">Climate</div><div class="v"><em>17°</em></div></div>
+        </div>
+        <div>
+          <div class="city-bar-label"><span>Surround fit</span><span>76 / 100</span></div>
+          <div class="city-bar"><span class="fill" style="--w:.76"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tz-section">
+  <div class="tz-head">
+    <div class="sec-eyebrow rv">§ 03 — Time zone overlap</div>
+    <h2 class="rv rv-2">Find the city that <em>sleeps</em> when your team does.</h2>
+  </div>
+  <div class="tz-bar">
+    <div class="tz-bar-inner" id="tzBar"></div>
+  </div>
+</section>
+
+<section class="split">
+  <div class="rv">
+    <div class="sec-eyebrow">§ 04 — Sensor stack</div>
+    <h3>94 sensors. <em>One</em> answer.</h3>
+    <p>Surround listens to every public signal a city emits — and a few private ones we built ourselves. Then the model returns a single fit score, broken down by what matters to you.</p>
+    <a class="split-cta">Explore the sensor stack <span class="ar">→</span></a>
+  </div>
+  <div class="rv rv-2">
+    <div class="split-viz">
+      <div class="sv-label">LIVE SIGNAL · LISBON</div>
+      <div class="sv-val"><em>fit 94</em></div>
+      <svg viewBox="0 0 200 100" style="height:auto;width:100%;position:absolute;left:0;right:0;bottom:160px;padding:30px;overflow:visible">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#7dd3c0"/>
+            <stop offset="100%" stop-color="#ff6b3d"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 60 Q 30 30 50 50 T 100 40 T 150 30 T 200 25" fill="none" stroke="url(#lg)" stroke-width="1.5"/>
+        <circle cx="200" cy="25" r="4" fill="#ff6b3d"/>
+      </svg>
+      <div class="sensor-wave">
+        <i style="animation-delay:0s"></i><i style="animation-delay:.1s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.3s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.5s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.7s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:.9s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.1s"></i><i style="animation-delay:1.2s"></i><i style="animation-delay:1.3s"></i><i style="animation-delay:1.4s"></i><i style="animation-delay:1.5s"></i><i style="animation-delay:1.6s"></i><i style="animation-delay:1.7s"></i><i style="animation-delay:1.8s"></i><i style="animation-delay:1.9s"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="clocks-sec">
+  <div class="sec-eyebrow rv">§ 05 — Live around the world</div>
+  <h2 class="rv rv-2" style="font-family:'Cormorant Garamond',serif;font-size:clamp(48px,6vw,80px);font-weight:400;letter-spacing:-.025em;line-height:1;margin-bottom:60px">Eight cities, <em>one</em> glance.</h2>
+  <div class="clocks">
+    <div class="clk" data-tz="Europe/Lisbon" data-base="0">
+      <div class="clk-flag">🇵🇹</div>
+      <div class="clk-name"><em>Lisbon</em></div>
+      <div class="clk-ctry">Portugal · GMT+0</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="Asia/Tokyo" data-base="9">
+      <div class="clk-flag">🇯🇵</div>
+      <div class="clk-name"><em>Tokyo</em></div>
+      <div class="clk-ctry">Japan · GMT+9</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="America/Bogota" data-base="-5">
+      <div class="clk-flag">🇨🇴</div>
+      <div class="clk-name"><em>Medellín</em></div>
+      <div class="clk-ctry">Colombia · GMT−5</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="Asia/Makassar" data-base="8">
+      <div class="clk-flag">🇮🇩</div>
+      <div class="clk-name"><em>Bali</em></div>
+      <div class="clk-ctry">Indonesia · GMT+8</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="Europe/Berlin" data-base="1">
+      <div class="clk-flag">🇩🇪</div>
+      <div class="clk-name"><em>Berlin</em></div>
+      <div class="clk-ctry">Germany · GMT+1</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="America/Mexico_City" data-base="-6">
+      <div class="clk-flag">🇲🇽</div>
+      <div class="clk-name">Mexico <em>City</em></div>
+      <div class="clk-ctry">Mexico · GMT−6</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="Asia/Bangkok" data-base="7">
+      <div class="clk-flag">🇹🇭</div>
+      <div class="clk-name">Chiang <em>Mai</em></div>
+      <div class="clk-ctry">Thailand · GMT+7</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+    <div class="clk" data-tz="Asia/Tbilisi" data-base="4">
+      <div class="clk-flag">🇬🇪</div>
+      <div class="clk-name"><em>Tbilisi</em></div>
+      <div class="clk-ctry">Georgia · GMT+4</div>
+      <div class="clk-time">--:--</div>
+      <div class="clk-diff">— —</div>
+    </div>
+  </div>
+</section>
+
+<section class="story">
+  <div class="story-inner">
+    <div class="story-quote rv">From the manifesto</div>
+    <h2 class="rv rv-2">Most "best cities for nomads" lists are <em>marketing.</em> Surround is the <span class="ol">opposite</span> — a cold, instrumented read on where you can <em>actually</em> live and work right now.</h2>
+    <div class="story-credit rv rv-3">Surround editorial · 2026</div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2 class="rv">Where will you <em>land?</em></h2>
+  <p class="cta-sub rv rv-2">Free during beta. No credit card. Cancel from the dashboard. Built by nomads, for nomads.</p>
+  <div class="cta-buttons rv rv-3">
+    <a class="btn">Start scanning <span class="ar">→</span></a>
+    <a class="btn ghost">View live demo <span class="ar">→</span></a>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div>
+      <div class="foot-logo"><span class="foot-mk"></span>Surround <em>· Index</em></div>
+      <p>An honest, sensor-driven index of the world's cities for remote workers. Updated hourly. No paid placements. Built in 11 timezones.</p>
+    </div>
+    <div><h4>Product</h4><ul><a>Scanner</a><a>Compare</a><a>Visa atlas</a><a>TZ planner</a><a>API</a></ul></div>
+    <div><h4>Research</h4><ul><a>Methodology</a><a>Sensor stack</a><a>Datasets</a><a>Changelog</a></ul></div>
+    <div><h4>Company</h4><ul><a>About</a><a>Careers</a><a>Press</a><a>Contact</a></ul></div>
+  </div>
+  <div class="colo">
+    <span>Set in Cormorant Garamond · Geist · Geist Mono</span>
+    <span>© 2026 Surround · v04 · From everywhere</span>
+  </div>
+</footer>
+
+<div class="glow" id="glow"></div>
+<div class="cur" id="cur"></div>
+
+<script>
+'use strict';
+
+document.documentElement.style.overflow = 'hidden';
+setTimeout(()=>{
+  const loader = document.getElementById('loader');
+  loader.classList.add('gone');
+
+  document.documentElement.style.overflow = '';
+  window.scrollTo(0, 0);
+  setTimeout(()=>loader.remove(), 800);
+}, 1400);
+
+const cur = document.getElementById('cur');
+const glow = document.getElementById('glow');
+const isHover = matchMedia('(hover:hover)').matches;
+if(isHover){
+  let tx=0,ty=0,cx=0,cy=0,gx=innerWidth/2,gy=innerHeight/2;
+  addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;});
+  (function loop(){
+    cx+=(tx-cx)*.4; cy+=(ty-cy)*.4;
+    gx+=(tx-gx)*.08; gy+=(ty-gy)*.08;
+    cur.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`;
+    glow.style.transform=`translate(${gx}px,${gy}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  })();
+  addEventListener('mouseover',e=>{
+    const t = e.target.closest('a,button,.city,.clk,.split-cta,input,.btn');
+    if(t) cur.classList.add('hot'); else cur.classList.remove('hot');
+  });
+}
+
+const hero = document.getElementById('hero');
+const heTitle = document.getElementById('heTitle');
+const heEye = document.getElementById('heEye');
+const heSub = document.getElementById('heSub');
+const heroBg = document.getElementById('heroBg');
+const radar = document.getElementById('radar');
+const cue = document.getElementById('cue');
+const scan = document.getElementById('scan');
+const scanRadar = document.getElementById('scanRadar');
+const scanLab = document.getElementById('scanLab');
+const dots = document.querySelectorAll('.scan-counter .dots i');
+const sframes = ['sf1','sf2','sf3','sf4','sf5'].map(id=>document.getElementById(id));
+const nav = document.getElementById('nav');
+
+let lastY = window.scrollY;
+function tickScroll(){
+  const y = window.scrollY;
+  updateScroll(y);
+  requestAnimationFrame(tickScroll);
+}
+
+const STAGE_LABELS = ['01 / 05 · COST','02 / 05 · INTERNET','03 / 05 · CLIMATE','04 / 05 · VISA','05 / 05 · OVERLAP'];
+
+const STAGE_CITIES = [
+  ['Chiang Mai','Bali','Mexico City'],
+  ['Taipei','Tokyo','Berlin'],
+  ['Lisbon','Cape Town','Medellín'],
+  ['Tallinn','Tbilisi','Bali'],
+  ['Lisbon','Berlin','Buenos Aires']
+];
+
+function lerp(a,b,k){return a+(b-a)*k}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function smoothstep(t){return t*t*(3-2*t)}
+
+function updateScroll(y){
+  const vh = innerHeight;
+
+  const heroK = clamp(y/vh, 0, 1);
+  const e = smoothstep(heroK);
+  heTitle.style.transform = `translateY(${-e*60}px) scale(${1 - e*.12})`;
+  heTitle.style.opacity = String(1 - e*.6);
+  heEye.style.opacity = String(1 - e*1.2);
+  heSub.style.opacity = String(1 - e*1.5);
+  heSub.style.transform = `translateY(${e*30}px)`;
+  heroBg.style.transform = `scale(${1 + e*.25})`;
+  heroBg.style.opacity = String(1 - e*.7);
+  radar.style.transform = `translate(-50%,-50%) scale(${1 + e*.4}) rotate(${e*30}deg)`;
+  radar.style.opacity = String(1 - e*.7);
+  cue.style.opacity = String(1 - e*2);
+
+  if(y > vh*0.6) nav.classList.add('solid'); else nav.classList.remove('solid');
+
+  const sTop = scan.offsetTop;
+  const sH = scan.offsetHeight;
+  const sProg = clamp((y - sTop) / (sH - vh), 0, 1);
+  const stage = clamp(Math.floor(sProg * 5), 0, 4);
+
+  const radScale = lerp(.65, 1.05, smoothstep(sProg));
+  const radRot = sProg * 90;
+  const radDrift = Math.sin(sProg * Math.PI * 2) * 20;
+  scanRadar.style.transform = `translateX(${radDrift}px) scale(${radScale}) rotate(${radRot}deg)`;
+
+  scanRadar.querySelectorAll('.ring').forEach((r,i)=>{
+
+    const dist = Math.abs((sProg*5) - (i + .5));
+    const active = Math.max(0, 1 - dist);
+    r.style.stroke = `rgba(125,211,192,${.18 + active*.7})`;
+    r.style.strokeWidth = String(.4 + active*.8);
+  });
+
+  sframes.forEach((f,i)=> {
+    f.classList.toggle('on', i === stage);
+  });
+
+  const activeCities = STAGE_CITIES[stage];
+  scanRadar.querySelectorAll('.city-dot').forEach(d=>{
+    const c = d.dataset.city;
+    d.classList.toggle('active', activeCities.includes(c));
+  });
+  scanRadar.querySelectorAll('.city-label').forEach(d=>{
+    const c = d.dataset.city;
+    d.classList.toggle('active', activeCities.includes(c));
+  });
+
+  dots.forEach((d,i)=> d.classList.toggle('on', i <= stage));
+  scanLab.textContent = STAGE_LABELS[stage];
+}
+updateScroll(window.scrollY);
+tickScroll();
+
+(function(){
+  let damping = false;
+  function inPinned(){
+    const sect = document.getElementById('scan');
+    if(!sect) return false;
+    const r = sect.getBoundingClientRect();
+
+    return r.top <= 0 && r.bottom > innerHeight + 1;
+  }
+
+  window.addEventListener('wheel', e=>{
+    if(!inPinned()) return;
+    e.preventDefault();
+
+    window.scrollBy({top: e.deltaY * 0.32, behavior:'auto'});
+  }, {passive:false});
+
+  let touchY = 0;
+  window.addEventListener('touchstart', e=>{ touchY = e.touches[0].clientY; }, {passive:true});
+  window.addEventListener('touchmove', e=>{
+    if(!inPinned()) return;
+    const cy = e.touches[0].clientY;
+    const dy = touchY - cy;
+    touchY = cy;
+    e.preventDefault();
+    window.scrollBy({top: dy * 0.45, behavior:'auto'});
+  }, {passive:false});
+
+  window.addEventListener('keydown', e=>{
+    if(!inPinned()) return;
+    if(e.key==='PageDown' || e.key==='PageUp' || e.key===' '){
+      e.preventDefault();
+      window.scrollBy({top: (e.key==='PageUp'?-1:1) * innerHeight * 0.18, behavior:'smooth'});
+    }
+  });
+})();
+
+setTimeout(()=>{
+  document.querySelectorAll('.hero-title .word').forEach((w,i)=>{
+    w.style.opacity = '0';
+    w.style.transform = 'translateY(40px) rotate(-2deg)';
+    w.style.transition = 'opacity .9s cubic-bezier(.2,.8,.2,1), transform 1.1s cubic-bezier(.2,.85,.2,1)';
+    setTimeout(()=>{
+      w.style.opacity = '1';
+      w.style.transform = 'none';
+    }, 100 + i*80);
+  });
+}, 1400);
+
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+},{rootMargin:'-8% 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+document.querySelectorAll('.city').forEach(el=>io.observe(el));
+
+function tickClocks(){
+  document.querySelectorAll('.clk').forEach(c=>{
+    const tz = c.dataset.tz;
+    const base = parseInt(c.dataset.base,10);
+    try{
+      const now = new Date();
+      const opts = {hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz};
+      const t = new Intl.DateTimeFormat('en-GB',opts).format(now);
+      c.querySelector('.clk-time').textContent = t;
+
+      const localOff = -now.getTimezoneOffset()/60;
+      const diff = base - localOff;
+      const dt = c.querySelector('.clk-diff');
+      if(diff === 0){ dt.textContent='SAME · YOUR TIME'; dt.className='clk-diff'; }
+      else { dt.textContent = (diff>0?'+':'')+diff+'H · '+(diff>0?'AHEAD':'BEHIND');
+        dt.className = 'clk-diff '+(diff>=0?'pos':'neg'); }
+    }catch(e){
+      c.querySelector('.clk-time').textContent = '—';
+    }
+  });
+}
+tickClocks();
+setInterval(tickClocks, 30000);
+
+function tickUtc(){
+  const utc = document.getElementById('utc');
+  if(utc){
+    const d = new Date();
+    utc.textContent = d.toISOString().slice(11,19);
+  }
+}
+tickUtc(); setInterval(tickUtc, 1000);
+
+(function(){
+  const myOff = -(new Date()).getTimezoneOffset()/60;
+  const map = [
+    [-8,'PORTLAND'],[-7,'DENVER'],[-6,'MEXICO CITY'],[-5,'BOGOTA'],
+    [-4,'NYC'],[-3,'BUENOS AIRES'],[0,'LISBON'],[1,'BERLIN'],
+    [2,'ATHENS'],[3,'MOSCOW'],[4,'TBILISI'],[5,'KARACHI'],
+    [5.5,'MUMBAI'],[7,'CHIANG MAI'],[8,'BALI'],[9,'TOKYO'],[10,'SYDNEY']
+  ];
+  let nearest = 'LISBON', best = 99;
+  for(const [o,n] of map){ if(Math.abs(o - myOff) < best){ best = Math.abs(o-myOff); nearest = n; } }
+  const el = document.getElementById('nearest');
+  if(el) el.textContent = nearest;
+})();
+
+(function(){
+  const bar = document.getElementById('tzBar');
+  if(!bar) return;
+
+  const hours = document.createElement('div');
+  hours.className='tz-hours';
+  for(let h=0;h<24;h++){
+    const c = document.createElement('div');
+    c.className='tz-hour' + (h>=9 && h<=17 ? ' work':'');
+    if(h%3===0) c.innerHTML = `<span class="tz-hour-label">${String(h).padStart(2,'0')}:00</span>`;
+    hours.appendChild(c);
+  }
+  bar.appendChild(hours);
+
+  const cities = [
+    {nm:'YOU · LIS',offset:0,start:9,end:17,y:14},
+    {nm:'NYC',offset:-5,start:9,end:17,y:44},
+    {nm:'SF',offset:-8,start:9,end:17,y:74}
+  ];
+  cities.forEach(c=>{
+    const row = document.createElement('div');
+    row.className='tz-row';
+    row.style.top = c.y+'px';
+    const startUtc = ((c.start - c.offset) + 24) % 24;
+    const endUtc = ((c.end - c.offset) + 24) % 24;
+    row.innerHTML = `<span class="tz-r-label">${c.nm}</span>`;
+    const block = document.createElement('div');
+    block.className='tz-block';
+    block.style.left = (startUtc/24*100)+'%';
+    const width = (endUtc > startUtc ? endUtc - startUtc : 24 - startUtc + endUtc) / 24 * 100;
+    block.style.width = width+'%';
+    row.appendChild(block);
+    bar.appendChild(row);
+  });
+
+  const overlap = document.createElement('div');
+  overlap.className='tz-overlap';
+  overlap.style.left = '70%';
+  overlap.style.width = '12.5%';
+  overlap.innerHTML = `<div class="tz-overlap-label">3H OVERLAP · 14–17 UTC</div>`;
+  bar.appendChild(overlap);
+})();
+
+</script>
+
+</body>
+</html>

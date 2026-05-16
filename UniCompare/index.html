@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UniCompare Pro — The research instrument for higher education</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Inter+Tight:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0c;
+    --bg-soft:#131318;
+    --bg-light:#f5f3ee;
+    --bg-light-2:#eae6dc;
+    --ink:#0a0a0c;
+    --paper:#f5f3ee;
+    --mute:#7a7669;
+    --mute-d:#9a9690;
+    --hot:#ff5a3c;
+    --blue:#3a6fff;
+    --gold:#d4a955;
+    --line-d:rgba(245,243,238,.1);
+    --line-l:rgba(10,10,12,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:auto}
+  html,body{background:var(--bg);color:var(--paper);font-family:'Inter Tight',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip}
+  body{cursor:none}
+  @media (hover:none){body{cursor:auto}}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:none;border:none;background:none;color:inherit}
+  ::selection{background:var(--hot);color:var(--paper)}
+
+  .cur{position:fixed;left:0;top:0;width:14px;height:14px;border:1.5px solid var(--paper);border-radius:50%;pointer-events:none;z-index:200;transform:translate(-50%,-50%);transition:width .25s,height .25s,background .2s,border-color .25s;mix-blend-mode:difference}
+  .cur.hot{width:48px;height:48px;background:var(--paper)}
+  .cur.dark{border-color:var(--ink);mix-blend-mode:normal}
+  .cur.dark.hot{background:var(--ink);border-color:var(--ink)}
+
+  .nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:18px 32px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);transition:background .4s,color .4s,backdrop-filter .4s}
+  .nav.solid{background:rgba(10,10,12,.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--line-d)}
+  .nav.on-light{color:var(--ink)}
+  .nav.on-light.solid{background:rgba(245,243,238,.8);border-bottom-color:var(--line-l)}
+  .nav .logo{display:flex;align-items:center;gap:10px;font-family:'Instrument Serif',serif;font-size:24px;letter-spacing:-.01em;text-transform:none}
+  .nav .logo .mk{width:10px;height:10px;background:var(--hot);border-radius:50%;box-shadow:0 0 14px var(--hot)}
+  .nav .links{display:flex;gap:30px;font-size:11px;font-family:'IBM Plex Mono',monospace}
+  .nav .links a{position:relative}
+  .nav .links a::after{content:"";position:absolute;left:0;right:100%;bottom:-4px;height:1px;background:currentColor;transition:right .25s cubic-bezier(.4,.7,.3,1)}
+  .nav .links a:hover::after{right:0}
+  .nav .cta{padding:10px 18px;border:1px solid currentColor;border-radius:100px;transition:background .25s,color .25s;letter-spacing:.15em}
+  .nav .cta:hover{background:var(--paper);color:var(--ink)}
+  .nav.on-light .cta:hover{background:var(--ink);color:var(--paper)}
+
+  .hero{height:100vh;position:relative;overflow:hidden;background:var(--bg)}
+  .hero-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute-d);display:flex;align-items:center;gap:14px;margin-bottom:36px;will-change:opacity,transform}
+  .hero-eyebrow::before,.hero-eyebrow::after{content:"";width:34px;height:1px;background:var(--mute-d)}
+  .hero-title{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(80px,14vw,240px);line-height:.88;letter-spacing:-.045em;text-align:center;will-change:transform,opacity}
+  .hero-title em{font-style:italic;color:var(--hot)}
+  .hero-title .stk{-webkit-text-stroke:1px var(--paper);color:transparent;font-style:italic}
+  .hero-sub{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute-d);margin-top:30px;will-change:opacity,transform}
+
+  .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(245,243,238,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(245,243,238,.04) 1px,transparent 1px);background-size:80px 80px;pointer-events:none;will-change:transform,opacity;mask-image:radial-gradient(ellipse at center,#000 0%,transparent 70%)}
+
+  .hero-spec{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:580px;height:580px;will-change:transform,opacity;pointer-events:none;opacity:.18}
+  .hero-spec svg{width:100%;height:100%}
+  .hero-spec .ring{transform-origin:center;animation:spin 60s linear infinite}
+  .hero-spec .ring2{animation:spin 90s linear infinite reverse}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .scroll-cue{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--mute-d);display:flex;flex-direction:column;align-items:center;gap:10px;animation:cue 2.5s ease-in-out infinite}
+  .scroll-cue .line{width:1px;height:30px;background:linear-gradient(180deg,var(--mute-d),transparent)}
+  @keyframes cue{0%,100%{opacity:.6;transform:translateX(-50%) translateY(0)}50%{opacity:1;transform:translateX(-50%) translateY(6px)}}
+
+  .hero.compact .hero-title{transform:translateY(-15vh) scale(.45);opacity:.6}
+  .hero.compact .hero-eyebrow,.hero.compact .hero-sub,.hero.compact .scroll-cue,.hero.compact .hero-spec{opacity:0}
+
+  .scrub{position:relative;height:260vh;background:var(--bg)}
+  .scrub-stage{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+  .specimen{position:relative;width:min(78vw,820px);aspect-ratio:1;will-change:transform}
+  .specimen .frame{position:absolute;inset:0;border:1px solid var(--line-d);border-radius:50%}
+  .specimen .frame.f2{inset:-40px}
+  .specimen .frame.f3{inset:-90px;opacity:.4}
+  .specimen .frame.f4{inset:-150px;opacity:.2}
+  .specimen .core{position:absolute;inset:50%;width:0;height:0;background:radial-gradient(circle at 30% 30%,var(--hot),#a83020);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 80px rgba(255,90,60,.35),inset 0 -10px 30px rgba(0,0,0,.5);will-change:width,height}
+  .specimen .arm{position:absolute;left:50%;top:50%;width:50%;height:2px;background:linear-gradient(90deg,var(--paper),transparent);transform-origin:left center;will-change:transform,opacity}
+  .specimen .arm .joint{position:absolute;right:0;top:50%;width:14px;height:14px;border:2px solid var(--paper);border-radius:50%;transform:translate(50%,-50%);background:var(--bg)}
+  .specimen .arm.a1{transform:rotate(-30deg)}
+  .specimen .arm.a2{transform:rotate(60deg)}
+  .specimen .arm.a3{transform:rotate(150deg)}
+  .specimen .arm.a4{transform:rotate(220deg)}
+  .specimen .label{position:absolute;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute-d);white-space:nowrap;display:flex;align-items:center;gap:8px;will-change:opacity,transform}
+  .specimen .label::before{content:"";width:24px;height:1px;background:var(--mute-d)}
+  .specimen .label.l1{top:-20px;left:50%;transform:translate(-50%,-100%)}
+  .specimen .label.l2{right:-30px;top:50%;transform:translate(100%,-50%)}
+  .specimen .label.l3{bottom:-20px;left:50%;transform:translate(-50%,100%)}
+  .specimen .label.l4{left:-30px;top:50%;transform:translate(-100%,-50%) rotate(0)}
+  .specimen .label.l1::before{order:2;transform:rotate(90deg);transform-origin:center;width:20px}
+
+  .scrub-copy{position:absolute;left:8vw;top:50%;transform:translateY(-50%);max-width:480px;display:flex;flex-direction:column;gap:6px;will-change:opacity}
+  .scrub-copy.right{left:auto;right:8vw}
+  .scrub-copy .step{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--hot)}
+  .scrub-copy h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(40px,5vw,68px);line-height:1;letter-spacing:-.02em;margin:14px 0 18px}
+  .scrub-copy h2 em{font-style:italic;color:var(--hot)}
+  .scrub-copy p{font-family:'Inter Tight',sans-serif;font-size:18px;line-height:1.5;color:var(--mute-d)}
+  .scrub-copy .stat{display:flex;gap:30px;margin-top:30px;padding-top:20px;border-top:1px solid var(--line-d)}
+  .scrub-copy .stat > div{flex:1}
+  .scrub-copy .stat .v{font-family:'Instrument Serif',serif;font-size:36px;line-height:1;font-style:italic;color:var(--paper)}
+  .scrub-copy .stat .v em{color:var(--hot);font-style:normal}
+  .scrub-copy .stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute-d);margin-top:8px}
+
+  .scrub-frame{position:absolute;inset:0;opacity:0;transition:opacity .4s ease}
+  .scrub-frame.on{opacity:1}
+
+  .scrub-counter{position:absolute;top:32px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute-d);display:flex;align-items:center;gap:16px}
+  .scrub-counter .dots{display:flex;gap:6px}
+  .scrub-counter .dots i{display:inline-block;width:24px;height:1px;background:var(--mute-d);opacity:.4;transition:opacity .3s,background .3s}
+  .scrub-counter .dots i.on{opacity:1;background:var(--hot)}
+
+  .light{background:var(--bg-light);color:var(--ink);position:relative}
+  .light::before{content:"";position:absolute;left:0;right:0;top:-1px;height:200px;background:linear-gradient(180deg,var(--bg),transparent);pointer-events:none}
+
+  .features{padding:160px 32px;max-width:1500px;margin:0 auto;position:relative}
+  .sec-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--hot);margin-bottom:28px;display:flex;align-items:center;gap:14px}
+  .sec-eyebrow::before{content:"";width:42px;height:1px;background:var(--hot)}
+  .features h2{font-family:'Instrument Serif',serif;font-size:clamp(56px,9vw,128px);font-weight:400;line-height:.92;letter-spacing:-.035em;max-width:1180px;margin-bottom:80px}
+  .features h2 em{font-style:italic;color:var(--hot)}
+  .features h2 .stk{-webkit-text-stroke:1.5px var(--ink);color:transparent;font-style:italic}
+
+  .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+  .feat{padding:54px 44px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--bg-light);transition:background .35s,color .35s,transform .35s;cursor:pointer;position:relative;overflow:hidden;will-change:transform}
+  .feat::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(100%);transition:transform .55s cubic-bezier(.55,0,.2,1)}
+  .feat:hover::before{transform:translateY(0)}
+  .feat:hover{color:var(--paper)}
+  .feat:hover .feat-num,.feat:hover .feat-name em{color:var(--hot)}
+  .feat > *{position:relative;z-index:1}
+  .feat-num{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.25em;color:var(--mute);text-transform:uppercase;margin-bottom:34px;display:flex;justify-content:space-between;transition:color .35s}
+  .feat-name{font-family:'Instrument Serif',serif;font-size:48px;font-weight:400;line-height:1;letter-spacing:-.02em;margin-bottom:18px}
+  .feat-name em{font-style:italic;color:var(--hot);transition:color .35s}
+  .feat-desc{font-family:'Inter Tight',sans-serif;font-size:16px;line-height:1.55;color:inherit;opacity:.85;max-width:380px}
+  .feat-viz{margin-top:34px;height:160px;border:1px solid currentColor;opacity:.5;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:6px;background:rgba(0,0,0,.03)}
+  .feat:hover .feat-viz{opacity:1;border-color:var(--paper);background:rgba(255,255,255,.02)}
+
+  .viz-rings{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+  .viz-rings .r{position:absolute;border:1px solid currentColor;border-radius:50%;animation:ringpulse 3s ease-in-out infinite}
+  .viz-rings .r:nth-child(1){width:60px;height:60px;animation-delay:0s}
+  .viz-rings .r:nth-child(2){width:100px;height:100px;animation-delay:.4s}
+  .viz-rings .r:nth-child(3){width:140px;height:140px;animation-delay:.8s}
+  @keyframes ringpulse{0%,100%{opacity:.25}50%{opacity:.7;transform:scale(1.05)}}
+
+  .viz-bars{display:flex;align-items:flex-end;gap:6px;padding:20px}
+  .viz-bars i{display:inline-block;width:10px;background:currentColor;animation:barwave 1.6s ease-in-out infinite;border-radius:1px}
+  .viz-bars i:nth-child(1){height:30%;animation-delay:0s}
+  .viz-bars i:nth-child(2){height:55%;animation-delay:.1s}
+  .viz-bars i:nth-child(3){height:80%;animation-delay:.2s}
+  .viz-bars i:nth-child(4){height:45%;animation-delay:.3s}
+  .viz-bars i:nth-child(5){height:70%;animation-delay:.4s}
+  .viz-bars i:nth-child(6){height:90%;animation-delay:.5s}
+  .viz-bars i:nth-child(7){height:35%;animation-delay:.6s}
+  .viz-bars i:nth-child(8){height:60%;animation-delay:.7s}
+  .viz-bars i:nth-child(9){height:85%;animation-delay:.8s}
+  .viz-bars i:nth-child(10){height:50%;animation-delay:.9s}
+  @keyframes barwave{0%,100%{transform:scaleY(.5);opacity:.5}50%{transform:scaleY(1);opacity:1}}
+
+  .viz-orbit{position:relative;width:140px;height:140px}
+  .viz-orbit .planet{position:absolute;inset:0;border:1px solid currentColor;border-radius:50%}
+  .viz-orbit .satellite{position:absolute;left:50%;top:50%;width:8px;height:8px;background:currentColor;border-radius:50%;transform-origin:0 0;animation:satorbit 4s linear infinite}
+  .viz-orbit .satellite.s2{animation-duration:6s;background:transparent;border:1px solid currentColor;animation-direction:reverse}
+  @keyframes satorbit{from{transform:translate(-50%,-50%) rotate(0) translateX(70px)}to{transform:translate(-50%,-50%) rotate(360deg) translateX(70px)}}
+
+  .viz-line{position:relative;width:100%;height:100%}
+  .viz-line svg{width:100%;height:100%}
+  .viz-line .ll{stroke:currentColor;stroke-width:1.5;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:linedraw 4s ease-in-out infinite}
+  @keyframes linedraw{0%{stroke-dashoffset:400}50%{stroke-dashoffset:0}100%{stroke-dashoffset:-400}}
+  .viz-line .dot{fill:currentColor;animation:dotpulse 2s ease-in-out infinite}
+  @keyframes dotpulse{0%,100%{opacity:.3;r:3}50%{opacity:1;r:5}}
+
+  .metrics{padding:120px 32px;border-top:1px solid var(--ink);max-width:1500px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end}
+  .metrics-left h3{font-family:'Instrument Serif',serif;font-size:64px;font-weight:400;line-height:.95;letter-spacing:-.025em}
+  .metrics-left h3 em{font-style:italic;color:var(--hot)}
+  .metrics-left p{font-family:'Inter Tight',sans-serif;font-size:18px;line-height:1.55;color:var(--mute);margin-top:24px;max-width:480px}
+  .metrics-right{display:grid;grid-template-columns:1fr 1fr;gap:0;border-left:1px solid var(--ink);border-top:1px solid var(--ink)}
+  .met{padding:36px 30px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .met .v{font-family:'Instrument Serif',serif;font-size:72px;font-weight:400;line-height:.9;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums}
+  .met .v em{font-style:italic;color:var(--hot)}
+  .met .v sub{font-size:18px;color:var(--mute);font-style:italic;vertical-align:baseline;margin-left:6px}
+  .met .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;margin-top:14px}
+  .met .d{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--hot);margin-top:6px}
+
+  .flow{background:var(--bg);color:var(--paper);padding:160px 0;overflow:hidden;position:relative}
+  .flow::before{content:"";position:absolute;left:0;right:0;top:0;height:200px;background:linear-gradient(180deg,var(--bg-light),transparent);pointer-events:none}
+  .flow-head{padding:0 32px;max-width:1500px;margin:0 auto;margin-bottom:80px}
+  .flow-head h2{font-family:'Instrument Serif',serif;font-size:clamp(50px,7vw,96px);font-weight:400;line-height:1;letter-spacing:-.03em;max-width:1100px}
+  .flow-head h2 em{font-style:italic;color:var(--hot)}
+  .flow-track-wrap{padding-left:32px;overflow:hidden}
+  .flow-track{display:flex;gap:32px;will-change:transform}
+  .flow-card{flex:0 0 460px;height:560px;border:1px solid var(--line-d);background:var(--bg-soft);padding:36px 32px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:border-color .25s}
+  .flow-card:hover{border-color:var(--hot)}
+  .flow-card .step{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--hot)}
+  .flow-card .step b{color:var(--paper);font-weight:400;margin-left:10px}
+  .flow-card h3{font-family:'Instrument Serif',serif;font-size:48px;font-weight:400;line-height:.95;letter-spacing:-.02em;margin-top:24px}
+  .flow-card h3 em{font-style:italic;color:var(--hot)}
+  .flow-card p{font-family:'Inter Tight',sans-serif;font-size:16px;line-height:1.55;color:var(--mute-d);margin-top:16px}
+  .flow-card .viz{flex:1;display:flex;align-items:center;justify-content:center;margin-top:30px;border-top:1px solid var(--line-d);padding-top:24px;position:relative}
+  .flow-card .viz svg{width:80%;height:auto;color:var(--paper)}
+
+  .instr{padding:180px 32px;background:var(--bg-light);color:var(--ink);position:relative;overflow:hidden}
+  .instr-inner{max-width:1500px;margin:0 auto}
+  .instr h2{font-family:'Instrument Serif',serif;font-size:clamp(56px,8vw,108px);font-weight:400;line-height:.95;letter-spacing:-.03em;max-width:1100px;margin-bottom:60px}
+  .instr h2 em{font-style:italic;color:var(--hot)}
+  .instr-card{background:var(--ink);color:var(--paper);padding:60px;border:1px solid var(--ink);position:relative;overflow:hidden}
+  .instr-card::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--hot),transparent);animation:sweep 4s linear infinite}
+  @keyframes sweep{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+  .instr-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch}
+  .instr-side{padding:20px 30px}
+  .instr-side .nm{font-family:'Instrument Serif',serif;font-size:36px;font-weight:400;line-height:1;letter-spacing:-.01em;margin-bottom:6px}
+  .instr-side .nm em{font-style:italic;color:var(--hot)}
+  .instr-side .city{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--mute-d);text-transform:uppercase;margin-bottom:26px}
+  .instr-row{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line-d)}
+  .instr-row:last-child{border-bottom:none}
+  .instr-row .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--mute-d);text-transform:uppercase}
+  .instr-row .v{font-family:'Instrument Serif',serif;font-size:22px;font-style:italic;color:var(--paper)}
+  .instr-row .v.w{color:var(--hot);font-weight:500}
+  .instr-vs{display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px;color:var(--hot);font-family:'Instrument Serif',serif;font-style:italic;font-size:42px;font-weight:400;letter-spacing:-.02em;position:relative}
+  .instr-vs::before,.instr-vs::after{content:"";position:absolute;left:50%;width:1px;background:var(--line-d);height:30%}
+  .instr-vs::before{top:0}
+  .instr-vs::after{bottom:0}
+
+  .instr-toggles{display:flex;gap:8px;flex-wrap:wrap;margin-top:30px}
+  .instr-toggle{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.15em;padding:8px 14px;border:1px solid var(--line-d);background:transparent;color:var(--paper);text-transform:uppercase;cursor:none;transition:background .2s,color .2s,border-color .2s;border-radius:100px}
+  .instr-toggle:hover{border-color:var(--paper)}
+  .instr-toggle.on{background:var(--hot);color:var(--ink);border-color:var(--hot)}
+
+  .story{padding:200px 32px;background:var(--bg);position:relative;overflow:hidden}
+  .story::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,90,60,.08),transparent 60%);pointer-events:none}
+  .story-inner{max-width:1100px;margin:0 auto;text-align:center;position:relative}
+  .story h2{font-family:'Instrument Serif',serif;font-size:clamp(50px,7vw,100px);font-weight:400;line-height:1.05;letter-spacing:-.025em;text-align:center}
+  .story h2 em{font-style:italic;color:var(--hot)}
+  .story h2 .stk{-webkit-text-stroke:1px var(--paper);color:transparent;font-style:italic}
+  .story-quote{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute-d);margin-top:60px;display:flex;align-items:center;justify-content:center;gap:14px}
+  .story-quote::before,.story-quote::after{content:"";width:42px;height:1px;background:var(--mute-d)}
+
+  .cta-section{padding:200px 32px 0;background:var(--bg);text-align:center;position:relative}
+  .cta-section h2{font-family:'Instrument Serif',serif;font-size:clamp(80px,14vw,220px);font-weight:400;line-height:.85;letter-spacing:-.045em}
+  .cta-section h2 em{font-style:italic;color:var(--hot)}
+  .cta-buttons{display:flex;gap:14px;justify-content:center;margin-top:60px;flex-wrap:wrap}
+  .btn{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.2em;padding:20px 40px;border-radius:100px;text-transform:uppercase;display:inline-flex;align-items:center;gap:12px;transition:all .25s;border:1px solid var(--paper);background:var(--paper);color:var(--ink);cursor:none}
+  .btn:hover{background:var(--hot);border-color:var(--hot);color:var(--paper);transform:translateY(-2px)}
+  .btn.ghost{background:transparent;color:var(--paper)}
+  .btn.ghost:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .btn .ar{font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;transition:transform .25s}
+  .btn:hover .ar{transform:translateX(6px)}
+
+  .foot{padding:120px 32px 40px;background:var(--bg);color:var(--paper);position:relative}
+  .foot-inner{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;border-top:1px solid var(--line-d);padding-top:60px}
+  .foot-logo{font-family:'Instrument Serif',serif;font-size:48px;letter-spacing:-.02em;line-height:1;display:flex;align-items:baseline;gap:10px}
+  .foot-logo em{font-style:italic;color:var(--hot)}
+  .foot-mk{width:12px;height:12px;background:var(--hot);border-radius:50%;display:inline-block}
+  .foot p{font-family:'Inter Tight',sans-serif;font-size:15px;color:var(--mute-d);margin-top:18px;line-height:1.55;max-width:380px}
+  .foot h4{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--mute-d);margin-bottom:18px}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot ul a{font-family:'Inter Tight',sans-serif;font-size:15px;transition:color .2s}
+  .foot ul a:hover{color:var(--hot)}
+  .colo{max-width:1500px;margin:80px auto 0;padding-top:24px;border-top:1px solid var(--line-d);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  .rv{opacity:0;transform:translateY(40px);transition:opacity 1.1s cubic-bezier(.2,.8,.2,1),transform 1.1s cubic-bezier(.2,.8,.2,1)}
+  .rv.in{opacity:1;transform:none}
+  .rv-2{transition-delay:.12s}
+  .rv-3{transition-delay:.22s}
+  .rv-4{transition-delay:.32s}
+  .rv-clip{display:inline-block;overflow:hidden;vertical-align:bottom}
+  .rv-clip > span{display:inline-block;transform:translateY(110%) rotate(-3deg);transition:transform 1.1s cubic-bezier(.2,.85,.2,1)}
+  .rv-clip.in > span{transform:none}
+
+  .loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;transition:opacity .8s,transform .8s}
+  .loader.gone{opacity:0;pointer-events:none;transform:scale(1.02)}
+  .loader .mk{width:14px;height:14px;background:var(--hot);border-radius:50%;box-shadow:0 0 20px var(--hot);animation:mkpulse 1.2s ease-in-out infinite}
+  @keyframes mkpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.4}}
+  .loader .lab{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute-d)}
+  .loader .bar{width:200px;height:1px;background:var(--line-d);position:relative;overflow:hidden}
+  .loader .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:0;background:var(--hot);animation:loadfill 1.3s ease-out forwards}
+  @keyframes loadfill{to{width:100%}}
+
+  .marq{padding:60px 0;border-top:1px solid var(--line-d);border-bottom:1px solid var(--line-d);background:var(--bg);overflow:hidden;white-space:nowrap}
+  .marq-track{display:inline-block;font-family:'Instrument Serif',serif;font-size:clamp(80px,12vw,180px);font-style:italic;line-height:1;letter-spacing:-.03em;animation:scroll 40s linear infinite}
+  .marq-track span{display:inline-block;margin:0 60px}
+  .marq-track .stk{-webkit-text-stroke:1.5px var(--paper);color:transparent}
+  .marq-track .h{color:var(--hot)}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+
+  .met .v[data-target]{font-variant-numeric:tabular-nums}
+
+  @media (max-width:980px){
+    body{cursor:auto}
+    .cur{display:none}
+    .nav .links{display:none}
+    .scrub{height:auto}
+    .scrub-stage{position:relative;height:auto;padding:80px 24px}
+    .scrub-copy{position:relative;left:0;top:0;transform:none;margin-bottom:40px}
+    .scrub-copy.right{right:0}
+    .specimen{position:relative;width:90vw;margin:0 auto}
+    .feat-grid{grid-template-columns:1fr}
+    .metrics{grid-template-columns:1fr;gap:40px}
+    .metrics-right{grid-template-columns:1fr 1fr}
+    .flow-card{flex:0 0 320px;height:480px}
+    .instr-grid{grid-template-columns:1fr;gap:30px}
+    .instr-vs{transform:rotate(90deg);height:40px}
+    .foot-inner{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="mk"></div>
+  <div class="lab">UniCompare Pro · Loading instrument…</div>
+  <div class="bar"></div>
+</div>
+
+<nav class="nav" id="nav">
+  <div class="logo"><span class="mk"></span>UniCompare<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--mute-d);margin-left:8px">PRO</span></div>
+  <div class="links">
+    <a>Overview</a><a>Features</a><a>Pricing</a><a>Research</a><a>Docs</a>
+  </div>
+  <a class="cta">Request access →</a>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-grid" id="heroGrid"></div>
+  <div class="hero-spec" id="heroSpec">
+    <svg viewBox="0 0 600 600">
+      <g class="ring"><circle cx="300" cy="300" r="280" fill="none" stroke="#fff" stroke-width=".5"/><circle cx="300" cy="300" r="280" fill="none" stroke="#fff" stroke-width=".5" stroke-dasharray="2 18"/></g>
+      <g class="ring2"><circle cx="300" cy="300" r="220" fill="none" stroke="#fff" stroke-width=".5"/><circle cx="300" cy="300" r="220" fill="none" stroke="#fff" stroke-width=".5" stroke-dasharray="1 6"/></g>
+      <circle cx="300" cy="300" r="160" fill="none" stroke="#fff" stroke-width=".4"/>
+      <circle cx="300" cy="300" r="100" fill="none" stroke="#ff5a3c" stroke-width=".8"/>
+    </svg>
+  </div>
+  <div class="hero-stage">
+    <div class="hero-eyebrow" id="heEye">A research instrument · v04 · 2026</div>
+    <h1 class="hero-title" id="heTitle">Same data. <em>Sharper</em> <span class="stk">questions.</span></h1>
+    <div class="hero-sub" id="heSub">Now indexing 14,820 institutions · 196 countries</div>
+  </div>
+  <div class="scroll-cue" id="cue">
+    <span>Scroll</span><span class="line"></span>
+  </div>
+</section>
+
+<section class="scrub" id="scrub">
+  <div class="scrub-stage">
+
+    <div class="scrub-counter">
+      <span>STAGE</span>
+      <span class="dots"><i class="on"></i><i></i><i></i><i></i></span>
+      <span id="scrubLab">01 / 04</span>
+    </div>
+
+    <div class="specimen" id="specimen">
+      <div class="frame f4"></div>
+      <div class="frame f3"></div>
+      <div class="frame f2"></div>
+      <div class="frame"></div>
+      <div class="core" id="specCore"></div>
+      <div class="arm a1" id="arm1"><div class="joint"></div></div>
+      <div class="arm a2" id="arm2"><div class="joint"></div></div>
+      <div class="arm a3" id="arm3"><div class="joint"></div></div>
+      <div class="arm a4" id="arm4"><div class="joint"></div></div>
+      <div class="label l1" id="lab1">14,820 institutions</div>
+      <div class="label l2" id="lab2">196 countries</div>
+      <div class="label l3" id="lab3">94 metrics</div>
+      <div class="label l4" id="lab4">live ticks · 18ms</div>
+    </div>
+
+    <div class="scrub-copy scrub-frame on" id="frame1">
+      <div class="step">§ 01 · The corpus</div>
+      <h2>A single <em>truth-source.</em></h2>
+      <p>We index every public university dataset on earth — QS, THE, ARWU, IPEDS, government open data, and visa registries. Then we structure it for comparison. Nothing is editorialized.</p>
+      <div class="stat">
+        <div><div class="v" data-target="14820"><em>0</em></div><div class="l">Institutions indexed</div></div>
+        <div><div class="v" data-target="196"><em>0</em></div><div class="l">Countries covered</div></div>
+      </div>
+    </div>
+
+    <div class="scrub-copy right scrub-frame" id="frame2">
+      <div class="step">§ 02 · The lens</div>
+      <h2>Compare on <em>your axis.</em></h2>
+      <p>The default rankings tell you who's prestigious. The Pro lens tells you who fits — by tuition, climate, language, employment outcomes, visa cost, even the number of return flights to your hometown.</p>
+      <div class="stat">
+        <div><div class="v" data-target="94"><em>0</em></div><div class="l">Comparison axes</div></div>
+        <div><div class="v"><em>Live</em></div><div class="l">Updated daily</div></div>
+      </div>
+    </div>
+
+    <div class="scrub-copy scrub-frame" id="frame3">
+      <div class="step">§ 03 · The ticker</div>
+      <h2>Live, <em>not stale.</em></h2>
+      <p>Tuition lines, acceptance rates, application cycles, visa-rule shifts — the Pro feed updates every business day. Set an alert on any school, any metric, any threshold.</p>
+      <div class="stat">
+        <div><div class="v">18<sub>ms</sub></div><div class="l">Latency to source</div></div>
+        <div><div class="v">99.97<sub>%</sub></div><div class="l">Uptime SLA</div></div>
+      </div>
+    </div>
+
+    <div class="scrub-copy right scrub-frame" id="frame4">
+      <div class="step">§ 04 · The pact</div>
+      <h2>No advice. <em>No commission.</em></h2>
+      <p>UniCompare doesn't sell admissions consulting. We don't earn referral fees. We don't rank by who pays us. The data is the product — clean, complete, and on your side.</p>
+      <div class="stat">
+        <div><div class="v"><em>0</em></div><div class="l">Affiliate links</div></div>
+        <div><div class="v"><em>0</em></div><div class="l">Sponsored ranks</div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="light">
+  <div class="features">
+    <div class="sec-eyebrow rv">§ 05 — The instrument</div>
+    <h2 class="rv rv-2">Six tools, <em>one</em> <span class="stk">decision.</span></h2>
+    <div class="feat-grid">
+      <div class="feat rv">
+        <div class="feat-num"><span>§ 01 · COMPARE</span><span>→</span></div>
+        <div class="feat-name">Side-by-side, <em>four-up.</em></div>
+        <div class="feat-desc">Pin up to four universities. Rows align on every metric — cost, weather, language of instruction, acceptance rate. Export as PDF, share as a link.</div>
+        <div class="feat-viz viz-rings"><div class="r"></div><div class="r"></div><div class="r"></div></div>
+      </div>
+      <div class="feat rv rv-2">
+        <div class="feat-num"><span>§ 02 · LIVE TICKER</span><span>→</span></div>
+        <div class="feat-name">Quotes that <em>move.</em></div>
+        <div class="feat-desc">Tuition, fees, intake counts, deadline days remaining — all live. Subscribe to alerts and get notified the moment something shifts on a school you're tracking.</div>
+        <div class="feat-viz viz-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="feat rv">
+        <div class="feat-num"><span>§ 03 · COST CALC</span><span>→</span></div>
+        <div class="feat-name">True <em>landed cost.</em></div>
+        <div class="feat-desc">Tuition is the easy part. The calculator layers in city cost-of-living, visa fees, health insurance, flights home, even tax on stipend income — by your home country.</div>
+        <div class="feat-viz viz-line"><svg viewBox="0 0 200 100"><path class="ll" d="M0 80 L40 60 L80 70 L120 35 L160 50 L200 20"/><circle class="dot" cx="40" cy="60" r="3"/><circle class="dot" cx="120" cy="35" r="3"/><circle class="dot" cx="200" cy="20" r="3"/></svg></div>
+      </div>
+      <div class="feat rv rv-2">
+        <div class="feat-num"><span>§ 04 · ODDS</span><span>→</span></div>
+        <div class="feat-name">An honest <em>read.</em></div>
+        <div class="feat-desc">Plug in your GPA, your test scores, your work experience. The Pro model returns a percentile fit for every school you've considered — reach, target, or safety, color-coded.</div>
+        <div class="feat-viz viz-orbit"><div class="planet"></div><div class="satellite"></div><div class="satellite s2"></div></div>
+      </div>
+      <div class="feat rv">
+        <div class="feat-num"><span>§ 05 · API</span><span>→</span></div>
+        <div class="feat-name">For <em>builders.</em></div>
+        <div class="feat-desc">Every dataset behind the Pro UI is also exposed through a clean REST and GraphQL surface. Build your own admissions tool. Build it on the same numbers we use.</div>
+        <div class="feat-viz viz-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="feat rv rv-2">
+        <div class="feat-num"><span>§ 06 · ARCHIVE</span><span>→</span></div>
+        <div class="feat-name">Eight years <em>back.</em></div>
+        <div class="feat-desc">Tuition history, ranking shifts, acceptance trends — every metric on every school back to 2018. Spot what's rising, what's falling, what's stable, and what's noise.</div>
+        <div class="feat-viz viz-line"><svg viewBox="0 0 200 100"><path class="ll" d="M0 50 L25 45 L50 60 L75 40 L100 50 L125 30 L150 45 L175 25 L200 35"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metrics-left">
+      <div class="sec-eyebrow rv">§ 06 — Coverage</div>
+      <h3 class="rv rv-2">The numbers <em>behind</em> the lens.</h3>
+      <p class="rv rv-3">Every figure is sourced from official rankings, government data, or university filings — never crowd-scraped. Refreshed daily on business days. Cited inline on every comparison.</p>
+    </div>
+    <div class="metrics-right">
+      <div class="met rv"><div class="v" data-target="14820"><em>0</em></div><div class="l">Institutions</div><div class="d">▲ 240 added this year</div></div>
+      <div class="met rv rv-2"><div class="v" data-target="196"><em>0</em></div><div class="l">Countries</div><div class="d">Full visa-rule coverage</div></div>
+      <div class="met rv"><div class="v" data-target="94"><em>0</em></div><div class="l">Comparison axes</div><div class="d">Plus 22 custom fields</div></div>
+      <div class="met rv rv-2"><div class="v">99.97<sub>%</sub></div><div class="l">Uptime SLA</div><div class="d">▲ 0.03 since v3</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="flow">
+  <div class="flow-head">
+    <div class="sec-eyebrow rv">§ 07 — Workflow</div>
+    <h2 class="rv rv-2">How a <em>session</em> runs.</h2>
+  </div>
+  <div class="flow-track-wrap">
+    <div class="flow-track" id="flowTrack">
+      <div class="flow-card">
+        <div class="step">01<b>QUERY</b></div>
+        <div>
+          <h3>State what you <em>want.</em></h3>
+          <p>"Master's in mechanical engineering, English-taught, total cost under $40k/yr, climate temperate, English-speaking weekends preferred." Pro parses the brief.</p>
+        </div>
+        <div class="viz">
+          <svg viewBox="0 0 200 80"><rect x="10" y="20" width="180" height="40" fill="none" stroke="currentColor" stroke-width="1.5" rx="6"/><line x1="20" y1="40" x2="60" y2="40" stroke="currentColor" stroke-width="1.5"/><circle cx="65" cy="40" r="3" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="step">02<b>FILTER</b></div>
+        <div>
+          <h3>14,820 → <em>148.</em></h3>
+          <p>The corpus narrows to viable candidates in under a second. Each retained school carries its match reasons — which of your constraints it satisfies, which it bends.</p>
+        </div>
+        <div class="viz">
+          <svg viewBox="0 0 200 80"><circle cx="40" cy="40" r="22" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="100" cy="40" r="14" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="155" cy="40" r="6" fill="currentColor" opacity=".8"/><line x1="62" y1="40" x2="86" y2="40" stroke="currentColor" stroke-width=".5" stroke-dasharray="2 2"/><line x1="114" y1="40" x2="149" y2="40" stroke="currentColor" stroke-width=".5" stroke-dasharray="2 2"/></svg>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="step">03<b>RANK</b></div>
+        <div>
+          <h3>Your axis, <em>your weights.</em></h3>
+          <p>Default rank is by best-fit. Drag the weight sliders to re-rank by cost, climate, employment outcome, or any combination. The list refreshes in place.</p>
+        </div>
+        <div class="viz">
+          <svg viewBox="0 0 200 80"><rect x="20" y="20" width="160" height="6" fill="none" stroke="currentColor"/><circle cx="120" cy="23" r="6" fill="currentColor"/><rect x="20" y="36" width="160" height="6" fill="none" stroke="currentColor"/><circle cx="60" cy="39" r="6" fill="currentColor"/><rect x="20" y="52" width="160" height="6" fill="none" stroke="currentColor"/><circle cx="155" cy="55" r="6" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="step">04<b>SHORTLIST</b></div>
+        <div>
+          <h3>Pin a <em>shortlist.</em></h3>
+          <p>Drag your favorites into a compare board (up to 12). Every shortlist lives forever, syncs across devices, and exports as a tidy PDF for advisors or family.</p>
+        </div>
+        <div class="viz">
+          <svg viewBox="0 0 200 80"><rect x="20" y="15" width="35" height="50" fill="currentColor" opacity=".2"/><rect x="65" y="15" width="35" height="50" fill="currentColor" opacity=".4"/><rect x="110" y="15" width="35" height="50" fill="currentColor" opacity=".7"/><rect x="155" y="15" width="35" height="50" fill="currentColor"/></svg>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="step">05<b>TRACK</b></div>
+        <div>
+          <h3>Wake on <em>change.</em></h3>
+          <p>Pinned school raises tuition? Adds an English-taught track? Drops a visa requirement? Pro pings you the same business day, with the diff and the citation.</p>
+        </div>
+        <div class="viz">
+          <svg viewBox="0 0 200 80"><circle cx="50" cy="40" r="20" fill="none" stroke="currentColor"/><circle cx="50" cy="40" r="6" fill="currentColor"/><line x1="76" y1="40" x2="120" y2="40" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4"/><circle cx="140" cy="40" r="12" fill="none" stroke="currentColor"/><line x1="135" y1="40" x2="145" y2="40" stroke="currentColor" stroke-width="1"/><line x1="140" y1="35" x2="140" y2="45" stroke="currentColor" stroke-width="1"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="instr">
+  <div class="instr-inner">
+    <div class="sec-eyebrow rv">§ 08 — Live instrument</div>
+    <h2 class="rv rv-2">Two schools. <em>Same row.</em></h2>
+    <div class="instr-card rv rv-3">
+      <div class="instr-grid">
+        <div class="instr-side">
+          <div class="nm" id="cA-nm">Imperial <em>College</em> London</div>
+          <div class="city" id="cA-ct">🇬🇧 London · United Kingdom</div>
+          <div class="instr-row"><span class="l">QS Rank</span><span class="v w" id="cA-r">2</span></div>
+          <div class="instr-row"><span class="l">Tuition (intl)</span><span class="v" id="cA-t">£41,500</span></div>
+          <div class="instr-row"><span class="l">Living index</span><span class="v" id="cA-l">98 · High</span></div>
+          <div class="instr-row"><span class="l">Acceptance</span><span class="v" id="cA-a">14%</span></div>
+          <div class="instr-row"><span class="l">English-taught</span><span class="v w" id="cA-e">Yes · 100%</span></div>
+          <div class="instr-row"><span class="l">Post-study visa</span><span class="v w" id="cA-v">2 years</span></div>
+          <div class="instr-toggles" id="cA-toggle">
+            <button class="instr-toggle on" data-side="A" data-id="imperial">Imperial</button>
+            <button class="instr-toggle" data-side="A" data-id="oxford">Oxford</button>
+            <button class="instr-toggle" data-side="A" data-id="harvard">Harvard</button>
+          </div>
+        </div>
+        <div class="instr-vs">vs</div>
+        <div class="instr-side">
+          <div class="nm" id="cB-nm">ETH <em>Zürich</em></div>
+          <div class="city" id="cB-ct">🇨🇭 Zürich · Switzerland</div>
+          <div class="instr-row"><span class="l">QS Rank</span><span class="v" id="cB-r">7</span></div>
+          <div class="instr-row"><span class="l">Tuition (intl)</span><span class="v w" id="cB-t">CHF 1,460</span></div>
+          <div class="instr-row"><span class="l">Living index</span><span class="v" id="cB-l">131 · Very high</span></div>
+          <div class="instr-row"><span class="l">Acceptance</span><span class="v" id="cB-a">27%</span></div>
+          <div class="instr-row"><span class="l">English-taught</span><span class="v" id="cB-e">Partial · Master's only</span></div>
+          <div class="instr-row"><span class="l">Post-study visa</span><span class="v" id="cB-v">6 months</span></div>
+          <div class="instr-toggles" id="cB-toggle">
+            <button class="instr-toggle on" data-side="B" data-id="eth">ETH</button>
+            <button class="instr-toggle" data-side="B" data-id="tum">TU Munich</button>
+            <button class="instr-toggle" data-side="B" data-id="kaist">KAIST</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marq">
+  <div class="marq-track">
+    <span><em>research-grade</em></span><span class="stk">indexed</span><span class="h">live</span><span><em>unfiltered</em></span><span class="stk">cited</span><span class="h">precise</span><span><em>research-grade</em></span><span class="stk">indexed</span><span class="h">live</span><span><em>unfiltered</em></span><span class="stk">cited</span><span class="h">precise</span>
+  </div>
+</div>
+
+<section class="story">
+  <div class="story-inner">
+    <div class="story-quote rv">From the editorial</div>
+    <h2 class="rv rv-2">We built UniCompare Pro because the world of university rankings is <em>noisy,</em> <span class="stk">commercial,</span> and <em>often wrong.</em> The tool is the corrective.</h2>
+    <div class="story-quote rv rv-3">UniCompare editorial · 2026</div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2 class="rv">Start a <em>session.</em></h2>
+  <div class="cta-buttons rv rv-2">
+    <a class="btn">Try Pro free for 14 days <span class="ar">→</span></a>
+    <a class="btn ghost">Read the docs <span class="ar">→</span></a>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div>
+      <div class="foot-logo"><span class="foot-mk"></span>UniCompare <em>Pro</em></div>
+      <p>An open, research-first comparison instrument for global higher education. No commissions. No sponsorships. Cited at every datapoint.</p>
+    </div>
+    <div><h4>Product</h4><ul><a>Compare</a><a>Live ticker</a><a>Cost calc</a><a>Odds model</a><a>Archive</a></ul></div>
+    <div><h4>Research</h4><ul><a>Methodology</a><a>Datasets</a><a>Editorial</a><a>Citations</a></ul></div>
+    <div><h4>Company</h4><ul><a>About</a><a>Careers</a><a>Press</a><a>Contact</a></ul></div>
+  </div>
+  <div class="colo">
+    <span>Set in Instrument Serif · IBM Plex Mono · Inter Tight</span>
+    <span>© 2026 UniCompare Inc. · Pro v04 · Built in 24 timezones</span>
+  </div>
+</footer>
+
+<div class="cur" id="cur"></div>
+
+<script>
+'use strict';
+
+document.documentElement.style.overflow = 'hidden';
+setTimeout(()=>{
+  const loader = document.getElementById('loader');
+  loader.classList.add('gone');
+
+  document.documentElement.style.overflow = '';
+  window.scrollTo(0, 0);
+  setTimeout(()=>loader.remove(), 800);
+}, 1400);
+
+const cur = document.getElementById('cur');
+const isHover = matchMedia('(hover:hover)').matches;
+if(isHover){
+  let tx=0,ty=0,cx=0,cy=0;
+  addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;});
+  (function loop(){ cx+=(tx-cx)*.35; cy+=(ty-cy)*.35; cur.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`; requestAnimationFrame(loop); })();
+  addEventListener('mouseover',e=>{
+    const t = e.target.closest('a,button,.feat,.flow-card,.instr-toggle');
+    if(t) cur.classList.add('hot'); else cur.classList.remove('hot');
+  });
+}
+
+let scrollY = window.scrollY;
+let targetY = window.scrollY;
+let ticking = false;
+const SMOOTH = 0.10;
+function smoothLoop(){
+  scrollY += (targetY - scrollY) * SMOOTH;
+  if(Math.abs(targetY - scrollY) < 0.5){ scrollY = targetY; ticking = false; }
+  else { ticking = true; }
+
+  updateScrollEffects(scrollY);
+  if(ticking) requestAnimationFrame(smoothLoop);
+}
+addEventListener('scroll',()=>{
+  targetY = window.scrollY;
+  if(!ticking){ ticking = true; requestAnimationFrame(smoothLoop); }
+});
+
+const hero = document.getElementById('hero');
+const heTitle = document.getElementById('heTitle');
+const heEye = document.getElementById('heEye');
+const heSub = document.getElementById('heSub');
+const heroGrid = document.getElementById('heroGrid');
+const heroSpec = document.getElementById('heroSpec');
+const cue = document.getElementById('cue');
+const scrub = document.getElementById('scrub');
+const specimen = document.getElementById('specimen');
+const specCore = document.getElementById('specCore');
+const arms = [document.getElementById('arm1'),document.getElementById('arm2'),document.getElementById('arm3'),document.getElementById('arm4')];
+const labs = [document.getElementById('lab1'),document.getElementById('lab2'),document.getElementById('lab3'),document.getElementById('lab4')];
+const frames = ['frame1','frame2','frame3','frame4'].map(id=>document.getElementById(id));
+const dots = document.querySelectorAll('.scrub-counter .dots i');
+const scrubLab = document.getElementById('scrubLab');
+const nav = document.getElementById('nav');
+const flowTrack = document.getElementById('flowTrack');
+
+function lerp(a,b,k){ return a + (b-a)*k; }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function smoothstep(t){ return t*t*(3-2*t); }
+
+function updateScrollEffects(y){
+  const vh = innerHeight;
+
+  const heroK = clamp(y/vh, 0, 1);
+  const heroEase = smoothstep(heroK);
+  heTitle.style.transform = `translateY(${-heroEase*60}px) scale(${1 - heroEase*0.15})`;
+  heTitle.style.opacity = String(1 - heroEase*0.6);
+  heEye.style.opacity = String(1 - heroEase*1.2);
+  heEye.style.transform = `translateY(${-heroEase*30}px)`;
+  heSub.style.opacity = String(1 - heroEase*1.5);
+  heSub.style.transform = `translateY(${heroEase*30}px)`;
+  heroGrid.style.transform = `scale(${1 + heroEase*0.3}) translateY(${heroEase*40}px)`;
+  heroGrid.style.opacity = String(1 - heroEase*0.8);
+  heroSpec.style.transform = `translate(-50%,-50%) scale(${1 + heroEase*1.5}) rotate(${heroEase*60}deg)`;
+  heroSpec.style.opacity = String(0.18 - heroEase*0.18);
+  cue.style.opacity = String(1 - heroEase*2);
+
+  if(y > vh*0.6) nav.classList.add('solid'); else nav.classList.remove('solid');
+
+  const lightTop = document.querySelector('.light').offsetTop;
+  const lightBot = document.querySelector('.light').offsetTop + document.querySelector('.light').offsetHeight;
+  const instrTop = document.querySelector('.instr').offsetTop;
+  const instrBot = document.querySelector('.instr').offsetTop + document.querySelector('.instr').offsetHeight;
+  const inLight = (y + 60 >= lightTop && y + 60 < lightBot) || (y + 60 >= instrTop && y + 60 < instrBot);
+  nav.classList.toggle('on-light', inLight);
+
+  const sTop = scrub.offsetTop;
+  const sH = scrub.offsetHeight;
+
+  const sProg = clamp((y - sTop) / (sH - vh), 0, 1);
+
+  const stage = clamp(Math.floor(sProg * 4), 0, 3);
+
+  const local = clamp(sProg * 4 - stage, 0, 1);
+
+  const coreSize = lerp(0.08, 0.80, smoothstep(sProg));
+  specCore.style.width = `calc(${coreSize*100}% - 0px)`;
+  specCore.style.height = `calc(${coreSize*100}% - 0px)`;
+
+  arms.forEach((arm,i)=>{
+    const base = [-30, 60, 150, 220][i];
+    arm.style.transform = `rotate(${base + sProg*180 + i*15}deg)`;
+
+    const dist = Math.abs(sProg*4 - (i+.5));
+    const k = Math.max(.18, 1 - dist*.6);
+    labs[i].style.opacity = String(k);
+    arm.style.opacity = String(.4 + k*.6);
+  });
+
+  const specScale = lerp(.62, 1.08, smoothstep(sProg));
+  const specRot = lerp(-30, 30, sProg);
+  const specShift = Math.sin(sProg * Math.PI) * 30;
+  specimen.style.transform = `translateX(${specShift}px) scale(${specScale}) rotate(${specRot}deg)`;
+
+  frames.forEach((f,i)=>{
+    if(i === stage){
+      f.classList.add('on');
+      f.style.opacity = '1';
+
+      f.style.transform = (i%2===0?'translateY(-50%)':'translateY(-50%)');
+    } else {
+      f.classList.remove('on');
+      f.style.opacity = '0';
+    }
+  });
+
+  dots.forEach((d,i)=> d.classList.toggle('on', i <= stage));
+  scrubLab.textContent = `0${stage+1} / 04`;
+
+  const flow = document.querySelector('.flow');
+  if(flow && flowTrack){
+    const flowTop = flow.offsetTop;
+    const flowH = flow.offsetHeight;
+
+    const center = y + vh/2;
+    if(center > flowTop && center < flowTop + flowH){
+      const k = clamp((center - flowTop) / flowH, 0, 1);
+
+      const trackW = flowTrack.scrollWidth;
+      const maxShift = trackW - innerWidth + 60;
+      flowTrack.style.transform = `translateX(${-k * maxShift * 0.5}px)`;
+    }
+  }
+}
+updateScrollEffects(window.scrollY);
+
+(function(){
+  function inPinned(){
+    const sect = document.getElementById('scrub');
+    if(!sect) return false;
+    const r = sect.getBoundingClientRect();
+    return r.top <= 0 && r.bottom > innerHeight + 1;
+  }
+  window.addEventListener('wheel', e=>{
+    if(!inPinned()) return;
+    e.preventDefault();
+    window.scrollBy({top: e.deltaY * 0.32, behavior:'auto'});
+  }, {passive:false});
+  let touchY = 0;
+  window.addEventListener('touchstart', e=>{ touchY = e.touches[0].clientY; }, {passive:true});
+  window.addEventListener('touchmove', e=>{
+    if(!inPinned()) return;
+    const cy = e.touches[0].clientY;
+    const dy = touchY - cy;
+    touchY = cy;
+    e.preventDefault();
+    window.scrollBy({top: dy * 0.45, behavior:'auto'});
+  }, {passive:false});
+  window.addEventListener('keydown', e=>{
+    if(!inPinned()) return;
+    if(e.key==='PageDown' || e.key==='PageUp' || e.key===' '){
+      e.preventDefault();
+      window.scrollBy({top: (e.key==='PageUp'?-1:1) * innerHeight * 0.18, behavior:'smooth'});
+    }
+  });
+})();
+
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+
+      if(e.target.matches('.met') || e.target.matches('.stat')){
+        e.target.querySelectorAll('[data-target]').forEach(num=>{
+          if(num.dataset.done) return;
+          num.dataset.done = '1';
+          const em = num.querySelector('em');
+          const target = parseInt(num.dataset.target,10);
+          if(isNaN(target)) return;
+          const dur = 1600, start = performance.now();
+          const out = em || num;
+          (function step(t){
+            const k = clamp((t-start)/dur,0,1);
+            const ease = 1 - Math.pow(1-k,3);
+            out.textContent = Math.round(target*ease).toLocaleString();
+            if(k<1) requestAnimationFrame(step); else out.textContent = target.toLocaleString();
+          })(start);
+        });
+      }
+      io.unobserve(e.target);
+    }
+  });
+},{rootMargin:'-8% 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+document.querySelectorAll('.met').forEach(el=>io.observe(el));
+document.querySelectorAll('.stat').forEach(el=>io.observe(el));
+
+const compareData = {
+  imperial: {nm:'Imperial <em>College</em> London',ct:'🇬🇧 London · United Kingdom',r:'2',t:'£41,500',l:'98 · High',a:'14%',e:'Yes · 100%',v:'2 years'},
+  oxford:   {nm:'University of <em>Oxford</em>',ct:'🇬🇧 Oxford · United Kingdom',r:'3',t:'£39,000',l:'89 · High',a:'17%',e:'Yes · 100%',v:'2 years'},
+  harvard:  {nm:'Harvard <em>University</em>',ct:'🇺🇸 Cambridge · United States',r:'4',t:'$57,200',l:'118 · Very high',a:'3.4%',e:'Yes · 100%',v:'OPT 12mo'},
+  eth:      {nm:'ETH <em>Zürich</em>',ct:'🇨🇭 Zürich · Switzerland',r:'7',t:'CHF 1,460',l:'131 · Very high',a:'27%',e:'Partial · Master\'s only',v:'6 months'},
+  tum:      {nm:'TU <em>Munich</em>',ct:'🇩🇪 München · Germany',r:'28',t:'€0',l:'82 · Mid',a:'68%',e:'Partial · Master\'s only',v:'18 months'},
+  kaist:    {nm:'<em>KAIST</em>',ct:'🇰🇷 Daejeon · South Korea',r:'53',t:'$9,400',l:'68 · Low-mid',a:'34%',e:'Yes · 100%',v:'2 years'}
+};
+function applyCompare(side, id){
+  const d = compareData[id]; if(!d) return;
+  document.getElementById('c'+side+'-nm').innerHTML = d.nm;
+  document.getElementById('c'+side+'-ct').textContent = d.ct;
+  document.getElementById('c'+side+'-r').textContent = d.r;
+  document.getElementById('c'+side+'-t').textContent = d.t;
+  document.getElementById('c'+side+'-l').textContent = d.l;
+  document.getElementById('c'+side+'-a').textContent = d.a;
+  document.getElementById('c'+side+'-e').textContent = d.e;
+  document.getElementById('c'+side+'-v').textContent = d.v;
+
+  const A = compareData[ document.querySelector('#cA-toggle .on').dataset.id ];
+  const B = compareData[ document.querySelector('#cB-toggle .on').dataset.id ];
+
+  function num(s){ return parseFloat(s.replace(/[^\d.]/g,''))||0; }
+  document.getElementById('cA-r').classList.toggle('w', num(A.r) < num(B.r));
+  document.getElementById('cB-r').classList.toggle('w', num(B.r) < num(A.r));
+  document.getElementById('cA-t').classList.toggle('w', num(A.t) < num(B.t));
+  document.getElementById('cB-t').classList.toggle('w', num(B.t) < num(A.t));
+  document.getElementById('cA-a').classList.toggle('w', num(A.a) > num(B.a));
+  document.getElementById('cB-a').classList.toggle('w', num(B.a) > num(A.a));
+}
+document.querySelectorAll('.instr-toggle').forEach(t=>{
+  t.addEventListener('click',()=>{
+    const side = t.dataset.side;
+    document.querySelectorAll(`#c${side}-toggle .instr-toggle`).forEach(b=>b.classList.remove('on'));
+    t.classList.add('on');
+    applyCompare(side, t.dataset.id);
+  });
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Noctis — Wake with the light, not the alarm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0c0a0e;
+    --night-2:#15110f;
+    --warm:#1d1611;
+    --paper:#ece2d4;
+    --mute:#8c8174;
+    --faint:#3a342e;
+    --hair:#27221c;
+    --ember:#ff8a4c;
+    --glow:#ffb877;
+    --lite:#fff2dc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--night);color:var(--paper);
+    font-family:'Hanken Grotesk',sans-serif;font-weight:300;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  @media (hover:hover){body{cursor:none}}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--ember);color:var(--night)}
+
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.05;
+    background-image:repeating-radial-gradient(circle at 0 0,#fff 0,#fff .5px,transparent 1px,transparent 3px);
+    mix-blend-mode:overlay;
+  }
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+
+  .kick{
+    font-family:'JetBrains Mono',monospace;font-weight:400;
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--glow);
+    display:flex;align-items:center;gap:12px;
+  }
+  .kick::before{content:"";width:26px;height:1px;background:var(--glow)}
+  h2.sec-h{
+    font-family:'Fraunces',serif;font-weight:400;
+    font-size:clamp(34px,4.6vw,60px);line-height:1.02;letter-spacing:-.02em;
+    margin:20px 0 18px;text-wrap:pretty;
+  }
+  h2.sec-h em{font-style:italic;color:var(--glow)}
+  .lede{font-size:16px;line-height:1.7;color:#c4b9aa;max-width:620px;text-wrap:pretty}
+
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:70;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 32px;
+    transition:background .5s ease,backdrop-filter .5s ease,border-color .5s ease;
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{
+    background:rgba(12,10,14,.72);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border-bottom-color:var(--hair);
+  }
+  nav .mk{
+    font-family:'Fraunces',serif;font-size:20px;letter-spacing:.04em;
+    display:flex;align-items:center;gap:10px;
+  }
+  nav .mk .bead{
+    width:9px;height:9px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,var(--lite),var(--ember));
+    box-shadow:0 0 12px var(--glow);
+    animation:beadPulse 4s ease-in-out infinite;
+  }
+  @keyframes beadPulse{50%{box-shadow:0 0 22px var(--glow)}}
+  nav .nav-r{display:flex;align-items:center;gap:26px;font-size:11px;
+    letter-spacing:.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+  nav .back{color:var(--mute);transition:color .25s}
+  nav .back:hover{color:var(--paper)}
+  nav .pre{
+    padding:9px 18px;border:1px solid var(--glow);border-radius:100px;
+    color:var(--glow);transition:background .25s,color .25s;
+  }
+  nav .pre:hover{background:var(--glow);color:var(--night)}
+
+  .scrollvid{
+    position:relative;
+    --runway:240vh;
+    height:var(--runway);
+    background:#000;
+  }
+  .scrollvid .sticky{
+    position:sticky;top:0;
+    height:100vh;width:100%;
+    overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse 80% 60% at 50% 55%,#1a0f06 0%,#000 70%);
+  }
+  #scrollVideo,
+  .scrollvid .placeholder{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;pointer-events:none;
+  }
+  .scrollvid .placeholder{
+    background:
+      radial-gradient(circle at 50% 60%,
+        rgba(255,184,119,.45) 0%,
+        rgba(255,138,76,.25) 14%,
+        rgba(120,40,20,.15) 32%,
+        rgba(0,0,0,.0) 60%),
+      conic-gradient(from 180deg at 50% 110%,
+        #1a0c06,#2a160b 18%,#4a2412 40%,#1a0c06 70%,#0a0506);
+  }
+  .scrollvid .placeholder::before{
+    content:"";position:absolute;left:50%;bottom:30%;
+    width:min(620px,52vw);aspect-ratio:1;border-radius:50%;
+    transform:translate(-50%,50%);
+    background:radial-gradient(circle at 50% 50%,
+      var(--lite) 0%,var(--glow) 20%,var(--ember) 38%,#7a2f17 55%,transparent 70%);
+    filter:blur(1px);opacity:.85;
+  }
+  .scrollvid .placeholder::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:38%;
+    background:linear-gradient(180deg,transparent,#000 80%);
+  }
+  .scrollvid .label{
+    position:absolute;left:32px;bottom:30px;z-index:3;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    letter-spacing:.24em;text-transform:uppercase;color:rgba(236,226,212,.55);
+    display:flex;align-items:center;gap:14px;
+  }
+  .scrollvid .label .dot{
+    width:7px;height:7px;border-radius:50%;background:var(--ember);
+    box-shadow:0 0 14px var(--ember);animation:beadPulse 1.6s ease-in-out infinite;
+  }
+  .scrollvid .label .progress{
+    width:90px;height:1px;background:rgba(236,226,212,.18);position:relative;overflow:hidden;
+  }
+  .scrollvid .label .progress i{
+    position:absolute;inset:0;background:var(--glow);transform-origin:left;
+    transform:scaleX(var(--p,0));transition:transform .12s linear;
+  }
+  .scrollvid .hint{
+    position:absolute;right:32px;bottom:30px;z-index:3;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    letter-spacing:.24em;text-transform:uppercase;color:rgba(236,226,212,.45);
+    display:flex;align-items:center;gap:10px;
+    opacity:calc(1 - var(--p,0) * 2);transition:opacity .3s ease;
+  }
+  .scrollvid .hint::before{
+    content:"";width:1px;height:36px;background:rgba(236,226,212,.45);
+    animation:scrollHint 1.8s ease-in-out infinite;transform-origin:top;
+  }
+  @keyframes scrollHint{
+    0%,100%{transform:scaleY(.2);opacity:.2}
+    50%{transform:scaleY(1);opacity:1}
+  }
+  .scrollvid .copy{
+    position:relative;z-index:2;text-align:center;
+    max-width:min(900px,92vw);padding:0 24px;
+    transform:translateY(calc(-6vh + var(--p,0) * 14vh));
+  }
+  .scrollvid .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    letter-spacing:.32em;text-transform:uppercase;color:var(--glow);
+    margin-bottom:24px;opacity:calc(1 - var(--p,0) * 1.4);
+  }
+  .scrollvid h2.tag{
+    font-family:'Fraunces',serif;font-weight:400;font-style:italic;
+    font-size:clamp(48px,8.2vw,128px);line-height:.95;letter-spacing:-.035em;
+    color:var(--lite);
+    text-shadow:0 0 80px rgba(255,150,90,.35);
+    opacity:calc(1 - var(--p,0) * 1.1);
+  }
+  .scrollvid h2.tag em{
+    font-style:normal;color:var(--glow);
+    text-shadow:0 0 90px rgba(255,184,119,.8);
+  }
+  .scrollvid .sub{
+    margin-top:26px;font-size:14px;letter-spacing:.04em;color:#c4b9aa;
+    opacity:calc(1 - var(--p,0) * 1.5);
+  }
+  .scrollvid::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:24vh;
+    background:linear-gradient(180deg,transparent,var(--night) 90%);
+    pointer-events:none;z-index:4;
+  }
+
+  .hero{
+    min-height:100vh;display:flex;align-items:center;
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(ellipse 70% 60% at 72% 42%,rgba(255,138,76,.16),transparent 70%),
+      linear-gradient(180deg,var(--night) 0%,var(--night) 70%,var(--night-2) 100%);
+    padding:140px 0;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.04;
+    background-image:
+      linear-gradient(var(--paper) 1px,transparent 1px),
+      linear-gradient(90deg,var(--paper) 1px,transparent 1px);
+    background-size:80px 80px;
+    mask-image:radial-gradient(ellipse 60% 50% at 50% 50%,#000 30%,transparent 80%);
+    -webkit-mask-image:radial-gradient(ellipse 60% 50% at 50% 50%,#000 30%,transparent 80%);
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;
+    width:100%;position:relative;z-index:2;
+  }
+  .hero h1{
+    font-family:'Fraunces',serif;font-weight:400;
+    font-size:clamp(46px,6.6vw,98px);line-height:.98;letter-spacing:-.03em;
+    margin:26px 0 22px;text-wrap:balance;
+  }
+  .hero h1 em{
+    font-style:italic;color:var(--glow);
+    text-shadow:0 0 38px rgba(255,184,119,.5);
+  }
+  .hero .sub{font-size:16.5px;line-height:1.7;color:#c4b9aa;max-width:480px}
+  .cta-row{display:flex;align-items:center;gap:22px;margin-top:34px;flex-wrap:wrap}
+  .btn-pre{
+    display:inline-flex;align-items:center;gap:12px;
+    padding:15px 26px;border-radius:100px;
+    background:linear-gradient(180deg,var(--glow),var(--ember));
+    color:#26140a;font-weight:600;font-size:14px;letter-spacing:.02em;
+    box-shadow:0 14px 40px -10px rgba(255,138,76,.6);
+    transition:transform .3s cubic-bezier(.3,1.2,.4,1),box-shadow .3s;
+  }
+  .btn-pre:hover{transform:translateY(-3px);box-shadow:0 20px 50px -8px rgba(255,138,76,.7)}
+  .ghost-link{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);
+    font-family:'JetBrains Mono',monospace;
+    border-bottom:1px solid var(--faint);padding-bottom:3px;transition:color .25s,border-color .25s;
+  }
+  .ghost-link:hover{color:var(--paper);border-color:var(--glow)}
+  .fineprint{margin-top:22px;font-size:10.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--mute);font-family:'JetBrains Mono',monospace}
+
+  .orb-stage{display:flex;align-items:center;justify-content:center;position:relative}
+  .orb{
+    --lit:.5;
+    width:min(420px,72vw);aspect-ratio:1;border-radius:50%;position:relative;
+    background:radial-gradient(circle at 38% 34%,
+      var(--lite) 0%,var(--glow) 26%,var(--ember) 52%,#7a2f17 74%,#27110a 100%);
+    box-shadow:
+      inset -34px -34px 90px rgba(0,0,0,.6),
+      0 0 calc(90px * var(--lit)) calc(20px * var(--lit)) rgba(255,150,80,.5);
+    filter:brightness(calc(.45 + .55 * var(--lit)));
+    transition:filter 3.4s ease,box-shadow 3.4s ease;
+    animation:breathe 6s ease-in-out infinite;
+  }
+  @keyframes breathe{50%{transform:scale(1.022)}}
+  .orb::after{
+    content:"";position:absolute;inset:-14%;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,170,110,.3),transparent 62%);
+    opacity:calc(.3 + .7 * var(--lit));transition:opacity 3.4s ease;
+  }
+  .orb-base{
+    position:absolute;bottom:-2%;left:50%;transform:translateX(-50%);
+    width:46%;height:42px;border-radius:0 0 14px 14px;
+    background:linear-gradient(180deg,#3a2a1c,#221913);
+    box-shadow:0 18px 40px rgba(0,0,0,.6);
+  }
+  .orb-base::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:7px;
+    background:linear-gradient(90deg,#7a5a32,#caa468,#7a5a32);
+  }
+  .orbit-tag{
+    position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--mute);
+    display:flex;align-items:center;gap:10px;white-space:nowrap;
+  }
+  .orbit-tag::before{content:"";width:24px;height:1px;background:var(--faint)}
+  .orbit-tag.t1{top:14%;left:-4%}
+  .orbit-tag.t2{top:52%;right:-6%}
+  .orbit-tag.t3{bottom:10%;left:8%}
+  @media (max-width:980px){.orbit-tag{display:none}}
+
+  .marquee{
+    border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+    background:var(--night);overflow:hidden;padding:22px 0;
+  }
+  .marquee-track{
+    display:flex;gap:0;white-space:nowrap;
+    animation:slide 60s linear infinite;
+    font-family:'Fraunces',serif;font-size:24px;font-style:italic;
+    color:var(--mute);
+  }
+  .marquee-track > span{display:inline-flex;align-items:center;gap:50px;padding-right:50px}
+  .marquee-track .dot{
+    width:5px;height:5px;border-radius:50%;background:var(--ember);
+    display:inline-block;
+  }
+  @keyframes slide{to{transform:translateX(-50%)}}
+
+  section{padding:140px 0;position:relative}
+  .first{background:linear-gradient(180deg,var(--night),var(--night-2))}
+  .object{background:var(--night-2);position:relative}
+  .object::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 50% 40% at 90% 10%,rgba(255,138,76,.06),transparent 70%);
+  }
+  .lives{background:linear-gradient(180deg,var(--night-2),var(--warm))}
+  .phil{background:var(--warm);position:relative;overflow:hidden}
+  .spec{background:var(--warm)}
+  .pre-sec{
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,138,76,.2),transparent 70%),
+      linear-gradient(180deg,var(--warm),#241a12);
+  }
+
+  .sec-head{
+    display:grid;grid-template-columns:140px 1fr;gap:40px;align-items:start;
+    border-top:1px solid var(--hair);padding-top:28px;
+  }
+  .sec-head .num{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.24em;
+    color:var(--mute);padding-top:6px;text-transform:uppercase;
+  }
+  @media (max-width:860px){
+    .sec-head{grid-template-columns:1fr;gap:8px}
+  }
+
+  .wake-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:60px}
+  .wake.lit .orb{--lit:1}
+  .panel{
+    border:1px solid var(--faint);border-radius:14px;padding:30px;
+    background:rgba(255,255,255,.015);
+  }
+  .clockface{
+    font-family:'Fraunces',serif;font-size:62px;line-height:1;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  }
+  .phase{
+    margin-top:8px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--glow);transition:color .4s;font-family:'JetBrains Mono',monospace;
+  }
+  .ramp{
+    margin:24px 0;height:8px;border-radius:100px;overflow:hidden;
+    background:#241c16;position:relative;
+  }
+  .ramp i{
+    position:absolute;inset:0;transform-origin:left;transform:scaleX(0);
+    background:linear-gradient(90deg,#5a2412,var(--ember),var(--glow),var(--lite));
+    transition:transform 3.4s linear;
+  }
+  .wake-btn{
+    width:100%;padding:14px;border:1px solid var(--glow);border-radius:100px;
+    background:none;color:var(--glow);font-family:'JetBrains Mono',monospace;
+    font-weight:400;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    cursor:none;transition:background .25s,color .25s;
+  }
+  .wake-btn:hover{background:var(--glow);color:var(--night)}
+  @media (hover:none){.wake-btn{cursor:pointer}}
+  .chime{
+    position:absolute;inset:0;border-radius:50%;border:1px solid var(--glow);
+    opacity:0;pointer-events:none;
+  }
+  .wake.ring .chime{animation:chime 1.6s ease-out}
+  @keyframes chime{
+    0%{opacity:.7;transform:scale(.6)}
+    100%{opacity:0;transform:scale(1.5)}
+  }
+  .ticks{
+    display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:18px;
+  }
+  .ticks .tk{
+    height:24px;border-left:1px solid var(--faint);padding-left:6px;
+    font-family:'JetBrains Mono',monospace;font-size:9.5px;
+    letter-spacing:.18em;color:var(--mute);text-transform:uppercase;
+    transition:color .3s,border-color .3s;
+  }
+  .ticks .tk.on{border-color:var(--glow);color:var(--glow)}
+
+  .mat-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border:1px solid var(--hair);margin-top:48px;
+    background:rgba(255,255,255,.01);
+  }
+  .mat{padding:36px 28px;border-right:1px solid var(--hair);transition:background .3s;
+    min-height:300px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .mat:last-child{border-right:none}
+  .mat:hover{background:rgba(255,138,76,.05)}
+  .mat .n{font-size:10px;letter-spacing:.22em;color:var(--ember);text-transform:uppercase;
+    font-family:'JetBrains Mono',monospace}
+  .mat .t{font-family:'Fraunces',serif;font-size:25px;margin:14px 0 8px;
+    line-height:1.15;font-style:italic}
+  .mat p{font-size:13px;line-height:1.6;color:var(--mute)}
+  .mat .swatch{
+    width:54px;height:54px;border-radius:50%;margin-top:20px;
+    border:1px solid var(--hair);box-shadow:inset -6px -6px 14px rgba(0,0,0,.4);
+  }
+  .mat .swatch.opal{background:radial-gradient(circle at 38% 32%,#fff8eb,#dccfb8 60%,#9a8d78)}
+  .mat .swatch.walnut{background:radial-gradient(circle at 30% 30%,#6b4524,#3a230f 70%,#1f120a)}
+  .mat .swatch.brass{background:conic-gradient(from 90deg,#caa468,#8a6a3e,#caa468,#a08653)}
+  .mat .swatch.chime{background:radial-gradient(circle at 50% 30%,#ffd9a4,#c98850 60%,#5a2412)}
+
+  .shot{
+    margin-top:60px;height:min(620px,68vh);
+    border:1px solid var(--hair);border-radius:18px;overflow:hidden;
+    position:relative;
+    background:
+      radial-gradient(ellipse 40% 60% at 35% 50%,rgba(255,184,119,.25),transparent 70%),
+      linear-gradient(180deg,#13100d,#0a0807);
+  }
+  .shot::before{
+    content:"";position:absolute;inset:0;opacity:.4;
+    background:repeating-linear-gradient(135deg,
+      rgba(255,255,255,.018) 0 2px,transparent 2px 14px);
+  }
+  .shot .ph-label{
+    position:absolute;left:24px;top:20px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.22em;text-transform:uppercase;color:rgba(236,226,212,.5);
+  }
+  .shot .ph-label::before{content:"▢";margin-right:8px;color:var(--ember)}
+  .shot .ph-dim{
+    position:absolute;right:24px;bottom:20px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.22em;color:rgba(236,226,212,.35);
+  }
+  .shot .shot-orb{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(360px,42vw);
+  }
+  .shot .shot-orb .orb{--lit:.75}
+
+  .feat-list{margin-top:46px;border-top:1px solid var(--hair)}
+  .feat-row{
+    display:grid;grid-template-columns:54px 1fr 2fr 80px;gap:24px;
+    padding:30px 0;border-bottom:1px solid var(--hair);align-items:baseline;
+    transition:padding-left .35s ease,background .3s;
+  }
+  .feat-row:hover{padding-left:14px;background:rgba(255,138,76,.03)}
+  .feat-row .fn{font-family:'JetBrains Mono',monospace;color:var(--mute);font-size:12px;letter-spacing:.16em}
+  .feat-row .ft{font-family:'Fraunces',serif;font-size:27px;letter-spacing:-.01em}
+  .feat-row .fd{font-size:14px;line-height:1.65;color:var(--mute)}
+  .feat-row .fa{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;
+    color:var(--mute);text-align:right;text-transform:uppercase;
+  }
+  @media (max-width:860px){
+    .feat-row{grid-template-columns:1fr;gap:6px}
+    .feat-row .fa{text-align:left}
+  }
+
+  .phil .wrap{position:relative;z-index:2}
+  .phil::before{
+    content:"§";position:absolute;
+    left:-4vw;top:-12vh;
+    font-family:'Fraunces',serif;font-size:min(60vw,90vh);
+    color:#241a12;opacity:.7;line-height:1;pointer-events:none;font-style:italic;
+  }
+  .phil blockquote{
+    font-family:'Fraunces',serif;font-weight:400;font-style:italic;
+    font-size:clamp(28px,3.4vw,48px);line-height:1.2;letter-spacing:-.01em;
+    color:var(--paper);max-width:980px;margin:50px 0 0;text-wrap:balance;
+  }
+  .phil blockquote em{font-style:normal;color:var(--glow)}
+  .phil cite{
+    display:block;margin-top:34px;font-style:normal;
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    letter-spacing:.22em;color:var(--mute);text-transform:uppercase;
+  }
+
+  .spec-table{margin-top:44px;border-top:1px solid var(--hair)}
+  .spec-table .r{
+    display:grid;grid-template-columns:230px 1fr 60px;gap:24px;
+    padding:22px 0;border-bottom:1px solid var(--hair);align-items:baseline;
+    transition:padding-left .3s,background .3s;
+  }
+  .spec-table .r:hover{padding-left:8px;background:rgba(255,138,76,.02)}
+  .spec-table .r dt{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);
+    font-family:'JetBrains Mono',monospace}
+  .spec-table .r dd{font-size:15px;color:var(--paper);line-height:1.5}
+  .spec-table .r .ix{
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--faint);text-align:right;letter-spacing:.12em;
+  }
+  @media (max-width:860px){
+    .spec-table .r{grid-template-columns:1fr;gap:4px}
+    .spec-table .r .ix{display:none}
+  }
+
+  .pre-card{
+    max-width:680px;margin:48px auto 0;text-align:center;
+    border:1px solid color-mix(in srgb,var(--glow) 40%,transparent);
+    border-radius:20px;padding:50px 40px;
+    background:rgba(255,184,119,.04);position:relative;
+  }
+  .pre-card::before{
+    content:"";position:absolute;inset:0;border-radius:20px;pointer-events:none;
+    box-shadow:0 0 60px -10px rgba(255,184,119,.15) inset;
+  }
+  .price{display:flex;align-items:baseline;justify-content:center;gap:14px;margin:6px 0 4px}
+  .price .now{font-family:'Fraunces',serif;font-size:72px;color:var(--glow);line-height:1}
+  .price .was{font-size:18px;color:var(--mute);text-decoration:line-through}
+  .price-note{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);
+    font-family:'JetBrains Mono',monospace}
+  .pre-points{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px 24px;
+    margin:30px 0;font-size:13px;color:#c4b9aa;
+  }
+  .pre-points span{display:flex;align-items:center;gap:8px}
+  .pre-points span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--ember)}
+
+  .batch{
+    max-width:680px;margin:30px auto 0;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--mute);
+  }
+  .batch .bar{flex:1;height:1px;background:var(--hair);position:relative}
+  .batch .bar i{position:absolute;inset:0;background:var(--ember);transform-origin:left;
+    transform:scaleX(.412);box-shadow:0 0 12px var(--ember)}
+
+  footer{
+    padding:80px 32px 54px;text-align:center;background:#241a12;
+    border-top:1px solid var(--hair);
+  }
+  footer .f-grid{
+    max-width:780px;margin:0 auto 60px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:40px;
+    text-align:left;
+  }
+  footer .f-grid h4{
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--mute);
+    font-weight:400;margin-bottom:14px;
+  }
+  footer .f-grid a,footer .f-grid p{
+    display:block;font-size:13px;color:var(--paper);line-height:1.9;
+  }
+  footer .f-grid a:hover{color:var(--glow)}
+  footer .f-back{
+    font-family:'Fraunces',serif;font-style:italic;font-size:22px;
+    color:var(--paper);transition:color .25s;
+  }
+  footer .f-back:hover{color:var(--glow)}
+  footer .colo{
+    margin-top:20px;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);
+    font-family:'JetBrains Mono',monospace;
+  }
+  @media (max-width:760px){footer .f-grid{grid-template-columns:1fr;gap:30px;text-align:center}}
+
+  .rv{opacity:0;transform:translateY(30px);
+    transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1)}
+  .rv.in{opacity:1;transform:none}
+
+  .cur{position:fixed;left:0;top:0;z-index:99;pointer-events:none;
+    width:30px;height:30px;border-radius:50%;transform:translate(-50%,-50%);
+    background:radial-gradient(circle,rgba(255,184,119,.55),transparent 68%);
+    mix-blend-mode:screen;}
+  .cur-dot{position:fixed;left:0;top:0;z-index:99;pointer-events:none;
+    width:5px;height:5px;border-radius:50%;background:var(--lite);
+    transform:translate(-50%,-50%);}
+
+  .boot{
+    position:fixed;inset:0;z-index:120;background:var(--night);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;
+    transition:opacity .8s ease;
+  }
+  .boot.gone{opacity:0;pointer-events:none}
+  .boot .seed{
+    width:54px;height:54px;border-radius:50%;
+    background:radial-gradient(circle at 38% 34%,var(--lite),var(--glow) 40%,var(--ember) 70%,#3a1a0d);
+    box-shadow:0 0 0 0 rgba(255,150,80,.5);
+    animation:seed 1.6s ease-in-out infinite;
+  }
+  @keyframes seed{
+    0%,100%{box-shadow:0 0 30px 4px rgba(255,150,80,.35);transform:scale(.92)}
+    50%{box-shadow:0 0 70px 16px rgba(255,150,80,.55);transform:scale(1.06)}
+  }
+  .boot .bt{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);
+    font-family:'JetBrains Mono',monospace}
+
+  @media (max-width:860px){
+    body{cursor:auto}
+    .cur,.cur-dot{display:none}
+    .hero-grid,.wake-grid{grid-template-columns:1fr;gap:40px}
+    .orb-stage{order:-1}
+    .mat-grid{grid-template-columns:1fr 1fr}
+    .mat{border-right:none;border-bottom:1px solid var(--hair);min-height:auto}
+    .mat:nth-child(2n){border-right:none}
+    section{padding:90px 0}
+    nav .back{display:none}
+    .scrollvid{--runway:160vh}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+    html{scroll-behavior:auto}
+    .marquee-track{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="boot" id="boot">
+  <div class="seed"></div>
+  <div class="bt">Noctis · warming up</div>
+</div>
+
+<nav id="nav">
+  <a class="mk" href="#top"><span class="bead"></span>Noctis</a>
+  <div class="nav-r">
+    <a class="back" href="../index.html">← Index of Worlds</a>
+    <a class="pre" href="#preorder">Pre-order</a>
+  </div>
+</nav>
+
+<section class="scrollvid" id="scrollVideoSection">
+  <div class="sticky">
+
+    <canvas id="scrollVideo" width="1600" height="900" aria-hidden="true"></canvas>
+
+    <div class="copy">
+      <div class="eyebrow">Noctis 01 · A film, in scroll</div>
+      <h2 class="tag">Wake with the <em>light.</em></h2>
+      <p class="sub">A thirty-minute sunrise, in glass · scroll to watch</p>
+    </div>
+
+    <div class="label">
+      <span class="dot"></span>
+      <span id="vidTimecode">REC · 00:00 / 00:12</span>
+      <span class="progress"><i></i></span>
+    </div>
+    <div class="hint">Scroll</div>
+  </div>
+</section>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kick">Noctis 01 · Upcoming · Autumn 2026</div>
+      <h1>Wake with the <em>light,</em> not the alarm.</h1>
+      <p class="sub">A screen-free bedside lamp that ends the day with a sunset and begins it with a thirty-minute sunrise. No display. No buzzer. Just light, the way mornings were always meant to arrive.</p>
+      <div class="cta-row">
+        <a class="btn-pre" href="#preorder">Pre-order — $189 <span>→</span></a>
+        <a class="ghost-link" href="#first">See it wake ↓</a>
+      </div>
+      <div class="fineprint">Retail $229 · First batch limited to 2,000 · Ships Autumn 2026</div>
+    </div>
+    <div class="orb-stage">
+      <div class="orbit-tag t1">140 mm opal globe</div>
+      <div class="orbit-tag t2">Brushed-brass collar</div>
+      <div class="orbit-tag t3">FSC walnut base</div>
+      <div class="orb" id="heroOrb"><div class="orb-base"></div></div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>No screen<span class="dot"></span>No buzzer<span class="dot"></span>No subscription<span class="dot"></span>Hand-blown opal glass<span class="dot"></span>Brushed brass<span class="dot"></span>Walnut, FSC-certified<span class="dot"></span>2200K → 4300K<span class="dot"></span>Built to outlast the trend<span class="dot"></span></span>
+    <span>No screen<span class="dot"></span>No buzzer<span class="dot"></span>No subscription<span class="dot"></span>Hand-blown opal glass<span class="dot"></span>Brushed brass<span class="dot"></span>Walnut, FSC-certified<span class="dot"></span>2200K → 4300K<span class="dot"></span>Built to outlast the trend<span class="dot"></span></span>
+  </div>
+</div>
+
+<section class="first" id="first">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="num">§ 01 / First light</div>
+      <div>
+        <div class="kick rv">A thirty-minute sunrise</div>
+        <h2 class="sec-h rv">Thirty minutes of <em>sunrise,</em> in glass.</h2>
+        <p class="lede rv">Noctis begins glowing half an hour before your wake time — a deep ember at first, warming through amber to a soft 4300K daylight. By the time the chime sounds, the room is already bright.</p>
+      </div>
+    </div>
+
+    <div class="wake-grid wake" id="wake">
+      <div class="orb-stage">
+        <div class="orb" id="wakeOrb"><div class="chime"></div><div class="orb-base"></div></div>
+      </div>
+      <div class="rv">
+        <div class="panel">
+          <div class="clockface" id="clock">05:58</div>
+          <div class="phase" id="phase">Pre-dawn · ember</div>
+          <div class="ramp"><i></i></div>
+          <button class="wake-btn" id="wakeBtn">Press to wake</button>
+          <div class="ticks" id="ticks">
+            <div class="tk">−30m</div>
+            <div class="tk">−25m</div>
+            <div class="tk">−20m</div>
+            <div class="tk">−15m</div>
+            <div class="tk">−10m</div>
+            <div class="tk">−5m</div>
+            <div class="tk">Now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="object">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="num">§ 02 / The object</div>
+      <div>
+        <div class="kick rv">Four materials, one object</div>
+        <h2 class="sec-h rv">Hand-blown. Hand-finished. <em>Built to outlast the trend.</em></h2>
+        <p class="lede rv">One knurled brass ring is the only control — twist it to set your wake time, press it to dim. There is nothing to read, nothing to tap through, nothing to charge an opinion about at 6 a.m.</p>
+      </div>
+    </div>
+
+    <div class="mat-grid rv">
+      <div class="mat">
+        <div>
+          <div class="n">i — Shade</div>
+          <div class="t">Opal glass</div>
+          <p>A 140 mm globe of hand-blown opal borosilicate that scatters light evenly — no hotspots, no glare.</p>
+        </div>
+        <div class="swatch opal"></div>
+      </div>
+      <div class="mat">
+        <div>
+          <div class="n">ii — Base</div>
+          <div class="t">FSC walnut</div>
+          <p>A turned base of solid, responsibly-sourced walnut that warms in tone as it ages with you.</p>
+        </div>
+        <div class="swatch walnut"></div>
+      </div>
+      <div class="mat">
+        <div>
+          <div class="n">iii — Collar</div>
+          <div class="t">Brushed brass</div>
+          <p>A single knurled brass ring. Twist to set, press to dim. It patinas; it never needs an update.</p>
+        </div>
+        <div class="swatch brass"></div>
+      </div>
+      <div class="mat">
+        <div>
+          <div class="n">iv — Voice</div>
+          <div class="t">Tuning-fork chime</div>
+          <p>A struck brass tone instead of a buzzer — a sound you can wake to without flinching.</p>
+        </div>
+        <div class="swatch chime"></div>
+      </div>
+    </div>
+
+    <div class="shot rv">
+      <div class="ph-label">Editorial shot — bedside, 6:14 a.m.</div>
+      <div class="shot-orb">
+        <div class="orb"><div class="orb-base"></div></div>
+      </div>
+      <div class="ph-dim">2400 × 1500 · final retouch pending</div>
+    </div>
+  </div>
+</section>
+
+<section class="lives">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="num">§ 03 / How it lives</div>
+      <div>
+        <div class="kick rv">Quiet by design</div>
+        <h2 class="sec-h rv">Quiet by design, <em>day and night.</em></h2>
+        <p class="lede rv">Five small decisions that disappear into the routine — so the lamp itself becomes invisible, and only the morning remains.</p>
+      </div>
+    </div>
+
+    <div class="feat-list rv">
+      <div class="feat-row">
+        <span class="fn">i</span>
+        <span class="ft">Sunrise &amp; sunset</span>
+        <span class="fd">A 30-minute warm ramp up in the morning; a slow fade to ember at night to cue your body toward sleep.</span>
+        <span class="fa">30 min</span>
+      </div>
+      <div class="feat-row">
+        <span class="fn">ii</span>
+        <span class="ft">Tap to snooze</span>
+        <span class="fd">The glass itself is the snooze button. A single touch buys nine more minutes; the light dims, then returns.</span>
+        <span class="fa">+9 min</span>
+      </div>
+      <div class="feat-row">
+        <span class="fn">iii</span>
+        <span class="ft">Ambient-aware</span>
+        <span class="fd">An onboard light sensor matches the room — dim in the dark, never harsh, never a beacon at 3 a.m.</span>
+        <span class="fa">0.1 lx</span>
+      </div>
+      <div class="feat-row">
+        <span class="fn">iv</span>
+        <span class="ft">Eighteen-hour cordless</span>
+        <span class="fd">Lift it off the magnetic puck and carry it anywhere. USB-C tops it up; a full charge lasts the night and then some.</span>
+        <span class="fa">18 hr</span>
+      </div>
+      <div class="feat-row">
+        <span class="fn">v</span>
+        <span class="ft">App optional, never required</span>
+        <span class="fd">Everything works from the ring. The app exists for routines and nothing more — and it can stay uninstalled.</span>
+        <span class="fa">0 KB</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="phil">
+  <div class="wrap">
+    <div class="kick rv">A note from the studio</div>
+    <blockquote class="rv">
+      We made Noctis because we were tired of being startled awake by rectangles. There is enough screen in a day; there should be none in the last and first ten minutes of it. <em>So we built a sunrise you can keep on your nightstand</em> — and asked it to do nothing else.
+    </blockquote>
+    <cite class="rv">— The studio · Studio note 01 · Spring 2026</cite>
+  </div>
+</section>
+
+<section class="spec">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="num">§ 04 / Specification</div>
+      <div>
+        <div class="kick rv">The complete sheet</div>
+        <h2 class="sec-h rv">The <em>full</em> sheet.</h2>
+      </div>
+    </div>
+    <dl class="spec-table rv">
+      <div class="r"><dt>Light engine</dt><dd>2200 K – 4300 K tunable warm white · 30-minute sunrise &amp; sunset</dd><div class="ix">01</div></div>
+      <div class="r"><dt>Shade</dt><dd>Hand-blown opal borosilicate glass, 140 mm diameter</dd><div class="ix">02</div></div>
+      <div class="r"><dt>Base &amp; collar</dt><dd>FSC-certified walnut · brushed-brass knurled control ring</dd><div class="ix">03</div></div>
+      <div class="r"><dt>Sound</dt><dd>Brass tuning-fork chime · capacitive tap-to-snooze on the glass</dd><div class="ix">04</div></div>
+      <div class="r"><dt>Power</dt><dd>USB-C · 18-hour cordless runtime · magnetic charging puck</dd><div class="ix">05</div></div>
+      <div class="r"><dt>Size &amp; weight</dt><dd>155 mm tall · 720 g</dd><div class="ix">06</div></div>
+      <div class="r"><dt>In the box</dt><dd>Noctis · charging puck · woven USB-C cable · linen travel pouch</dd><div class="ix">07</div></div>
+      <div class="r"><dt>Warranty</dt><dd>3 years · 30-night sleep-at-home trial</dd><div class="ix">08</div></div>
+    </dl>
+  </div>
+</section>
+
+<section class="pre-sec" id="preorder">
+  <div class="wrap">
+    <div class="kick rv" style="justify-content:center">§ 05 / Pre-order</div>
+    <h2 class="sec-h rv" style="text-align:center">The first <em>2,000</em> are open now.</h2>
+    <div class="pre-card rv">
+      <div class="price-note">Pre-order price</div>
+      <div class="price"><span class="now">$189</span><span class="was">$229</span></div>
+      <div class="price-note">Charged when it ships · Autumn 2026</div>
+      <div class="pre-points">
+        <span>Free worldwide shipping</span>
+        <span>30-night trial</span>
+        <span>3-year warranty</span>
+        <span>Limited first batch</span>
+      </div>
+      <a class="btn-pre" href="#top">Reserve your Noctis <span>→</span></a>
+    </div>
+    <div class="batch rv">
+      <span>Batch 01 / Autumn 2026</span>
+      <span class="bar"><i></i></span>
+      <span>824 / 2,000 reserved</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-grid">
+    <div>
+      <h4>Object</h4>
+      <a href="#first">First light</a>
+      <a href="#preorder">Pre-order</a>
+      <a href="#">Press kit</a>
+    </div>
+    <div>
+      <h4>Studio</h4>
+      <a href="../index.html">Index of Worlds</a>
+      <a href="#">Manifesto</a>
+      <a href="#">Contact</a>
+    </div>
+    <div>
+      <h4>Newsletter</h4>
+      <p>One letter, when the next thing ships. Never more.</p>
+    </div>
+  </div>
+  <a class="f-back" href="../index.html">Noctis is project 02 in the <em>Index of Worlds</em> portfolio →</a>
+  <div class="colo">Concept launch page · © 2026 · Set in Fraunces, Hanken Grotesk &amp; JetBrains Mono</div>
+</footer>
+
+<script>
+'use strict';
+
+setTimeout(()=>{
+  const b = document.getElementById('boot');
+  b.classList.add('gone');
+  setTimeout(()=>b.remove(), 800);
+}, 1300);
+
+const navEl = document.getElementById('nav');
+addEventListener('scroll', ()=>{
+  navEl.classList.toggle('scrolled', scrollY > 40);
+}, {passive:true});
+
+if(matchMedia('(hover:hover)').matches){
+  const cur = document.createElement('div'); cur.className='cur';
+  const dot = document.createElement('div'); dot.className='cur-dot';
+  document.body.append(cur, dot);
+  let tx=innerWidth/2, ty=innerHeight/2, cx=tx, cy=ty;
+  addEventListener('mousemove', e=>{
+    tx=e.clientX; ty=e.clientY;
+    dot.style.transform=`translate(${tx}px,${ty}px) translate(-50%,-50%)`;
+  });
+  (function loop(){
+    cx+=(tx-cx)*.16; cy+=(ty-cy)*.16;
+    cur.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  })();
+}
+
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+},{rootMargin:'-10% 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+(function scrollVideoController(){
+  const section = document.getElementById('scrollVideoSection');
+  const canvas  = document.getElementById('scrollVideo');
+  const tc      = document.getElementById('vidTimecode');
+  if(!section || !canvas) return;
+
+  const FRAME_COUNT = 210;
+  const DURATION    = 7;
+  const framePath   = i => `assets/frames/frame_${String(i+1).padStart(4,'0')}.jpg`;
+
+  const ctx = canvas.getContext('2d');
+  const frames = new Array(FRAME_COUNT);
+  let drawnIndex = -1;
+
+  function ready(img){ return img && img.complete && img.naturalWidth > 0; }
+
+  function paint(idx){
+    idx = Math.max(0, Math.min(FRAME_COUNT - 1, idx));
+    let img = frames[idx];
+    if(!ready(img)){
+      for(let d = 1; d < FRAME_COUNT; d++){
+        if(ready(frames[idx - d])){ img = frames[idx - d]; break; }
+        if(ready(frames[idx + d])){ img = frames[idx + d]; break; }
+      }
+    }
+    if(ready(img)){
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      drawnIndex = idx;
+    }
+  }
+
+  function preload(){
+
+    const order = [];
+    for(let i = 0; i < FRAME_COUNT; i++) order.push(i);
+    order.sort((a, b) => (a % 10) - (b % 10) || a - b);
+    let n = 0;
+    function next(){
+      if(n >= order.length) return;
+      const i = order[n++];
+      const img = new Image();
+      frames[i] = img;
+      img.onload = img.onerror = ()=>{ paint(target()); next(); };
+      img.src = framePath(i);
+    }
+    for(let c = 0; c < 6; c++) next();
+  }
+
+  function progress(){
+    const rect = section.getBoundingClientRect();
+    const total = rect.height - innerHeight;
+    return total <= 0 ? 0 : Math.max(0, Math.min(1, -rect.top / total));
+  }
+  function target(){ return Math.round(progress() * (FRAME_COUNT - 1)); }
+
+  function fmt(p){
+    const cur = p * DURATION;
+    const c = t => String(Math.floor(t / 60)).padStart(2,'0') + ':' +
+                   String(Math.floor(t % 60)).padStart(2,'0');
+    return `REC · ${c(cur)} / ${c(DURATION)}`;
+  }
+
+  let ticking = false;
+  function update(){
+    const p = progress();
+    section.style.setProperty('--p', p.toFixed(4));
+    const idx = Math.round(p * (FRAME_COUNT - 1));
+    if(idx !== drawnIndex) paint(idx);
+    if(tc) tc.textContent = fmt(p);
+    ticking = false;
+  }
+  function onScroll(){
+    if(!ticking){ requestAnimationFrame(update); ticking = true; }
+  }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', onScroll);
+
+  preload();
+  update();
+})();
+
+const wake   = document.getElementById('wake');
+const btn    = document.getElementById('wakeBtn');
+const clock  = document.getElementById('clock');
+const phase  = document.getElementById('phase');
+const ticksEl= document.getElementById('ticks');
+const RAMP   = 3400;
+let running  = false, rafId = 0;
+
+const phases = [
+  [0.00,'Pre-dawn · ember'],
+  [0.35,'First light · amber'],
+  [0.72,'Morning · warm white'],
+  [1.00,'Awake · 4300 K daylight']
+];
+
+function setClock(t){
+  const totalMin = 5*60+58 + Math.round(t*32);
+  const h = String(Math.floor(totalMin/60)).padStart(2,'0');
+  const m = String(totalMin%60).padStart(2,'0');
+  clock.textContent = `${h}:${m}`;
+  for(let i=phases.length-1;i>=0;i--){
+    if(t>=phases[i][0]){ phase.textContent = phases[i][1]; break; }
+  }
+
+  const tks = ticksEl.children;
+  const active = Math.floor(t * tks.length);
+  for(let i=0;i<tks.length;i++){
+    tks[i].classList.toggle('on', i <= active);
+  }
+}
+
+function runRamp(){
+  running = true;
+  btn.textContent = 'Sleep';
+  wake.classList.add('lit');
+  const start = performance.now();
+  (function step(now){
+    const t = Math.min(1,(now-start)/RAMP);
+    setClock(t);
+    if(t<1){ rafId = requestAnimationFrame(step); }
+    else{
+      wake.classList.add('ring');
+      setTimeout(()=>wake.classList.remove('ring'), 1700);
+    }
+  })(start);
+}
+
+function reset(){
+  running = false;
+  cancelAnimationFrame(rafId);
+  btn.textContent = 'Press to wake';
+  wake.classList.remove('lit','ring');
+  setClock(0);
+}
+
+btn.addEventListener('click', ()=> running ? reset() : runRamp());
+</script>
+
+</body>
+</html>

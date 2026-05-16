@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LangLearn Atlas — A reference for learning any language</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;0,6..96,900;1,6..96,400&family=DM+Mono:wght@400;500&family=Noto+Sans+JP&family=Noto+Sans+KR&family=Noto+Sans+SC&family=Noto+Sans+Devanagari&family=Noto+Sans+Arabic&family=Noto+Sans+Hebrew&family=Noto+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="enhance.css">
+<style>
+  :root{
+    --paper:#f0e6d2;
+    --paper-2:#e6d9bd;
+    --paper-3:#d9c8a4;
+    --ink:#2a1810;
+    --ink-2:#5c4530;
+    --rule:#bba682;
+    --red:#a83232;
+    --gold:#b78c2e;
+    --green:#4f6b3a;
+    --blue:#2c4a6e;
+    --plum:#6a3a55;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Noto Serif',serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  ::selection{background:var(--red);color:var(--paper)}
+
+  .deco-line{height:8px;background:var(--ink);position:relative;display:flex;align-items:center;justify-content:center}
+  .deco-line::before,.deco-line::after{content:"";flex:1;height:1px;background:var(--paper);margin:0 4px}
+  .deco-line .glyph{color:var(--paper);font-family:'Bodoni Moda',serif;font-size:13px;font-style:italic;padding:0 12px;background:var(--ink);position:relative;top:-2px}
+
+  .top{padding:14px 30px;display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-2)}
+
+  .masthead{padding:14px 30px 24px;border-bottom:6px solid var(--ink);position:relative}
+  .masthead::after{content:"";position:absolute;left:30px;right:30px;bottom:-12px;height:1px;background:var(--ink)}
+  .masthead-inner{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .logo{font-family:'Bodoni Moda',serif;font-weight:900;font-size:64px;letter-spacing:-.025em;line-height:.9;text-transform:uppercase}
+  .logo em{font-style:italic;font-weight:400;color:var(--red);text-transform:lowercase;letter-spacing:-.01em}
+  .nav{display:flex;gap:24px;font-family:'DM Mono',monospace;font-size:11.5px;letter-spacing:.15em;text-transform:uppercase}
+  .nav a{padding-bottom:3px;border-bottom:1px solid transparent}
+  .nav a:hover,.nav a.on{border-bottom-color:var(--red);color:var(--red)}
+
+  .hero{padding:80px 30px 60px;border-bottom:1px solid var(--ink);position:relative;overflow:hidden}
+  .hero-glyph{position:absolute;font-size:600px;line-height:.8;color:var(--paper-3);right:-50px;top:-80px;opacity:.55;pointer-events:none;font-family:'Noto Sans JP',sans-serif;z-index:0}
+  .hero-inner{position:relative;z-index:1;max-width:1400px;margin:0 auto}
+  .hero-kicker{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:32px;display:flex;align-items:center;gap:14px}
+  .hero-kicker::before,.hero-kicker::after{content:"";flex:0 0 30px;height:1px;background:var(--red)}
+  .hero-kicker{justify-content:flex-start}
+  .hero h1{font-family:'Bodoni Moda',serif;font-weight:300;font-size:clamp(56px,9vw,140px);line-height:.9;letter-spacing:-.03em;margin-bottom:28px;max-width:1100px}
+  .hero h1 em{font-style:italic;font-weight:400;color:var(--red)}
+  .hero h1 .scr{font-family:'Noto Sans JP',sans-serif;font-style:normal;font-weight:500}
+  .hero h1 .scr2{font-family:'Noto Sans Devanagari',sans-serif;font-style:normal;font-weight:400}
+  .hero h1 .scr3{font-family:'Noto Sans Arabic',sans-serif;font-style:normal;font-weight:400;direction:rtl;display:inline-block}
+  .hero p{font-family:'Bodoni Moda',serif;font-size:21px;line-height:1.5;max-width:620px;color:var(--ink-2);font-style:italic}
+  .hero p::first-letter{font-size:56px;font-weight:700;float:left;line-height:.85;margin:8px 10px 0 0;font-style:normal;color:var(--ink);font-family:'Bodoni Moda',serif}
+
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--ink);background:var(--paper-2)}
+  .stat{padding:30px 24px;border-right:1px solid var(--rule);position:relative}
+  .stat:last-child{border-right:none}
+  .stat-num{font-family:'Bodoni Moda',serif;font-size:54px;font-weight:500;letter-spacing:-.02em;line-height:1}
+  .stat-num em{font-style:italic;font-weight:400;color:var(--red)}
+  .stat-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);margin-top:10px}
+
+  .sec{padding:80px 30px;border-bottom:1px solid var(--ink);max-width:1500px;margin:0 auto}
+  .sec-num{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+  .sec-title{font-family:'Bodoni Moda',serif;font-size:64px;font-weight:300;letter-spacing:-.02em;line-height:.95;margin-bottom:8px}
+  .sec-title em{font-style:italic;color:var(--red)}
+  .sec-sub{font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;color:var(--ink-2);margin-bottom:50px;max-width:680px}
+
+  .quiz{margin-bottom:60px;background:var(--ink);color:var(--paper);padding:50px;border:2px solid var(--ink);position:relative;overflow:hidden}
+  .quiz::before{content:"?";position:absolute;font-family:'Bodoni Moda',serif;font-size:540px;font-style:italic;color:#3a2a1f;right:-30px;top:-160px;line-height:.8;font-weight:300;pointer-events:none}
+  .quiz-head{position:relative;z-index:1;margin-bottom:30px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  .quiz-head h3{font-family:'Bodoni Moda',serif;font-size:56px;font-weight:300;line-height:1;letter-spacing:-.02em}
+  .quiz-head h3 em{font-style:italic;color:#e6b865}
+  .quiz-num{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#e6b865;margin-bottom:10px}
+  .quiz-sub{font-family:'Bodoni Moda',serif;font-style:italic;font-size:18px;color:#c4b8a0;margin-top:6px;max-width:540px}
+  .quiz-score{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;color:#e6b865;text-transform:uppercase;text-align:right}
+  .quiz-score .num{font-family:'Bodoni Moda',serif;font-size:36px;font-style:italic;color:var(--paper);display:block;line-height:1}
+  .quiz-board{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.4fr;gap:40px;align-items:stretch}
+  .quiz-card{background:var(--paper);color:var(--ink);padding:40px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:320px;border:2px solid var(--red);position:relative}
+  .quiz-card::before{content:"";position:absolute;inset:6px;border:1px solid var(--ink);pointer-events:none}
+  .quiz-lang-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.25em;color:var(--red);text-transform:uppercase;margin-bottom:14px;position:relative}
+  .quiz-glyph{font-size:200px;line-height:.9;font-weight:400;position:relative}
+  .quiz-glyph.ja{font-family:'Noto Sans JP',sans-serif}
+  .quiz-glyph.ko{font-family:'Noto Sans KR',sans-serif}
+  .quiz-glyph.zh{font-family:'Noto Sans SC',sans-serif}
+  .quiz-glyph.hi{font-family:'Noto Sans Devanagari',sans-serif}
+  .quiz-glyph.ar{font-family:'Noto Sans Arabic',sans-serif;direction:rtl}
+  .quiz-glyph.he{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl}
+  .quiz-glyph.la{font-family:'Bodoni Moda',serif;font-style:italic;font-weight:500}
+  .quiz-prompt{font-family:'Bodoni Moda',serif;font-style:italic;font-size:18px;color:var(--ink-2);margin-top:14px;position:relative}
+  .quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center}
+  .quiz-opt{background:transparent;color:var(--paper);padding:24px 18px;border:1px solid #4a3525;font-family:'Bodoni Moda',serif;font-size:22px;font-weight:500;cursor:pointer;text-align:left;transition:all .2s;line-height:1.2}
+  .quiz-opt:hover{background:#3a2a1f;border-color:#e6b865;transform:translateX(4px)}
+  .quiz-opt .meaning{font-family:'Bodoni Moda',serif;font-style:italic;font-size:14px;color:#c4b8a0;display:block;margin-top:4px;font-weight:400}
+  .quiz-opt.correct{background:#2a4a2a;border-color:#7fd06a;color:var(--paper)}
+  .quiz-opt.wrong{background:#5a2a2a;border-color:#ff6b3d;color:var(--paper)}
+  .quiz-opt:disabled{cursor:default}
+  .quiz-feedback{font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;text-align:center;margin-top:18px;color:#c4b8a0;min-height:30px}
+  .quiz-feedback.right{color:#7fd06a}
+  .quiz-feedback.miss{color:#ff6b3d}
+  .quiz-next{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;padding:12px 22px;background:var(--red);color:var(--paper);border:none;cursor:pointer;margin:18px auto 0;display:block}
+  .quiz-next:hover{background:var(--paper);color:var(--red)}
+
+  .wall{border:2px solid var(--ink);background:var(--ink);display:grid;grid-template-columns:repeat(16,1fr);grid-auto-rows:90px;gap:1px}
+  .glyph-cell{background:var(--paper);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;position:relative;font-size:48px;line-height:1;overflow:hidden}
+  .glyph-cell:hover{background:var(--ink);color:var(--paper);transform:scale(1.08);z-index:5;box-shadow:0 0 40px rgba(168,50,50,.5)}
+  .glyph-cell.ja{font-family:'Noto Sans JP',sans-serif}
+  .glyph-cell.ko{font-family:'Noto Sans KR',sans-serif}
+  .glyph-cell.zh{font-family:'Noto Sans SC',sans-serif}
+  .glyph-cell.hi{font-family:'Noto Sans Devanagari',sans-serif}
+  .glyph-cell.ar{font-family:'Noto Sans Arabic',sans-serif}
+  .glyph-cell.he{font-family:'Noto Sans Hebrew',sans-serif}
+  .glyph-cell.la{font-family:'Bodoni Moda',serif;font-style:italic;font-weight:500}
+  .glyph-cell.featured{grid-column:span 2;grid-row:span 2;font-size:96px;background:var(--paper-2);color:var(--red)}
+  .glyph-cell.label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--ink-2);text-transform:uppercase;text-align:center;padding:0 6px;line-height:1.3}
+  .glyph-cell.label:hover{background:var(--red);color:var(--paper)}
+
+  .wall-tooltip{position:fixed;background:var(--ink);color:var(--paper);padding:14px 18px;font-family:'Bodoni Moda',serif;border:1px solid var(--red);pointer-events:none;z-index:1000;opacity:0;transition:opacity .12s;max-width:280px}
+  .wall-tooltip.on{opacity:1}
+  .wall-tooltip .lang{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e6b865;margin-bottom:6px}
+  .wall-tooltip .ch{font-size:38px;line-height:1;margin-bottom:6px;font-style:italic;color:var(--paper)}
+  .wall-tooltip .meaning{font-size:15px;font-style:italic;color:#c4b8a0}
+
+  .fluency{background:var(--red);color:var(--paper);padding:50px;margin-top:50px;position:relative;overflow:hidden;border:2px solid var(--ink)}
+  .fluency::before{content:"⏳";position:absolute;font-size:280px;right:-30px;top:-30px;opacity:.08;color:var(--paper)}
+  .fluency-inner{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr 1fr;gap:50px;align-items:end}
+  .fluency h3{font-family:'Bodoni Moda',serif;font-size:54px;font-weight:300;line-height:1;letter-spacing:-.02em;margin-bottom:8px}
+  .fluency h3 em{font-style:italic}
+  .fluency .sub{font-family:'Bodoni Moda',serif;font-style:italic;font-size:18px;color:#f5d4b8;margin-bottom:30px;max-width:480px}
+  .fl-controls{display:flex;flex-direction:column;gap:18px}
+  .fl-control label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#f5d4b8;display:block;margin-bottom:8px}
+  .fl-control select,.fl-control input[type=range]{width:100%}
+  .fl-control select{padding:12px 14px;border:1px solid var(--paper);background:var(--red);color:var(--paper);font-family:'Bodoni Moda',serif;font-size:20px;font-style:italic;cursor:pointer;outline:none}
+  .fl-control input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:24px}
+  .fl-control input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--paper)}
+  .fl-control input[type=range]::-moz-range-track{height:2px;background:var(--paper)}
+  .fl-control input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--paper);margin-top:-8px;cursor:grab;border:2px solid var(--red)}
+  .fl-control input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--paper);cursor:grab;border:2px solid var(--red)}
+  .fl-value{font-family:'Bodoni Moda',serif;font-size:24px;font-style:italic;color:var(--paper);margin-bottom:6px}
+  .fl-output{background:var(--ink);padding:36px;border:2px solid var(--paper)}
+  .fl-output-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:#e6b865;text-transform:uppercase;margin-bottom:14px}
+  .fl-output-num{font-family:'Bodoni Moda',serif;font-size:96px;line-height:.9;font-weight:300;color:var(--paper);letter-spacing:-.03em}
+  .fl-output-num em{font-style:italic;color:#e6b865;font-weight:400}
+  .fl-output-line{font-family:'Bodoni Moda',serif;font-size:18px;font-style:italic;color:#c4b8a0;margin-top:14px;line-height:1.4}
+  .fl-output-date{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.15em;color:#e6b865;text-transform:uppercase;margin-top:18px;padding-top:14px;border-top:1px solid #4a3525}
+
+  .roadmap{background:var(--ink);color:var(--paper);padding:80px 30px;position:relative;overflow:hidden}
+  .roadmap-deco{position:absolute;top:30px;right:30px;font-family:'Noto Sans Arabic',sans-serif;font-size:240px;color:#3a2a1f;opacity:.5;line-height:1;direction:rtl}
+  .roadmap-inner{position:relative;z-index:1;max-width:1500px;margin:0 auto}
+  .roadmap h2{font-family:'Bodoni Moda',serif;font-size:72px;font-weight:300;letter-spacing:-.02em;line-height:.95;margin-bottom:8px}
+  .roadmap h2 em{font-style:italic;color:#e6b865}
+  .roadmap .sub{font-family:'Bodoni Moda',serif;font-style:italic;font-size:20px;color:#c4b8a0;margin-bottom:50px;max-width:620px}
+  .levels{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1px solid #4a3525}
+  .level{padding:28px 22px;border-right:1px solid #4a3525;position:relative}
+  .level:last-child{border-right:none}
+  .level-code{font-family:'Bodoni Moda',serif;font-size:54px;font-weight:300;font-style:italic;color:#e6b865;line-height:1}
+  .level-name{font-family:'Bodoni Moda',serif;font-size:22px;font-weight:500;margin-top:8px;letter-spacing:-.005em}
+  .level-hours{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;color:#8a7a60;text-transform:uppercase;margin-top:14px}
+  .level-desc{font-family:'Bodoni Moda',serif;font-size:14px;font-style:italic;color:#c4b8a0;margin-top:14px;line-height:1.5}
+
+  .certs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:2px solid var(--ink)}
+  .cert{padding:28px 22px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--paper)}
+  .cert:nth-child(4n){border-right:none}
+  .cert:nth-last-child(-n+4){border-bottom:none}
+  .cert-flag{font-size:30px;line-height:1;margin-bottom:8px}
+  .cert-code{font-family:'Bodoni Moda',serif;font-size:34px;font-weight:700;font-style:italic;color:var(--red);line-height:1;letter-spacing:-.02em}
+  .cert-name{font-family:'Bodoni Moda',serif;font-size:16px;font-weight:500;margin-top:6px}
+  .cert-meta{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ink-2);text-transform:uppercase;margin-top:12px;line-height:1.6}
+
+  .diff-table{width:100%;border-collapse:collapse;border:2px solid var(--ink);background:var(--paper)}
+  .diff-table thead th{background:var(--ink);color:var(--paper);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:14px 18px;text-align:left;font-weight:400}
+  .diff-table tbody tr{border-bottom:1px solid var(--rule)}
+  .diff-table tbody tr:last-child{border-bottom:none}
+  .diff-table tbody td{padding:18px;vertical-align:middle}
+  .diff-cat{font-family:'Bodoni Moda',serif;font-size:36px;font-weight:700;font-style:italic;color:var(--red);width:120px;line-height:1}
+  .diff-langs{font-family:'Bodoni Moda',serif;font-size:18px;line-height:1.5}
+  .diff-hours{font-family:'DM Mono',monospace;font-size:14px;letter-spacing:.05em;color:var(--ink-2);white-space:nowrap}
+
+  .methods{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:2px solid var(--ink);background:var(--ink)}
+  .method{background:var(--paper);padding:32px 28px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+  .method:nth-child(3n){border-right:none}
+  .method:nth-last-child(-n+3){border-bottom:none}
+  .method-num{font-family:'Bodoni Moda',serif;font-size:48px;font-weight:300;font-style:italic;color:var(--red);line-height:1}
+  .method-name{font-family:'Bodoni Moda',serif;font-size:26px;font-weight:500;margin:8px 0 14px;letter-spacing:-.01em}
+  .method-desc{font-family:'Noto Serif',serif;font-size:15px;line-height:1.6;color:var(--ink-2)}
+  .method-best{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+
+  .foot{background:var(--ink);color:var(--paper);padding:60px 30px 30px}
+  .foot-inner{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+  .foot-logo{font-family:'Bodoni Moda',serif;font-size:54px;font-weight:900;letter-spacing:-.025em;line-height:.9;text-transform:uppercase}
+  .foot-logo em{font-style:italic;font-weight:400;color:#e6b865;text-transform:lowercase}
+  .foot p{font-family:'Bodoni Moda',serif;font-style:italic;font-size:17px;color:#c4b8a0;margin-top:14px;line-height:1.5;max-width:380px}
+  .foot h4{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.2em;color:#c4b8a0;margin-bottom:14px;text-transform:uppercase}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .foot ul a{font-family:'Bodoni Moda',serif;font-size:17px}
+  .foot ul a:hover{color:#e6b865;font-style:italic}
+  .colo{max-width:1500px;margin:50px auto 0;padding-top:20px;border-top:1px solid #4a3525;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8a7a60;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(42,24,16,.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:40px}
+  .modal-bg.on{display:flex}
+  .modal{background:var(--paper);border:2px solid var(--ink);max-width:820px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+  .modal-inner{padding:48px}
+  .close{position:absolute;top:14px;right:14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;padding:8px 12px;border:1px solid var(--ink);background:var(--paper);z-index:2;text-transform:uppercase}
+  .close:hover{background:var(--ink);color:var(--paper)}
+  .modal-hero{padding:40px;background:var(--paper-2);border-bottom:1px solid var(--ink);text-align:center;position:relative}
+  .modal-script{font-size:160px;line-height:.9;color:var(--ink);margin-bottom:8px}
+  .modal h2{font-family:'Bodoni Moda',serif;font-size:54px;font-weight:300;line-height:1;letter-spacing:-.02em}
+  .modal h2 em{font-style:italic;color:var(--red)}
+  .modal .native{font-family:'Bodoni Moda',serif;font-style:italic;font-size:22px;color:var(--ink-2);margin-top:6px}
+  .modal-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--ink)}
+  .modal-stats > div{padding:16px;border-right:1px solid var(--ink);text-align:center}
+  .modal-stats > div:last-child{border-right:none}
+  .modal-stats .l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--ink-2);text-transform:uppercase;margin-bottom:4px}
+  .modal-stats .v{font-family:'Bodoni Moda',serif;font-size:18px;font-weight:500}
+  .modal-body{padding:36px 40px}
+  .modal h3{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--red);text-transform:uppercase;margin:24px 0 12px}
+  .modal h3:first-child{margin-top:0}
+  .modal p,.modal li{font-family:'Noto Serif',serif;font-size:16px;line-height:1.65}
+  .modal ul{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+  .resource-list{list-style:none !important;padding:0 !important;display:grid !important;grid-template-columns:1fr 1fr !important;gap:12px !important}
+  .resource-list li{font-family:'Bodoni Moda',serif !important;font-size:15px !important;padding:10px 14px;background:var(--paper-2);border:1px solid var(--rule)}
+
+  @media (max-width:980px){
+    .wall{grid-template-columns:repeat(6,1fr)}
+    .quiz{padding:24px}
+    .quiz-board{grid-template-columns:1fr;gap:20px}
+    .quiz-glyph{font-size:130px}
+    .certs-grid{grid-template-columns:repeat(2,1fr)}
+    .fluency-inner{grid-template-columns:1fr;gap:24px}
+    .fluency{padding:30px}
+    .methods{grid-template-columns:1fr}
+    .levels{grid-template-columns:repeat(2,1fr)}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .stat:nth-child(2n){border-right:none}
+    .foot-inner{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span>Vol. I · An open atlas of human language</span>
+  <span id="day"></span>
+</div>
+
+<div class="deco-line"><span class="glyph">❦ a · 言 · ل · अ · 한 · я ❦</span></div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="logo">LangLearn<br/><em>Atlas</em></div>
+    <nav class="nav">
+      <a class="on">Languages</a><a>Roadmaps</a><a>Scripts</a><a>Certifications</a><a>Methods</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-glyph">語</div>
+  <div class="hero-inner">
+    <div class="hero-kicker">Volume I · A reference, not a course</div>
+    <h1>The <em>study</em> of <span class="scr">言葉</span>,<br/>the <em>love</em> of <span class="scr3">كلمات</span>,<br/>the <em>map</em> to <span class="scr2">शब्द</span>.</h1>
+    <p>An open, opinion-free reference for learners of every language. Every method, certification, and resource — catalogued, compared, and rooted in actual research. No app push. No algorithm. Just the cartography of how to learn a tongue.</p>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><div class="stat-num">62<em>+</em></div><div class="stat-label">Languages catalogued</div></div>
+  <div class="stat"><div class="stat-num"><em>1,840</em></div><div class="stat-label">Resources reviewed</div></div>
+  <div class="stat"><div class="stat-num">28</div><div class="stat-label">Writing systems</div></div>
+  <div class="stat"><div class="stat-num"><em>11</em></div><div class="stat-label">Certifications mapped</div></div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">Method primers</div></div>
+</section>
+
+<section class="sec">
+  <div class="sec-num">§ 01 — Index</div>
+  <h2 class="sec-title">The <em>language</em> atlas.</h2>
+  <p class="sec-sub">Each entry is a complete dossier — script, regions, difficulty, recommended courses, exams, and the cultural arteries you'll be learning along with the grammar.</p>
+  <div class="quiz">
+    <div class="quiz-head">
+      <div>
+        <div class="quiz-num">§ Interactive tool · The character quiz</div>
+        <h3>Do you <em>know</em> this?</h3>
+        <div class="quiz-sub">Identify the character. Multiple choice. Four options. No timer, but every wrong answer costs you streak.</div>
+      </div>
+      <div class="quiz-score">Streak<span class="num" id="quiz-streak">0</span>Best <span id="quiz-best">0</span></div>
+    </div>
+    <div class="quiz-board">
+      <div class="quiz-card">
+        <div class="quiz-lang-tag" id="quiz-lang">JAPANESE · HIRAGANA</div>
+        <div class="quiz-glyph ja" id="quiz-glyph">あ</div>
+        <div class="quiz-prompt" id="quiz-prompt">— what does this mean?</div>
+      </div>
+      <div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback">Pick the correct meaning.</div>
+        <button class="quiz-next" id="quiz-next" style="display:none">Next character →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wall" id="wall"></div>
+
+  <div class="fluency">
+    <div class="fluency-inner">
+      <div>
+        <h3>The <em>time</em> calculator.</h3>
+        <p class="sub">An honest estimate. Based on FSI data and how many hours per week you can actually put in.</p>
+        <div class="fl-controls">
+          <div class="fl-control">
+            <label>Language</label>
+            <select id="fl-lang"></select>
+          </div>
+          <div class="fl-control">
+            <label>Hours per week</label>
+            <div class="fl-value" id="fl-hours-v">10 hrs/week</div>
+            <input type="range" id="fl-hours" min="2" max="40" step="1" value="10" />
+          </div>
+          <div class="fl-control">
+            <label>Target level</label>
+            <select id="fl-target">
+              <option value="180">A2 · Tourist survival (180 hrs)</option>
+              <option value="350">B1 · Conversational (350 hrs)</option>
+              <option value="600" selected>B2 · Working proficiency (600 hrs)</option>
+              <option value="1000">C1 · Fluent (1,000 hrs)</option>
+              <option value="1800">C2 · Mastery (1,800 hrs)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="fl-output">
+        <div class="fl-output-label">Estimated time to reach target</div>
+        <div class="fl-output-num"><em id="fl-years">1.2</em> <span id="fl-years-word">years</span></div>
+        <div class="fl-output-line" id="fl-line">≈ 60 weeks of consistent study</div>
+        <div class="fl-output-date" id="fl-date">Target date · —</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wall-tooltip" id="wall-tip"></div>
+
+<section class="roadmap">
+  <div class="roadmap-deco">المستوى</div>
+  <div class="roadmap-inner">
+    <div class="sec-num" style="color:#e6b865">§ 02 — Roadmap</div>
+    <h2>The <em>CEFR</em> ladder.</h2>
+    <p class="sub">The Common European Framework of Reference is the most widely-used measure of language ability. Six levels from absolute beginner to mastery — with rough hour estimates for the average English-speaking adult.</p>
+    <div class="levels">
+      <div class="level">
+        <div class="level-code">A1</div>
+        <div class="level-name">Breakthrough</div>
+        <div class="level-hours">~80 hours</div>
+        <div class="level-desc">Order food. Introduce yourself. Read signs.</div>
+      </div>
+      <div class="level">
+        <div class="level-code">A2</div>
+        <div class="level-name">Waystage</div>
+        <div class="level-hours">~180 hours</div>
+        <div class="level-desc">Survive a tourist trip. Talk about your day in past tense.</div>
+      </div>
+      <div class="level">
+        <div class="level-code">B1</div>
+        <div class="level-name">Threshold</div>
+        <div class="level-hours">~350 hours</div>
+        <div class="level-desc">Hold a conversation. Watch TV with subtitles. Argue weakly.</div>
+      </div>
+      <div class="level">
+        <div class="level-code">B2</div>
+        <div class="level-name">Vantage</div>
+        <div class="level-hours">~600 hours</div>
+        <div class="level-desc">Work in the language. Read novels slowly. Defend opinions.</div>
+      </div>
+      <div class="level">
+        <div class="level-code">C1</div>
+        <div class="level-name">Effective</div>
+        <div class="level-hours">~1,000 hours</div>
+        <div class="level-desc">Native-comfortable. Write academic essays. Read literature.</div>
+      </div>
+      <div class="level">
+        <div class="level-code">C2</div>
+        <div class="level-name">Mastery</div>
+        <div class="level-hours">~1,800 hours</div>
+        <div class="level-desc">Indistinguishable from an educated native, on a good day.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-num">§ 03 — Difficulty</div>
+  <h2 class="sec-title">FSI <em>categories.</em></h2>
+  <p class="sec-sub">Estimates from the U.S. Foreign Service Institute, the gold standard for how long an English-speaking adult takes to reach professional working proficiency.</p>
+  <table class="diff-table">
+    <thead><tr><th style="width:120px">Category</th><th>Languages</th><th style="text-align:right">Hours to professional fluency</th></tr></thead>
+    <tbody>
+      <tr><td class="diff-cat">I</td><td class="diff-langs">Spanish · French · Italian · Portuguese · Dutch · Swedish · Norwegian · Danish · Romanian · Afrikaans</td><td class="diff-hours" style="text-align:right">~600–750</td></tr>
+      <tr><td class="diff-cat">II</td><td class="diff-langs">German</td><td class="diff-hours" style="text-align:right">~900</td></tr>
+      <tr><td class="diff-cat">III</td><td class="diff-langs">Indonesian · Malay · Swahili · Haitian Creole</td><td class="diff-hours" style="text-align:right">~900</td></tr>
+      <tr><td class="diff-cat">IV</td><td class="diff-langs">Russian · Polish · Czech · Greek · Hebrew · Turkish · Vietnamese · Thai · Finnish · Hungarian · Estonian · Hindi · Urdu · Persian · Tagalog</td><td class="diff-hours" style="text-align:right">~1,100</td></tr>
+      <tr><td class="diff-cat">V</td><td class="diff-langs">Mandarin · Cantonese · Japanese · Korean · Arabic</td><td class="diff-hours" style="text-align:right">~2,200</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="sec">
+  <div class="sec-num">§ 04 — Certifications</div>
+  <h2 class="sec-title">The <em>credentials</em> map.</h2>
+  <p class="sec-sub">The internationally-recognized exams that prove a level. Some are required for university admission, others for immigration or work permits.</p>
+  <div class="certs-grid">
+    <div class="cert">
+      <div class="cert-flag">🇯🇵</div>
+      <div class="cert-code">JLPT</div>
+      <div class="cert-name">日本語能力試験</div>
+      <div class="cert-meta">Japanese · 5 levels (N5–N1)<br/>2× per year</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🇨🇳</div>
+      <div class="cert-code">HSK</div>
+      <div class="cert-name">汉语水平考试</div>
+      <div class="cert-meta">Mandarin · 9 levels<br/>Monthly worldwide</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🇰🇷</div>
+      <div class="cert-code">TOPIK</div>
+      <div class="cert-name">한국어능력시험</div>
+      <div class="cert-meta">Korean · 6 levels<br/>6× per year</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🇪🇸</div>
+      <div class="cert-code">DELE</div>
+      <div class="cert-name">Diplomas de Español</div>
+      <div class="cert-meta">Spanish · A1–C2 (CEFR)<br/>Issued by Instituto Cervantes</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🇫🇷</div>
+      <div class="cert-code">DELF</div>
+      <div class="cert-name">Diplôme d'études</div>
+      <div class="cert-meta">French · A1–B2 (DALF C1/C2)<br/>French Ministry of Education</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🇩🇪</div>
+      <div class="cert-code">TestDaF</div>
+      <div class="cert-name">Deutsch als Fremdsprache</div>
+      <div class="cert-meta">German · TDN 3–5<br/>Required for German university</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🇮🇹</div>
+      <div class="cert-code">CILS</div>
+      <div class="cert-name">Certificazione Italiano</div>
+      <div class="cert-meta">Italian · A1–C2<br/>University of Siena</div>
+    </div>
+    <div class="cert">
+      <div class="cert-flag">🌍</div>
+      <div class="cert-code">CEFR</div>
+      <div class="cert-name">Common European Framework</div>
+      <div class="cert-meta">All languages · A1–C2<br/>The scale every cert maps to</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-num">§ 05 — Methodology</div>
+  <h2 class="sec-title">Six <em>schools</em> of thought.</h2>
+  <p class="sec-sub">There is no single best way to learn a language. There are, however, six well-documented traditions — each with its own merits, weaknesses, and ideal use case.</p>
+  <div class="methods">
+    <div class="method">
+      <div class="method-num">I.</div>
+      <div class="method-name">Comprehensible Input</div>
+      <div class="method-desc">Krashen's hypothesis: acquire language by understanding messages slightly above your level. Watch, read, listen — speak when ready.</div>
+      <div class="method-best">Best for · Tonal languages · Listening</div>
+    </div>
+    <div class="method">
+      <div class="method-num">II.</div>
+      <div class="method-name">Grammar-Translation</div>
+      <div class="method-desc">The classical method. Memorize rules, conjugate tables, translate sentences. Old-fashioned, but no faster way to read Cicero.</div>
+      <div class="method-best">Best for · Reading literature · Latin/Greek</div>
+    </div>
+    <div class="method">
+      <div class="method-num">III.</div>
+      <div class="method-name">Audiolingual / Pimsleur</div>
+      <div class="method-desc">Drill-based listen-and-repeat with spaced repetition baked in. Fastest path to a passable accent and basic conversation.</div>
+      <div class="method-best">Best for · Travel · First 3 months</div>
+    </div>
+    <div class="method">
+      <div class="method-num">IV.</div>
+      <div class="method-name">Assimil "With Ease"</div>
+      <div class="method-desc">French method built on natural dialogues, side-by-side translation, and a passive-then-active two-wave approach. Beloved cult favourite.</div>
+      <div class="method-best">Best for · Self-study · Romance languages</div>
+    </div>
+    <div class="method">
+      <div class="method-num">V.</div>
+      <div class="method-name">Spaced Repetition (SRS)</div>
+      <div class="method-desc">Anki, Memrise, FSRS. Algorithmic flashcards that schedule reviews at expanding intervals. Most efficient way to retain vocabulary long-term.</div>
+      <div class="method-best">Best for · Vocab · Kanji · Characters</div>
+    </div>
+    <div class="method">
+      <div class="method-num">VI.</div>
+      <div class="method-name">Immersion</div>
+      <div class="method-desc">Move, live, work in the language. The only method with a 100% historical track record — at the cost of being the most expensive and least scalable.</div>
+      <div class="method-best">Best for · Fluency · Cultural depth</div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <div>
+      <div class="foot-logo">LangLearn<br/><em>Atlas</em></div>
+      <p>An open reference for learners of every tongue. No accounts, no algorithms, no affiliate links. Curated by hand, updated quarterly, owned by no one.</p>
+    </div>
+    <div><h4>Atlas</h4><ul><a>All languages</a><a>By family</a><a>By script</a><a>By difficulty</a></ul></div>
+    <div><h4>Reference</h4><ul><a>CEFR levels</a><a>FSI categories</a><a>Certifications</a><a>Methods</a></ul></div>
+    <div><h4>About</h4><ul><a>Editorial</a><a>Submit a resource</a><a>Corrections</a><a>Contact</a></ul></div>
+  </div>
+  <div class="colo">
+    <span>Set in Bodoni Moda · DM Mono · Noto</span>
+    <span>© LangLearn Atlas · Open reference · Compiled by hand</span>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">CLOSE ×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const langs = [
+  {id:1,name:"Japanese",native:"日本語",script:"日",scriptClass:"ja",speakers:"125M",fsi:"V",hours:"~2,200",writing:"Hiragana · Katakana · Kanji",region:"asia",tags:["asia","hard"],cert:"JLPT (N5–N1)",desc:"An East Asian language with three integrated writing systems. Highly agglutinative; verbs and adjectives conjugate but nouns barely change. Famous for its tier system of politeness encoded directly into grammar.",resources:["NHK Easy News","Tofugu","WaniKani","Bunpro","Genki I–II","Tae Kim's Grammar"]},
+  {id:2,name:"Korean",native:"한국어",script:"한",scriptClass:"ko",speakers:"77M",fsi:"V",hours:"~2,200",writing:"Hangul",region:"asia",tags:["asia","hard"],cert:"TOPIK I–II",desc:"The script — Hangul — is the most logically designed writing system in the world. The grammar shares structure with Japanese, but the vocabulary is largely distinct (with significant Chinese borrowings).",resources:["TTMIK","HowToStudyKorean","Pimsleur Korean","Naver Dictionary","Pagoda","Sejong Korean"]},
+  {id:3,name:"Mandarin Chinese",native:"普通话",script:"汉",scriptClass:"zh",speakers:"1.1B",fsi:"V",hours:"~2,200",writing:"Hanzi (simplified/traditional)",region:"asia",tags:["asia","hard"],cert:"HSK 1–9",desc:"The most-spoken first language on Earth. Famously tonal — four tones plus a neutral — and analytic, meaning grammar is conveyed by word order and particles rather than conjugation. Characters take time.",resources:["Pleco","HelloChinese","DuChinese","HSK Online","Yoyo Chinese","Chinese Grammar Wiki"]},
+  {id:4,name:"Spanish",native:"Español",script:"ñ",scriptClass:"la",speakers:"500M",fsi:"I",hours:"~600",writing:"Latin",region:"europe",tags:["europe","easy"],cert:"DELE A1–C2",desc:"The most widely-spoken Romance language and the second-most-spoken native language in the world. Highly regular phonetics — read what you see — but the verb system is rich and the subjunctive will test you.",resources:["SpanishDict","Dreaming Spanish","Pimsleur Spanish","Anki Spanish 5K","Practice Makes Perfect","Coffee Break Spanish"]},
+  {id:5,name:"French",native:"Français",script:"é",scriptClass:"la",speakers:"310M",fsi:"I",hours:"~750",writing:"Latin",region:"europe",tags:["europe","easy"],cert:"DELF · DALF",desc:"A Romance language whose orthography preserves centuries of etymology — a long way from how it sounds. Tonally flat but rhythmically distinct; the liaison and nasal vowels take time. Indispensable for diplomacy.",resources:["TV5Monde","Lawless French","Pimsleur French","Assimil New French","Duolingo French","Easy French (YT)"]},
+  {id:6,name:"Arabic",native:"العربية",script:"ع",scriptClass:"ar",speakers:"370M",fsi:"V",hours:"~2,200",writing:"Arabic abjad (RTL)",region:"middleeast",tags:["middleeast","hard"],cert:"ALPT · ILR",desc:"A Semitic language with a diglossic split: Modern Standard Arabic (MSA) is universal in writing and media, but every region speaks its own dialect. The root system means three consonants generate dozens of related words.",resources:["Madinah Arabic","Al-Kitaab","Pimsleur Eastern Arabic","Mango Arabic","Lingualism","ArabicPod101"]},
+  {id:7,name:"Hindi",native:"हिन्दी",script:"अ",scriptClass:"hi",speakers:"600M",fsi:"IV",hours:"~1,100",writing:"Devanagari",region:"indic",tags:["indic","hard"],cert:"None standardized",desc:"An Indo-Aryan language closely related to Urdu (mutually intelligible spoken; different scripts). Devanagari is phonetic — pronunciation is fully predictable from spelling. Grammar features gendered verbs and split ergativity.",resources:["HindiPod101","Rupert Snell · Teach Yourself","Indian textbooks (NCERT)","Hindi WordPower","Dasti Hindi","Pimsleur Hindi"]},
+  {id:8,name:"German",native:"Deutsch",script:"ß",scriptClass:"la",speakers:"95M",fsi:"II",hours:"~900",writing:"Latin",region:"europe",tags:["europe","easy"],cert:"TestDaF · Goethe-Zertifikat",desc:"A Germanic language whose grammar is famously systematic: four cases, three genders, separable verbs, and compound nouns of arbitrary length. The structure is rigid; the rewards for memorising it are substantial.",resources:["Deutsche Welle","Easy German (YT)","Anki German 5K","Hammer's German Grammar","Pimsleur German","Goethe Institut"]},
+  {id:9,name:"Russian",native:"Русский",script:"Я",scriptClass:"la",speakers:"258M",fsi:"IV",hours:"~1,100",writing:"Cyrillic",region:"europe",tags:["europe","hard"],cert:"TORFL A1–C2",desc:"An East Slavic language with a Cyrillic alphabet that takes a week to learn. The grammar — six cases, perfective/imperfective aspect, three genders, palatalisation — takes years. Phenomenal literature.",resources:["RussianPod101","Pimsleur Russian","Russian Tutor (Routledge)","Anki Russian Top 5K","Master Russian","Easy Russian"]},
+  {id:10,name:"Portuguese",native:"Português",script:"ã",scriptClass:"la",speakers:"265M",fsi:"I",hours:"~600",writing:"Latin",region:"europe",tags:["europe","easy"],cert:"CELPE-Bras · CAPLE",desc:"A Romance language with two major varieties — European and Brazilian — that differ in pronunciation, syntax, and vocabulary. Brazilian is melodic, European is more clipped. Nasal vowels are the signature.",resources:["Practice Portuguese","Pimsleur Brazilian","Tá Falado","Portuguese With Carla","Streetsmart Brazil","Easy Portuguese"]},
+  {id:11,name:"Hebrew",native:"עברית",script:"ש",scriptClass:"he",speakers:"9M",fsi:"IV",hours:"~1,100",writing:"Hebrew abjad (RTL)",region:"middleeast",tags:["middleeast","hard"],cert:"YAEL · BAGRUT",desc:"A Semitic language revived from religious use into a living national language in the early 20th century. Right-to-left consonantal writing; vowels are usually omitted. Triliteral root system creates families of related words.",resources:["HebrewPod101","Ulpan La-Inyan","Pimsleur Hebrew","Routledge Modern Hebrew","Memrise Hebrew","Easy Hebrew"]},
+  {id:12,name:"Italian",native:"Italiano",script:"à",scriptClass:"la",speakers:"68M",fsi:"I",hours:"~600",writing:"Latin",region:"europe",tags:["europe","easy"],cert:"CILS · CELI",desc:"A Romance language with the most regular phonetics in the family — five vowels, doubled consonants, no silent letters. The standard is based on Tuscan but every region has its dialect. Operatic by nature.",resources:["Italian Pod 101","Coffee Break Italian","Pimsleur Italian","Easy Italian","Lingq Italian","Practice Makes Perfect"]},
+  {id:13,name:"Vietnamese",native:"Tiếng Việt",script:"ờ",scriptClass:"la",speakers:"85M",fsi:"IV",hours:"~1,100",writing:"Latin (with diacritics)",region:"asia",tags:["asia","hard"],cert:"VLPT",desc:"An Austroasiatic language with six tones and a Latin-based alphabet (a 17th-century missionary contribution). Almost no inflection — words don't change shape — but the tone system is what trips Western speakers up.",resources:["VietnamesePod101","Tieng Viet Oi","Pimsleur Vietnamese","Anki Vietnamese","Tu Hoc Tieng Viet","Annie Nguyen YT"]},
+  {id:14,name:"Turkish",native:"Türkçe",script:"Ş",scriptClass:"la",speakers:"85M",fsi:"IV",hours:"~1,100",writing:"Latin",region:"middleeast",tags:["middleeast","hard"],cert:"TYS · TÖMER",desc:"A Turkic language with vowel harmony and an agglutinative structure that stacks suffix after suffix onto a root. Strangely satisfying to study — the grammar is mathematically clean once you grasp the rules.",resources:["Turkish Tea Time","Pimsleur Turkish","Yunus Emre Institute","TÖMER Textbook","Easy Turkish","Anki Turkish 5K"]},
+  {id:15,name:"Dutch",native:"Nederlands",script:"ij",scriptClass:"la",speakers:"24M",fsi:"I",hours:"~600",writing:"Latin",region:"europe",tags:["europe","easy"],cert:"CNaVT · NT2",desc:"A Germanic language closely related to English and German. Almost everyone in the Netherlands speaks excellent English, which is the main obstacle to actually practicing. The grammar is simpler than German.",resources:["Bart de Pau","Dutch Grammar (online)","Pimsleur Dutch","NT2.nl","Easy Dutch","Heb Je Zin"]},
+  {id:16,name:"Polish",native:"Polski",script:"Ł",scriptClass:"la",speakers:"45M",fsi:"IV",hours:"~1,100",writing:"Latin",region:"europe",tags:["europe","hard"],cert:"Polish State Cert",desc:"A West Slavic language famously rich in consonant clusters and seven grammatical cases. The pronunciation is regular once you accept that 'rz' is one sound. Native speakers are unusually appreciative of learners.",resources:["Real Polish","Easy Polish","Pimsleur Polish","Hurra Po Polsku","Polski Daily","Anki Polish 5K"]}
+];
+
+const wallGlyphs = [
+
+  {ch:'言',cls:'ja',meaning:'word, speech',lang:'Japanese',langId:1,featured:true},
+  {ch:'あ',cls:'ja',meaning:'a · hiragana',lang:'Japanese',langId:1},
+  {ch:'ん',cls:'ja',meaning:'n · hiragana',lang:'Japanese',langId:1},
+  {ch:'カ',cls:'ja',meaning:'ka · katakana',lang:'Japanese',langId:1},
+  {ch:'ロ',cls:'ja',meaning:'ro · katakana',lang:'Japanese',langId:1},
+  {ch:'人',cls:'ja',meaning:'person',lang:'Japanese',langId:1},
+  {ch:'한',cls:'ko',meaning:'han · Korea',lang:'Korean',langId:2,featured:true},
+  {ch:'ㄱ',cls:'ko',meaning:'g · giyeok',lang:'Korean',langId:2},
+  {ch:'ㄴ',cls:'ko',meaning:'n · nieun',lang:'Korean',langId:2},
+  {ch:'사',cls:'ko',meaning:'sa',lang:'Korean',langId:2},
+  {ch:'랑',cls:'ko',meaning:'rang · love',lang:'Korean',langId:2},
+  {ch:'中',cls:'zh',meaning:'middle, China',lang:'Mandarin',langId:3},
+  {ch:'美',cls:'zh',meaning:'beautiful',lang:'Mandarin',langId:3},
+  {ch:'愛',cls:'zh',meaning:'love',lang:'Mandarin',langId:3,featured:true},
+  {ch:'山',cls:'zh',meaning:'mountain',lang:'Mandarin',langId:3},
+  {ch:'水',cls:'zh',meaning:'water',lang:'Mandarin',langId:3},
+  {ch:'ñ',cls:'la',meaning:'eñe · Spanish',lang:'Spanish',langId:4},
+  {ch:'é',cls:'la',meaning:'e-acute',lang:'French',langId:5},
+  {ch:'A',cls:'label',meaning:'Latin alphabet',lang:'European',langId:4,labelOnly:true},
+  {ch:'ع',cls:'ar',meaning:"'ayn",lang:'Arabic',langId:6,featured:true},
+  {ch:'ا',cls:'ar',meaning:'alif · 1st letter',lang:'Arabic',langId:6},
+  {ch:'ب',cls:'ar',meaning:'bāʾ',lang:'Arabic',langId:6},
+  {ch:'م',cls:'ar',meaning:'mīm',lang:'Arabic',langId:6},
+  {ch:'अ',cls:'hi',meaning:'a · 1st vowel',lang:'Hindi',langId:7,featured:true},
+  {ch:'क',cls:'hi',meaning:'ka',lang:'Hindi',langId:7},
+  {ch:'न',cls:'hi',meaning:'na',lang:'Hindi',langId:7},
+  {ch:'द',cls:'hi',meaning:'da',lang:'Hindi',langId:7},
+  {ch:'ß',cls:'la',meaning:'eszett · German',lang:'German',langId:8},
+  {ch:'ü',cls:'la',meaning:'u-umlaut',lang:'German',langId:8},
+  {ch:'Я',cls:'la',meaning:'ya · "I" · Cyrillic',lang:'Russian',langId:9},
+  {ch:'Ж',cls:'la',meaning:'zhe',lang:'Russian',langId:9},
+  {ch:'ש',cls:'he',meaning:'shin',lang:'Hebrew',langId:11,featured:true},
+  {ch:'א',cls:'he',meaning:'aleph · 1st',lang:'Hebrew',langId:11},
+  {ch:'ב',cls:'he',meaning:'bet',lang:'Hebrew',langId:11},
+  {ch:'ã',cls:'la',meaning:'a-tilde · PT',lang:'Portuguese',langId:10},
+  {ch:'ç',cls:'la',meaning:'cedilla',lang:'Portuguese',langId:10},
+  {ch:'à',cls:'la',meaning:'a-grave · IT',lang:'Italian',langId:12},
+  {ch:'è',cls:'la',meaning:'e-grave',lang:'Italian',langId:12},
+  {ch:'ờ',cls:'la',meaning:'o-tone · VN',lang:'Vietnamese',langId:13},
+  {ch:'ằ',cls:'la',meaning:'a-grave-circumflex',lang:'Vietnamese',langId:13},
+  {ch:'Ş',cls:'la',meaning:'s-cedilla · TR',lang:'Turkish',langId:14},
+  {ch:'ğ',cls:'la',meaning:'soft g',lang:'Turkish',langId:14},
+  {ch:'ij',cls:'la',meaning:'ij · digraph',lang:'Dutch',langId:15},
+  {ch:'Ł',cls:'la',meaning:'l-bar · PL',lang:'Polish',langId:16},
+  {ch:'ę',cls:'la',meaning:'e-ogonek',lang:'Polish',langId:16},
+];
+
+function renderWall(){
+  const wall = document.getElementById('wall');
+  wall.innerHTML='';
+  wallGlyphs.forEach(g=>{
+    const cell = document.createElement('div');
+    cell.className = `glyph-cell ${g.cls}${g.featured?' featured':''}`;
+    cell.textContent = g.ch;
+    cell.onmousemove = e=>{
+      const t = document.getElementById('wall-tip');
+      t.classList.add('on');
+      t.innerHTML = `<div class="lang">${g.lang}</div><div class="ch ${g.cls}">${g.ch}</div><div class="meaning">${g.meaning}</div>`;
+      t.style.left = (e.clientX+18)+'px';
+      t.style.top = (e.clientY+18)+'px';
+    };
+    cell.onmouseleave = ()=>document.getElementById('wall-tip').classList.remove('on');
+    cell.onclick = ()=>{
+      const lang = langs.find(l=>l.id===g.langId);
+      if(lang) openModal(lang);
+    };
+    wall.appendChild(cell);
+  });
+}
+
+function setupFluency(){
+  const sel = document.getElementById('fl-lang');
+  sel.innerHTML = langs.map(l=>`<option value="${l.id}" data-cat="${l.fsi}">${l.name} · FSI ${l.fsi} · ${l.hours}</option>`).join('');
+  sel.value = '4';
+  ['fl-lang','fl-hours','fl-target'].forEach(id=>{
+    document.getElementById(id).oninput = updateFluency;
+    document.getElementById(id).onchange = updateFluency;
+  });
+  updateFluency();
+}
+function fsiBaseHours(fsi){
+  return {'I':700,'II':900,'III':1000,'IV':1100,'V':2200}[fsi]||900;
+}
+function updateFluency(){
+  const lang = langs.find(l=>l.id==document.getElementById('fl-lang').value);
+  const hrsPerWeek = +document.getElementById('fl-hours').value;
+  const target = +document.getElementById('fl-target').value;
+
+  const ratio = fsiBaseHours(lang.fsi)/600;
+  const adjusted = Math.round(target*ratio);
+  const weeks = Math.ceil(adjusted/hrsPerWeek);
+  const years = (weeks/52);
+  document.getElementById('fl-hours-v').textContent = `${hrsPerWeek} hrs/week`;
+  let yNum, yWord;
+  if(years<1){yNum = Math.round(weeks/4.3);yWord='months'}
+  else {yNum = years.toFixed(1);yWord = years<2?'year':'years'}
+  document.getElementById('fl-years').textContent = yNum;
+  document.getElementById('fl-years-word').textContent = yWord;
+  document.getElementById('fl-line').textContent = `≈ ${weeks.toLocaleString()} weeks of ${hrsPerWeek}-hour study to absorb ${adjusted.toLocaleString()} hours of ${lang.name}.`;
+  const d = new Date();
+  d.setDate(d.getDate()+weeks*7);
+  const dStr = d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  document.getElementById('fl-date').textContent = `Target date · ${dStr}`;
+}
+
+function openModal(l){
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-hero">
+      <div class="modal-script ${l.scriptClass}" style="font-size:140px">${l.script}</div>
+      <h2>${l.name}</h2>
+      <div class="native">${l.native}</div>
+    </div>
+    <div class="modal-stats">
+      <div><div class="l">Speakers</div><div class="v">${l.speakers}</div></div>
+      <div><div class="l">FSI Cat</div><div class="v">${l.fsi}</div></div>
+      <div><div class="l">Hours</div><div class="v">${l.hours}</div></div>
+      <div><div class="l">Script</div><div class="v" style="font-size:13px">${l.writing}</div></div>
+    </div>
+    <div class="modal-body">
+      <h3>Overview</h3><p>${l.desc}</p>
+      <h3>Certification</h3><p>${l.cert}</p>
+      <h3>Recommended Resources</h3>
+      <ul class="resource-list">${l.resources.map(r=>`<li>${r}</li>`).join('')}</ul>
+    </div>
+  `;
+  document.getElementById('modal-bg').classList.add('on');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('on')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+// Day
+const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const t=new Date();
+document.getElementById('day').textContent = `${months[t.getMonth()]} ${t.getDate()}, ${t.getFullYear()}`;
+
+// Character quiz
+const quizState = {streak:0,best:0,current:null,answered:false};
+function pickQuiz(){
+  const pool = wallGlyphs.filter(g=>!g.labelOnly);
+  const correct = pool[Math.floor(Math.random()*pool.length)];
+  // 3 distractors from different languages where possible
+  const distractors = [];
+  const used = new Set([correct.meaning]);
+  while(distractors.length<3){
+    const cand = pool[Math.floor(Math.random()*pool.length)];
+    if(!used.has(cand.meaning)){
+      distractors.push(cand);
+      used.add(cand.meaning);
+    }
+  }
+  const opts = [correct,...distractors].sort(()=>Math.random()-.5);
+  quizState.current = {correct,opts};
+  quizState.answered = false;
+  // Render
+  document.getElementById('quiz-glyph').className = 'quiz-glyph '+correct.cls;
+  document.getElementById('quiz-glyph').textContent = correct.ch;
+  document.getElementById('quiz-lang').textContent = correct.lang.toUpperCase()+' · character';
+  document.getElementById('quiz-prompt').textContent = '— what does this mean?';
+  const wrap = document.getElementById('quiz-options');
+  wrap.innerHTML = opts.map((o,i)=>`<button class="quiz-opt" data-idx="${i}">${o.meaning.split('·')[0].trim()}<span class="meaning">${o.lang}</span></button>`).join('');
+  wrap.querySelectorAll('.quiz-opt').forEach(btn=>{
+    btn.onclick = ()=>{
+      if(quizState.answered) return;
+      quizState.answered = true;
+      const chosen = opts[+btn.dataset.idx];
+      const fb = document.getElementById('quiz-feedback');
+      if(chosen.meaning===correct.meaning){
+        btn.classList.add('correct');
+        fb.textContent = `Correct — ${correct.lang}: "${correct.meaning}".`;
+        fb.className = 'quiz-feedback right';
+        quizState.streak++;
+        if(quizState.streak>quizState.best) quizState.best=quizState.streak;
+      } else {
+        btn.classList.add('wrong');
+        // highlight correct
+        wrap.querySelectorAll('.quiz-opt').forEach((b,i)=>{
+          if(opts[i].meaning===correct.meaning) b.classList.add('correct');
+        });
+        fb.textContent = `Miss — that was "${correct.meaning}" in ${correct.lang}.`;
+        fb.className = 'quiz-feedback miss';
+        quizState.streak = 0;
+      }
+      wrap.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+      document.getElementById('quiz-next').style.display='block';
+      document.getElementById('quiz-streak').textContent = quizState.streak;
+      document.getElementById('quiz-best').textContent = quizState.best;
+    };
+  });
+}
+document.getElementById('quiz-next').onclick = ()=>{
+  document.getElementById('quiz-next').style.display='none';
+  document.getElementById('quiz-feedback').textContent = 'Pick the correct meaning.';
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  pickQuiz();
+};
+pickQuiz();
+
+renderWall();
+setupFluency();
+</script>
+<script src="enhance.js"></script>
+</body>
+</html>

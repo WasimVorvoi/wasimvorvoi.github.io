@@ -13,7 +13,7 @@
     <rect width="200" height="200" fill="#0B0D12"/>
     <rect x="60" y="60" width="80" height="80" rx="16" fill="#4F8FF7"/>
     <text x="100" y="118" text-anchor="middle" font-family="system-ui, sans-serif" font-size="40" font-weight="800" fill="#fff" letter-spacing="-2">X</text>
-    <rect x="128" y="128" width="18" height="18" rx="4" fill="#FDC470"/>
+    <rect x="128" y="128" width="18" height="18" rx="4" fill="#3FCF8E"/>
   </svg>
 </template>
 <style>
@@ -36,8 +36,8 @@
   --accent-soft: rgba(79,143,247,.15);
   --accent-softer: rgba(79,143,247,.08);
 
-  --amber: #FDC470;
-  --amber-soft: rgba(253,196,112,.12);
+  --amber: #3FCF8E;
+  --amber-soft: rgba(63,207,142,.12);
 
   --radius: 14px;
   --radius-lg: 22px;
@@ -115,7 +115,7 @@ p{margin:0; color:var(--ink-3); text-wrap:pretty;}
 .announce-badge{
   display:inline-flex; align-items:center; gap:6px;
   font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-  background:var(--amber); color:#1A1306;
+  background:var(--amber); color:#042214;
   padding:4px 10px; border-radius:999px; flex-shrink:0;
 }
 .announce-text{flex:1; color:var(--ink-2);}
@@ -426,7 +426,7 @@ nav a.nav-link.active{
   content:'';
   position:absolute; left:-4px; right:-4px; bottom:.05em;
   height:.18em;
-  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 8 Q 50 1, 100 7 T 198 5' fill='none' stroke='%23FDC470' stroke-width='3' stroke-linecap='round'/></svg>") no-repeat;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'><path d='M2 8 Q 50 1, 100 7 T 198 5' fill='none' stroke='%233FCF8E' stroke-width='3' stroke-linecap='round'/></svg>") no-repeat;
   background-size:100% 100%;
   pointer-events:none;
 }
@@ -508,7 +508,7 @@ nav a.nav-link.active{
   background:var(--amber);
   border-radius:50%;
   transform:translateX(-50%);
-  box-shadow:0 0 18px rgba(253,196,112,.7);
+  box-shadow:0 0 18px rgba(63,207,142,.7);
 }
 .reel-playhead::before{top:18%;}
 .reel-playhead::after{bottom:18%;}
@@ -589,7 +589,7 @@ nav a.nav-link.active{
   font-size:.6rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
   background:var(--amber-soft); color:var(--amber);
   padding:3px 7px; border-radius:999px;
-  border:1px solid rgba(253,196,112,.25);
+  border:1px solid rgba(63,207,142,.25);
   font-variant-numeric:tabular-nums;
 }
 
@@ -614,16 +614,16 @@ nav a.nav-link.active{
 .reel-card.active .m-dot{
   background:var(--amber);
   transform:translateX(-50%) scale(1.6);
-  box-shadow:0 0 0 6px rgba(253,196,112,.18), 0 0 22px rgba(253,196,112,.6);
+  box-shadow:0 0 0 6px rgba(63,207,142,.18), 0 0 22px rgba(63,207,142,.6);
 }
 .reel-card.special.active{
-  background:linear-gradient(180deg, rgba(253,196,112,.14) 0%, var(--card-2) 100%);
-  border-color:rgba(253,196,112,.45);
-  box-shadow:0 20px 60px -16px rgba(253,196,112,.45), 0 6px 16px -6px rgba(0,0,0,.5);
+  background:linear-gradient(180deg, rgba(63,207,142,.14) 0%, var(--card-2) 100%);
+  border-color:rgba(63,207,142,.45);
+  box-shadow:0 20px 60px -16px rgba(63,207,142,.45), 0 6px 16px -6px rgba(0,0,0,.5);
 }
 .reel-card.special.active .m-month{color:var(--amber);}
 .reel-card.special.active .m-stamp{
-  background:var(--amber); color:#1A1306;
+  background:var(--amber); color:#042214;
   border-color:var(--amber);
 }
 
@@ -851,7 +851,7 @@ nav a.nav-link.active{
 }
 .cube-dot.done::after{width:100%;}
 .cube-dot.current::after{width:var(--fill, 0%);}
-.cube-dot.required-mark{background:rgba(253,196,112,.25);}
+.cube-dot.required-mark{background:rgba(63,207,142,.25);}
 
 .cube-hint{
   margin-top:8px;
@@ -921,9 +921,9 @@ nav a.nav-link.active{
 .cube-face[data-idx="5"]{transform: rotateY(300deg) translateZ(329px);}
 
 .cube-face.is-required{
-  background:linear-gradient(180deg, rgba(253,196,112,.10) 0%, var(--card-2) 80%);
-  border-color:rgba(253,196,112,.4);
-  box-shadow:0 30px 80px -30px rgba(253,196,112,.35), inset 0 1px 0 rgba(255,255,255,.05);
+  background:linear-gradient(180deg, rgba(63,207,142,.10) 0%, var(--card-2) 80%);
+  border-color:rgba(63,207,142,.4);
+  box-shadow:0 30px 80px -30px rgba(63,207,142,.35), inset 0 1px 0 rgba(255,255,255,.05);
 }
 
 .cube-face .face-top{
@@ -946,9 +946,9 @@ nav a.nav-link.active{
   color:var(--ink-4);
 }
 .cube-face .face-badge.required{
-  background:var(--amber); color:#1A1306; border-color:var(--amber);
+  background:var(--amber); color:#042214; border-color:var(--amber);
 }
-.cube-face .face-badge .pulse{width:5px; height:5px; border-radius:50%; background:#1A1306;}
+.cube-face .face-badge .pulse{width:5px; height:5px; border-radius:50%; background:#042214;}
 
 .cube-face .face-title{
   font-size:1.5rem; font-weight:700;
@@ -961,7 +961,7 @@ nav a.nav-link.active{
   transition:color .2s var(--ease), border-color .2s var(--ease);
 }
 .cube-face .face-title a:hover{color:var(--accent); border-color:var(--accent);}
-.cube-face.is-required .face-title a{border-color:rgba(253,196,112,.35);}
+.cube-face.is-required .face-title a{border-color:rgba(63,207,142,.35);}
 
 .cube-face .face-meta{
   display:grid;
@@ -973,12 +973,12 @@ nav a.nav-link.active{
   border:1px solid var(--line);
   margin-top:auto;
 }
-.cube-face.is-required .face-meta{background:rgba(253,196,112,.22); border-color:rgba(253,196,112,.25);}
+.cube-face.is-required .face-meta{background:rgba(63,207,142,.22); border-color:rgba(63,207,142,.25);}
 .cube-face .face-meta-item{
   background:var(--bg-2);
   padding:14px 16px;
 }
-.cube-face.is-required .face-meta-item{background:rgba(253,196,112,.05);}
+.cube-face.is-required .face-meta-item{background:rgba(63,207,142,.05);}
 .cube-face .face-meta-item .lbl{
   font-size:.66rem; font-weight:600;
   color:var(--ink-4);
@@ -1037,14 +1037,14 @@ nav a.nav-link.active{
   display:inline-flex; align-items:center; gap:6px;
 }
 .comp-badge.required{
-  background:var(--amber); color:#1A1306;
+  background:var(--amber); color:#042214;
 }
 .comp-badge.optional{
   background:transparent; color:var(--ink-4);
   border:1px solid var(--line-2);
 }
 .comp-badge .pulse{
-  width:5px; height:5px; border-radius:50%; background:#1A1306;
+  width:5px; height:5px; border-radius:50%; background:#042214;
 }
 .comp-title{
   font-size:1.18rem; font-weight:700;
@@ -1109,8 +1109,8 @@ nav a.nav-link.active{
   display:flex; flex-direction:column; gap:14px;
 }
 .cube-mobile .comp-card.is-required{
-  background:linear-gradient(180deg, rgba(253,196,112,.06) 0%, var(--card) 60%);
-  border-color:rgba(253,196,112,.35);
+  background:linear-gradient(180deg, rgba(63,207,142,.06) 0%, var(--card) 60%);
+  border-color:rgba(63,207,142,.35);
 }
 .cube-mobile .face-top{display:flex; justify-content:space-between; align-items:center;}
 .cube-mobile .face-num{font-family:var(--serif); font-style:italic; color:var(--accent); font-size:1.6rem;}
@@ -1120,7 +1120,7 @@ nav a.nav-link.active{
   padding:5px 10px; border-radius:999px;
   border:1px solid var(--line-2); color:var(--ink-4);
 }
-.cube-mobile .face-badge.required{background:var(--amber); color:#1A1306; border-color:var(--amber);}
+.cube-mobile .face-badge.required{background:var(--amber); color:#042214; border-color:var(--amber);}
 .cube-mobile .face-title{font-size:1.15rem; font-weight:700; letter-spacing:-.015em;}
 .cube-mobile .face-meta{
   display:grid; grid-template-columns:1fr 1fr; gap:1px;
@@ -1137,7 +1137,7 @@ nav a.nav-link.active{
 .launchsb::before{
   content:''; position:absolute; inset:0;
   background:radial-gradient(circle at 20% 0%, rgba(79,143,247,.10), transparent 40%),
-             radial-gradient(circle at 80% 80%, rgba(253,196,112,.06), transparent 45%);
+             radial-gradient(circle at 80% 80%, rgba(63,207,142,.06), transparent 45%);
   pointer-events:none;
 }
 .launchsb .container{position:relative; z-index:1;}
@@ -1168,7 +1168,7 @@ nav a.nav-link.active{
   font-size:.65rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
   color:var(--amber); padding:3px 10px;
   background:var(--amber-soft);
-  border:1px solid rgba(253,196,112,.25);
+  border:1px solid rgba(63,207,142,.25);
   border-radius:999px;
 }
 .lsb-bigdate .month{
@@ -1208,11 +1208,11 @@ nav a.nav-link.active{
 .lsb-required{
   display:inline-flex; align-items:center; gap:8px;
   margin-top:18px;
-  background:var(--amber); color:#1A1306;
+  background:var(--amber); color:#042214;
   padding:7px 14px; border-radius:999px;
   font-size:.74rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
 }
-.lsb-required .dot{width:6px; height:6px; border-radius:50%; background:#1A1306;}
+.lsb-required .dot{width:6px; height:6px; border-radius:50%; background:#042214;}
 .lsb-pitch{
   font-family:var(--serif); font-style:italic;
   color:var(--ink-2);
@@ -1261,19 +1261,19 @@ nav a.nav-link.active{
   display:grid; place-items:center;
 }
 .checklist li .chk svg{width:10px; height:10px;}
-.dress-list li .chk{background:var(--amber); color:#1A1306; border-radius:6px;}
+.dress-list li .chk{background:var(--amber); color:#042214; border-radius:6px;}
 
 .lsb-note{
   margin-top:28px;
   display:flex; gap:14px; align-items:flex-start;
   padding:18px 22px;
-  background:rgba(253,196,112,.06);
-  border:1px solid rgba(253,196,112,.2);
+  background:rgba(63,207,142,.06);
+  border:1px solid rgba(63,207,142,.2);
   border-radius:var(--radius);
 }
 .lsb-note-icon{
   width:32px; height:32px; flex-shrink:0;
-  background:var(--amber); color:#1A1306;
+  background:var(--amber); color:#042214;
   border-radius:50%;
   display:grid; place-items:center;
 }
@@ -2032,18 +2032,18 @@ footer{
         </a>
       </article>
 
-      <article class="comp-card reveal" data-delay="2" style="border-color:rgba(253,196,112,.35); background:linear-gradient(180deg, rgba(253,196,112,.04) 0%, var(--card) 60%);">
+      <article class="comp-card reveal" data-delay="2" style="border-color:rgba(63,207,142,.35); background:linear-gradient(180deg, rgba(63,207,142,.04) 0%, var(--card) 60%);">
         <div class="comp-header">
           <span class="comp-num" style="color:var(--amber);">05</span>
           <span class="comp-badge required"><span class="pulse"></span>Required</span>
         </div>
         <h3 class="comp-title"><a href="https://blueoceancompetition.org/" target="_blank" rel="noopener">Blue Ocean</a></h3>
-        <div class="comp-meta" style="background:rgba(253,196,112,.18); border-color:rgba(253,196,112,.25);">
-          <div class="comp-meta-item" style="background:rgba(253,196,112,.04);">
+        <div class="comp-meta" style="background:rgba(63,207,142,.18); border-color:rgba(63,207,142,.25);">
+          <div class="comp-meta-item" style="background:rgba(63,207,142,.04);">
             <div class="lbl">Team</div>
             <div class="val">2 – 4 members</div>
           </div>
-          <div class="comp-meta-item" style="background:rgba(253,196,112,.04);">
+          <div class="comp-meta-item" style="background:rgba(63,207,142,.04);">
             <div class="lbl">Deadline</div>
             <div class="val">Feb 22</div>
           </div>
